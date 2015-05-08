@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
+using TirkxDownloader.ViewModels;
 
 namespace TirkxDownloader
 {
@@ -21,6 +22,7 @@ namespace TirkxDownloader
             container = new SimpleContainer();
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
+            container.PerRequest<ShellViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
@@ -36,6 +38,11 @@ namespace TirkxDownloader
         protected override void BuildUp(object instance)
         {
             container.BuildUp(instance);
+        }
+
+        protected override void OnStartup(object sender, System.Windows.StartupEventArgs e)
+        {
+            DisplayRootViewFor<ShellViewModel>();
         }
     }
 }
