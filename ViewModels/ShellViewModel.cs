@@ -8,11 +8,17 @@ using TirkxDownloader.Views;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class ShellViewModel : Conductor<object>.Collection.OneActive
+    public class ShellViewModel : Conductor<IContentList>.Collection.OneActive
     {
-        public ShellViewModel()
+        // IContentList implementations will be injected by IoC 
+        public ShellViewModel(IEnumerable<IContentList> view)
         {
-            this.DisplayName = "Tirkx Downloader";
+            DisplayName = "Tirkx Downloader";
+            // Add ViewModel to screen collection
+            Items.AddRange(view);
+
+            // Initial view to Anime list
+            ActivateItem(Items[0]);
         }
     }
 }
