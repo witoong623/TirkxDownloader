@@ -3,21 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Height="400" WindowStartupLocation="CenterScreen"
         x:Name="MainWindow">
-    <StackPanel>
-        <Menu DockPanel.Dock="Top"  IsMainMenu="True">
-            <MenuItem Header="File">
-
-            </MenuItem>
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File" />
         </Menu>
-        <StackPanel Orientation="Horizontal">
-            <ListBox x:Name="Items" VerticalAlignment="Top" Width="150" MinHeight="300" BorderThickness="1" Margin="10,5,5,5">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding DisplayName}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <ContentControl x:Name="ActiveItem" Margin="5,5,10,5" />
-        </StackPanel>
-    </StackPanel>
+        <ListBox x:Name="Items" DockPanel.Dock="Left" Width="150" MinHeight="300" BorderThickness="1" Margin="10,5,5,5" VerticalAlignment="Top">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayName}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ContentControl x:Name="ActiveItem" Margin="5,5,10,5" />
+    </DockPanel>
 </Window>
