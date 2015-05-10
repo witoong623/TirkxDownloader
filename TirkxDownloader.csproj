@@ -69,7 +69,7 @@
     </Compile>
     <Compile Include="Models\TirkxDownloadParser.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
-    <Compile Include="ViewModels\IContentList.cs" />
+    <Compile Include="Framework\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\TopicListViewModel.cs" />
     <Compile Include="Views\QueueView.xaml.cs">
@@ -111,9 +111,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Framework\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="Views\QueueView.xaml">
       <SubType>Designer</SubType>
