@@ -23,7 +23,7 @@ namespace TirkxDownloader
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
             container.PerRequest<ShellViewModel>();
-            container.PerRequest<IContentList, TopicListViewModel>();
+            container.PerRequest<IContentList, ThreadListViewModel>();
             container.PerRequest<IContentList, QueueViewModel>();
         }
 
