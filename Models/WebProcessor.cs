@@ -3,22 +3,19 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace TirkxDownloader.Models
 {
+    /// <summary>
+    /// Use to get DOM string from website that use javascript generate page
+    /// </summary>
     public class WebProcessor : ApplicationContext
     {
-        private int NavigatingCouter;
-        private int DocCompletedCounter;
         private string Url;
-
         private HtmlDocument generatedSource;
         private Thread thread;
-        private WebBrowser web;
         
-
         public async Task<HtmlDocument> GetGeneratedHTML(string url)
         {
             Url = url;
@@ -43,8 +40,7 @@ namespace TirkxDownloader.Models
 
         private void webBrowserThread()
         {
-            
-            web = new WebBrowser();
+            var web = new WebBrowser();
             web.Navigate(Url);
             web.DocumentCompleted += web_DocumentCompleted;
         }
@@ -56,8 +52,8 @@ namespace TirkxDownloader.Models
             if (web.ReadyState == WebBrowserReadyState.Interactive)
             {
                 generatedSource = web.Document;
-                web.Dispose();
                 Application.Exit();
+                web.Dispose();
                 thread.Abort();
             }
             else
