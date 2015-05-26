@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "Tirkx",
+  "version": "1.0",
+  "description": "Extension use to select file to download",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "contextMenus",
+    "nativeMessaging"
+  ]
+}

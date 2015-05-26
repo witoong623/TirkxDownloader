@@ -1,0 +1,9 @@
+{
+  "name": "com.aliveplex.tirkx_downloader",
+  "description": "Unofficial tirkx downloader",
+  "path": "bin\\Debug\\TirkxDownloader.exe",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://fpdbfchondanmcmekkiaofnogjdpmdoi/"
+  ]
+}
