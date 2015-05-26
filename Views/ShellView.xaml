@@ -1,7 +1,8 @@
-﻿<Window x:Class="TirkxDownloader.Views.ShellView"
+﻿<metro:MetroWindow x:Class="TirkxDownloader.Views.ShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Height="400" Width="550" WindowStartupLocation="CenterScreen"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        Height="500" Width="550" WindowStartupLocation="CenterScreen"
         x:Name="MainWindow">
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
@@ -19,4 +20,4 @@
         </StatusBar>
         <ContentControl x:Name="ActiveItem" Margin="5,5,10,5" />
     </DockPanel>
-</Window>
+</metro:MetroWindow>
