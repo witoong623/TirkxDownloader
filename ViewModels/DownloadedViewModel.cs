@@ -7,11 +7,11 @@ using Caliburn.Micro;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class ThreadListViewModel : Screen, IContentList
+    public class DownloadedViewModel : Screen, IContentList
     {
-        public ThreadListViewModel()
+        public DownloadedViewModel()
         {
-            DisplayName = "Anime List";
+            DisplayName = "Downloaded List";
         }
     }
 }

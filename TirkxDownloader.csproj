@@ -71,15 +71,15 @@
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Compile Include="ViewModels\ThreadListViewModel.cs" />
+    <Compile Include="ViewModels\DownloadedViewModel.cs" />
     <Compile Include="Views\QueueView.xaml.cs">
       <DependentUpon>QueueView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ThreadListView.xaml.cs">
-      <DependentUpon>ThreadListView.xaml</DependentUpon>
+    <Compile Include="Views\DownloadedView.xaml.cs">
+      <DependentUpon>DownloadedView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -123,7 +123,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ThreadListView.xaml">
+    <Page Include="Views\DownloadedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

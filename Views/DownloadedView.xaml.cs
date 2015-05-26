@@ -18,9 +18,9 @@ namespace TirkxDownloader.Views
     /// <summary>
     /// Interaction logic for TopicListView.xaml
     /// </summary>
-    public partial class TopicListView : UserControl
+    public partial class DownloadedView : UserControl
     {
-        public TopicListView()
+        public DownloadedView()
         {
             InitializeComponent();
         }

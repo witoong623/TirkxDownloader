@@ -23,8 +23,8 @@ namespace TirkxDownloader
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
             container.PerRequest<ShellViewModel>();
-            container.PerRequest<IContentList, ThreadListViewModel>();
             container.PerRequest<IContentList, QueueViewModel>();
+            container.PerRequest<IContentList, DownloadedViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
