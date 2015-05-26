@@ -68,6 +68,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Framework\Anime.cs" />
+    <None Include="Framework\FileInfo.cs" />
+    <None Include="Models\TirkxDownloadParser.cs" />
+    <None Include="Models\WebProcessor.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
@@ -111,9 +115,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="Views\QueueView.xaml">
       <SubType>Designer</SubType>
