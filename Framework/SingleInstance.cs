@@ -8,7 +8,7 @@
 // </summary>
 //-----------------------------------------------------------------------
 
-namespace Microsoft.Shell
+namespace TirkxDownloader.Framework
 {
     using System;
     using System.Collections;
