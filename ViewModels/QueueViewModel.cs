@@ -26,7 +26,25 @@ namespace TirkxDownloader.ViewModels
             {
                 selectedItem = value;
                 NotifyOfPropertyChange(() => SelectedItem);
+                NotifyOfPropertyChange(() => CanDownload);
+                NotifyOfPropertyChange(() => CanStop);
+                NotifyOfPropertyChange(() => CanDelete);
             }
+        }
+
+        public bool CanDownload
+        {
+            get { return SelectedItem != null && SelectedItem.Status == DownloadStatus.Queue; }
+        }
+
+        public bool CanStop
+        {
+            get { return SelectedItem != null && SelectedItem.Status == DownloadStatus.Downloading; }
+        }
+
+        public bool CanDelete
+        {
+            get { return SelectedItem != null; }
         }
 
         public QueueViewModel()
@@ -37,16 +55,60 @@ namespace TirkxDownloader.ViewModels
 
         protected override void OnInitialize()
         {
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 10; i++)
             {
-                downloadInfoList.Add(new DownloadInfo { FileName = "School days", DownloadLink = "tirkx download thread",
-                    SaveDestination = "D drive", AddDate = DateTime.Now });
+                downloadInfoList.Add(new DownloadInfo
+                {   
+                    FileName = "School days",
+                    DownloadLink = "tirkx download thread",
+                    SaveLocation = "D drive",
+                    AddDate = DateTime.Now,
+                    CompleteDate = null,
+                    Status = DownloadStatus.Queue
+                });
             }
+
+            downloadInfoList.Add(new DownloadInfo
+            {
+                FileName = "Shin sekai yori",
+                DownloadLink = "tirkx download thread",
+                SaveLocation = "D drive",
+                AddDate = DateTime.Now,
+                CompleteDate = null,
+                Status = DownloadStatus.Downloading
+            });
         }
 
-        public void SelectItem(System.Windows.Controls.ListView listView)
+        public void SelectItem(DownloadInfo info)
         {
-            SelectedItem = (DownloadInfo)listView.SelectedItem;
+            SelectedItem = info;
+        }
+
+        public void Download()
+        {
+            SelectedItem.Status = DownloadStatus.Downloading;
+            NotifyOfPropertyChange(() => SelectedItem);
+            NotifyOfPropertyChange(() => CanDownload);
+            NotifyOfPropertyChange(() => CanStop);
+        }
+
+        public void Delete()
+        {
+            DownloadInfoList.Remove(SelectedItem);
+            NotifyOfPropertyChange(() => SelectedItem);
+        }
+
+        public void Stop()
+        {
+            SelectedItem.Status = DownloadStatus.Queue;
+            NotifyOfPropertyChange(() => SelectedItem);
+            NotifyOfPropertyChange(() => CanDownload);
+            NotifyOfPropertyChange(() => CanStop);
+        }
+
+        public void UnSelect()
+        {
+            Debug.WriteLine("UnSelect was called");
         }
     }
 }
