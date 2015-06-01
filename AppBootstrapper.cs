@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using TirkxDownloader.ViewModels;
+using TirkxDownloader.Framework;
 
 namespace TirkxDownloader
 {
@@ -22,6 +23,7 @@ namespace TirkxDownloader
             container = new SimpleContainer();
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
+            container.Singleton<BindableCollection<DownloadInfo>, BindableCollection<DownloadInfo>>();
             container.PerRequest<ShellViewModel>();
             container.PerRequest<IContentList, QueueViewModel>();
             container.PerRequest<IContentList, DownloadedViewModel>();
