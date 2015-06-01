@@ -5,16 +5,46 @@
         <Setter Property="TextAlignment" Value="Right" />
         <Setter Property="Margin" Value="0,0,10,0" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontWeight" Value="Medium" />
     </Style>
     <Style x:Key="MasterDetail"
            TargetType="TextBlock">
         <Setter Property="FontSize"
-                Value="14" />
+                Value="13" />
     </Style>
-    <Style x:Key="HeadButton"
-           TargetType="Button"
-           BasedOn="{StaticResource MetroButton}">
+    <Style x:Key="NewDownloadDescription"
+           TargetType="TextBlock">
+        <Setter Property="TextAlignment"
+                Value="Right" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="FontSize"
+                Value="14" />
+        <Setter Property="Margin"
+                Value="0,0,10,0" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="Width"
+                Value="130" />
+        <Setter Property="IsEnabled"
+                Value="False" />
+    </Style>
+    <Style x:Key="NewDownloadValue"
+           TargetType="TextBox"
+           BasedOn="{StaticResource MetroTextBox}">
+        <Setter Property="Margin"
+                Value="3" />
+        <Setter Property="Width"
+                Value="350" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="IsEnabled"
+                Value="False" />
+    </Style>
+    <Style x:Key="HeadButton" 
+           TargetType="Button" 
+           BasedOn="{StaticResource MetroButton}"
+           >
         <Setter Property="Margin"
                 Value="5,0,0,0" />
         <Setter Property="Padding"
@@ -25,25 +55,5 @@
                 Value="45" />
         <Setter Property="Controls:ButtonHelper.CornerRadius"
                 Value="1" />
-    </Style>
-    <Style TargetType="ListView"
-           x:Key="ListViewNoItem">
-        <Style.Triggers>
-            <Trigger Property="HasItems"
-                                     Value="False">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListView">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Text="No item" FontSize="16" />
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 </ResourceDictionary>
