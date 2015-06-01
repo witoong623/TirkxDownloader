@@ -12,7 +12,8 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="180" />
         </Grid.RowDefinitions>
-        <DockPanel LastChildFill="False">
+        <DockPanel Grid.Row="0"
+                   LastChildFill="False">
             <Button x:Name="Download"
                     Style="{StaticResource HeadButton}"
                     DockPanel.Dock="Left">
@@ -48,11 +49,13 @@
             </Button>
         </DockPanel>
         <DockPanel Grid.Row="1">
-            <ListView x:Name="DownloadInfoList"
+            <ListView ItemsSource="{Binding QueueDownloadList}"
                       cal:Message.Attach="[Event SelectionChanged] = [Action SelectItem($this)]"
-                      BorderBrush="DarkGray"
                       DockPanel.Dock="Top"
                       Margin="0,0,0,15">
+                <ListView.BorderBrush>
+                    <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+                </ListView.BorderBrush>
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="File Name"
@@ -63,16 +66,23 @@
                                         DisplayMemberBinding="{Binding AddDate}" />
                     </GridView>
                 </ListView.View>
-                <ListView.Style>
-                    <Style BasedOn="{StaticResource ListViewNoItem}"
-                           TargetType="ListView" />
-                </ListView.Style>
             </ListView>
         </DockPanel>
+        <Border Grid.Row="1"
+                Opacity="0.75" d:IsHidden="True">
+            <TextBlock Text="No item..."
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+        </Border>
         <Border Grid.Row="2"
-                BorderBrush="DarkGray"
                 BorderThickness="1"
                 Padding="10,5">
+            <Border.BorderBrush>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+            </Border.BorderBrush>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150" />
@@ -86,7 +96,7 @@
                     <RowDefinition Height="30" />
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="File name:"
+                <TextBlock Text="File name"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="0" Grid.Column="0" />
                 <TextBlock x:Name="SelectedItem_FileName"

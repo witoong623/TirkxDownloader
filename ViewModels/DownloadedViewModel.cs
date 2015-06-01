@@ -10,12 +10,31 @@ namespace TirkxDownloader.ViewModels
 {
     public class DownloadedViewModel : Screen, IContentList
     {
-        public BindableCollection<DownloadInfo> DownloadInfoList { get; set; }
-        public DownloadInfo SelectedItem { get; set; }
+        private DownloadInfo selectedItem;
 
-        public DownloadedViewModel()
+        public BindableCollection<DownloadInfo> DownloadInfoList { get; set; }
+
+        public DownloadInfo SelectedItem
+        {
+            get { return selectedItem; }
+            set
+            {
+                selectedItem = value;
+                NotifyOfPropertyChange(() => SelectedItem);
+                NotifyOfPropertyChange(() => CanDelete);
+                NotifyOfPropertyChange(() => CanOpen);
+            }
+        }
+
+        public bool IsEmpty
+        {
+            get { return DownloadInfoList.Count == 0; }
+        }
+
+        public DownloadedViewModel(BindableCollection<DownloadInfo> downloadList)
         {
             DisplayName = "Downloaded List";
+            DownloadInfoList = downloadList;
         }
 
         public bool CanOpen
@@ -28,6 +47,11 @@ namespace TirkxDownloader.ViewModels
             get { return SelectedItem != null; }
         }
 
+        public void SelectItem(DownloadInfo info)
+        {
+            SelectedItem = info;
+        }
+
         public void Open()
         {
 
@@ -38,6 +62,7 @@ namespace TirkxDownloader.ViewModels
             DownloadInfoList.Remove(SelectedItem);
             NotifyOfPropertyChange(() => CanOpen);
             NotifyOfPropertyChange(() => CanDelete);
+            NotifyOfPropertyChange(() => IsEmpty);
         }
     }
 }

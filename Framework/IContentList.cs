@@ -8,5 +8,6 @@ namespace TirkxDownloader.ViewModels
 {
     public interface IContentList
     {
+        bool IsEmpty { get; }
     }
 }

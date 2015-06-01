@@ -11,12 +11,19 @@ namespace TirkxDownloader.ViewModels
 {
     class QueueViewModel : Screen, IContentList
     {
-        private BindableCollection<DownloadInfo> downloadInfoList;
         private DownloadInfo selectedItem;
 
-        public BindableCollection<DownloadInfo> DownloadInfoList
+        public BindableCollection<DownloadInfo> QueueDownloadList { get; private set; }
+
+        public QueueViewModel(BindableCollection<DownloadInfo> downloadList)
         {
-            get { return downloadInfoList; }
+            DisplayName = "Queue/Downloading";
+            QueueDownloadList = new BindableCollection<DownloadInfo>();
+        }
+
+        public bool IsEmpty
+        {
+            get { return QueueDownloadList.Count == 0; }
         }
 
         public DownloadInfo SelectedItem
@@ -47,28 +54,22 @@ namespace TirkxDownloader.ViewModels
             get { return SelectedItem != null; }
         }
 
-        public QueueViewModel()
-        {
-            DisplayName = "Queue/Downloading";
-            downloadInfoList = new BindableCollection<DownloadInfo>();
-        }
-
         protected override void OnInitialize()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 5; i++)
             {
-                downloadInfoList.Add(new DownloadInfo
+                QueueDownloadList.Add(new DownloadInfo
                 {   
                     FileName = "School days",
                     DownloadLink = "tirkx download thread",
                     SaveLocation = "D drive",
                     AddDate = DateTime.Now,
                     CompleteDate = null,
-                    Status = DownloadStatus.Queue
+                    Status = DownloadStatus.Complete
                 });
             }
 
-            downloadInfoList.Add(new DownloadInfo
+            QueueDownloadList.Add(new DownloadInfo
             {
                 FileName = "Shin sekai yori",
                 DownloadLink = "tirkx download thread",
@@ -94,8 +95,9 @@ namespace TirkxDownloader.ViewModels
 
         public void Delete()
         {
-            DownloadInfoList.Remove(SelectedItem);
+            QueueDownloadList.Remove(SelectedItem);
             NotifyOfPropertyChange(() => SelectedItem);
+            NotifyOfPropertyChange(() => IsEmpty);
         }
 
         public void Stop()
@@ -104,11 +106,6 @@ namespace TirkxDownloader.ViewModels
             NotifyOfPropertyChange(() => SelectedItem);
             NotifyOfPropertyChange(() => CanDownload);
             NotifyOfPropertyChange(() => CanStop);
-        }
-
-        public void UnSelect()
-        {
-            Debug.WriteLine("UnSelect was called");
         }
     }
 }
