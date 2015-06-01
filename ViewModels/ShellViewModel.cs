@@ -10,10 +10,13 @@ namespace TirkxDownloader.ViewModels
 {
     public class ShellViewModel : Conductor<IContentList>.Collection.OneActive
     {
+        private readonly IWindowManager windowManager;
         // IContentList implementations will be injected by IoC 
-        public ShellViewModel(IEnumerable<IContentList> view)
+        public ShellViewModel(IEnumerable<IContentList> view, IWindowManager windowManager)
         {
             DisplayName = "Tirkx Downloader";
+            this.windowManager = windowManager;
+
             // Add ViewModel to screen collection
             Items.AddRange(view);
 
