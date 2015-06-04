@@ -12,19 +12,24 @@ namespace TirkxDownloader.ViewModels
 {
     public class NewDownloadViewModel : Screen
     {
-        private readonly IWindowManager windowManager;
+        private readonly IWindowManager WindowManager;
+        private readonly IEventAggregator EventAggregator;
+        private MetroWindow View;
 
-        public DownloadInfo CurrentItem { get; set; }
+        public DownloadInfo CurrentItem { get; private set; }
 
-        public NewDownloadViewModel(IWindowManager windowManager)
+        public NewDownloadViewModel(IWindowManager windowManager,
+            IEventAggregator eventAggregator, TirkxFileInfo fileInfo)
         {
-            this.windowManager = windowManager;
+            WindowManager = windowManager;
+            EventAggregator = eventAggregator;
             DisplayName = "New download file";
-            // For testing
+            View = (MetroWindow)GetView();
+
             CurrentItem = new DownloadInfo
             {
-                FileName = "Saenai Kanojo no Sodatekata",
-                DownloadLink = "www.tirkx.com/Saenai Kanojo no Sodatekata",
+                FileName = fileInfo.FileName,
+                DownloadLink = fileInfo.DownloadLink
             };
         }
 
@@ -38,19 +43,26 @@ namespace TirkxDownloader.ViewModels
                 CurrentItem.SaveLocation = folderBrowser.FileName;
                 NotifyOfPropertyChange(() => CurrentItem);
             }
-
-            var window = (MetroWindow)GetView();
-            window.Focus();
         }
 
         public void Download()
         {
+            CurrentItem.Status = DownloadStatus.Downloading;
+            CurrentItem.AddDate = DateTime.Now;
+            EventAggregator.PublishOnUIThread(CurrentItem);
 
+            var window = (MetroWindow)GetView();
+            window.Close();
         }
 
         public void Queue()
         {
+            CurrentItem.Status = DownloadStatus.Queue;
+            CurrentItem.AddDate = DateTime.Now;
+            EventAggregator.PublishOnUIThread(CurrentItem);
 
+            var window = (MetroWindow)GetView();
+            window.Close();
         }
 
         public void Cancel()

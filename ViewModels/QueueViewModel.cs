@@ -9,16 +9,20 @@ using TirkxDownloader.Framework;
 
 namespace TirkxDownloader.ViewModels
 {
-    class QueueViewModel : Screen, IContentList
+    public class QueueViewModel : Screen, IContentList, IHandle<DownloadInfo>
     {
         private DownloadInfo selectedItem;
+        private readonly IEventAggregator EventAggregator;
 
         public BindableCollection<DownloadInfo> QueueDownloadList { get; private set; }
 
-        public QueueViewModel(BindableCollection<DownloadInfo> downloadList)
+        public QueueViewModel(IEventAggregator eventAggregator)
         {
+            EventAggregator = eventAggregator;
             DisplayName = "Queue/Downloading";
             QueueDownloadList = new BindableCollection<DownloadInfo>();
+
+            EventAggregator.Subscribe(this);
         }
 
         public bool IsEmpty
@@ -106,6 +110,11 @@ namespace TirkxDownloader.ViewModels
             NotifyOfPropertyChange(() => SelectedItem);
             NotifyOfPropertyChange(() => CanDownload);
             NotifyOfPropertyChange(() => CanStop);
+        }
+
+        public void Handle(DownloadInfo message)
+        {
+            QueueDownloadList.Add(message);
         }
     }
 }

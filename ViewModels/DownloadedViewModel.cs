@@ -12,7 +12,13 @@ namespace TirkxDownloader.ViewModels
     {
         private DownloadInfo selectedItem;
 
-        public BindableCollection<DownloadInfo> DownloadInfoList { get; set; }
+        public BindableCollection<DownloadInfo> DownloadCompleteList { get; private set; }
+
+        public DownloadedViewModel()
+        {
+            DisplayName = "Downloaded list";
+            DownloadCompleteList = new BindableCollection<DownloadInfo>();
+        }
 
         public DownloadInfo SelectedItem
         {
@@ -28,13 +34,7 @@ namespace TirkxDownloader.ViewModels
 
         public bool IsEmpty
         {
-            get { return DownloadInfoList.Count == 0; }
-        }
-
-        public DownloadedViewModel(BindableCollection<DownloadInfo> downloadList)
-        {
-            DisplayName = "Downloaded List";
-            DownloadInfoList = downloadList;
+            get { return DownloadCompleteList.Count == 0; }
         }
 
         public bool CanOpen
@@ -59,7 +59,7 @@ namespace TirkxDownloader.ViewModels
 
         public void Delete()
         {
-            DownloadInfoList.Remove(SelectedItem);
+            DownloadCompleteList.Remove(SelectedItem);
             NotifyOfPropertyChange(() => CanOpen);
             NotifyOfPropertyChange(() => CanDelete);
             NotifyOfPropertyChange(() => IsEmpty);

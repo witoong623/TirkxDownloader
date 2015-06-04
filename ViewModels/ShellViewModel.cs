@@ -5,23 +5,37 @@ using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using TirkxDownloader.Views;
+using TirkxDownloader.Framework;
+using TirkxDownloader.Models;
 
 namespace TirkxDownloader.ViewModels
 {
     public class ShellViewModel : Conductor<IContentList>.Collection.OneActive
     {
-        private readonly IWindowManager windowManager;
-        // IContentList implementations will be injected by IoC 
-        public ShellViewModel(IEnumerable<IContentList> view, IWindowManager windowManager)
+        private readonly IWindowManager WindowManager;
+        private readonly IEventAggregator EventAggregator;
+        private readonly MessageReciever Reciever;
+        
+        public ShellViewModel(QueueViewModel queueViewModel, DownloadedViewModel downloadViewModel,
+            IWindowManager windowManager, IEventAggregator eventAggregator, MessageReciever messageRevicer)
         {
             DisplayName = "Tirkx Downloader";
-            this.windowManager = windowManager;
+            WindowManager = windowManager;
+            EventAggregator = eventAggregator;
+            Reciever = messageRevicer;
 
-            // Add ViewModel to screen collection
-            Items.AddRange(view);
-
-            // Initial view to Anime list
+            Items.Add(queueViewModel);
+            Items.Add(downloadViewModel);
             ActivateItem(Items[0]);
+            messageRevicer.Start();
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            if (close)
+            {
+                Reciever.Stop();
+            }
         }
     }
 }
