@@ -52,10 +52,10 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\MahApps.Metro.1.1.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -81,7 +81,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\DownloadInfo.cs" />
+    <Compile Include="Framework\TirkxFileInfo.cs" />
     <Compile Include="Framework\SingleInstance.cs" />
+    <Compile Include="Models\MessageReviever.cs" />
     <Compile Include="ViewModels\NewDownloadViewModel.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\IContentList.cs" />
@@ -130,9 +132,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
