@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:cal="http://www.caliburnproject.org"
-        Height="600" Width="800" WindowStartupLocation="CenterScreen"
+        Height="600" Width="900" WindowStartupLocation="CenterScreen"
         BorderBrush="{DynamicResource AccentColorBrush}"
         Icon="/TirkxDownloader;component/Resources/sakuramini.ico">
     <metro:MetroWindow.RightWindowCommands>
@@ -29,7 +29,7 @@
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="180" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <ListBox x:Name="Items"

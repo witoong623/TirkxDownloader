@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:cal="http://www.caliburnproject.org"
-        GlowBrush="{DynamicResource AccentColorBrush}"
-        WindowStartupLocation="CenterOwner" Height="220" Width="600"
+        BorderBrush="{DynamicResource AccentColorBrush}"
+        WindowStartupLocation="CenterOwner"
+        Height="220" Width="600"
         ShowMinButton="False"
         ShowMaxRestoreButton="False"
         ResizeMode="NoResize">

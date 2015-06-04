@@ -59,11 +59,11 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="File Name"
-                                        Width="300"
+                                        Width="400"
                                         DisplayMemberBinding="{Binding FileName}" />
-                        <GridViewColumn Header="Add date"
-                                        Width="150"
-                                        DisplayMemberBinding="{Binding AddDate}" />
+                        <GridViewColumn Header="Status"
+                                        Width="100"
+                                        DisplayMemberBinding="{Binding Status}" />
                     </GridView>
                 </ListView.View>
             </ListView>
