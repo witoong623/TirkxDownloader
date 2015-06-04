@@ -83,7 +83,7 @@
     <Compile Include="Framework\DownloadInfo.cs" />
     <Compile Include="Framework\TirkxFileInfo.cs" />
     <Compile Include="Framework\SingleInstance.cs" />
-    <Compile Include="Models\MessageReviever.cs" />
+    <Compile Include="Models\MessageReciever.cs" />
     <Compile Include="ViewModels\NewDownloadViewModel.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\IContentList.cs" />
