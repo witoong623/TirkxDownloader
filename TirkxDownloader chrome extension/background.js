@@ -1,25 +1,35 @@
 var port = null;
+var IsConnect = false;
 
 chrome.runtime.onInstalled.addListener(Init);
-chrome.contextMenus.onClicked.addListener(showMessageBox)
+chrome.runtime.onSuspend.addListener(Disconnect);
+chrome.contextMenus.onClicked.addListener(showMessageBox);
 
 function showMessageBox(info, tab) {
 	var link = decodeURIComponent(info.linkUrl);
 	var index = link.search(/[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/);
 	var fileName = link.substring(index);
 
-	if (info.menuItemId == "download_now") {
-		alert("will download from " + link + " soon\n File name : " + fileName);
-		Connect();
+	alert("will download from " + link + " soon\n File name : " + fileName);
+
+	try{
+		if (IsConnect == false) {
+			IsConnect = true;
+			Connect();
+		}
 		SendMessage(fileName, link);
 	}
-	else if (info.menuItemId == "queue_download") {
-		alert(link + " will be queued\n File name : " + fileName);
+	catch(err) {
+		console.debug("said from catch");
+		IsConnect = false;
+		if (IsConnect == false) {
+			IsConnect = true;
+			Connect();
+		}
+		SendMessage(fileName, link);
 	}
-	else
-	{
-		return;
-	}
+	
+	console.debug("sended");
 }
 
 function Init() {
@@ -28,12 +38,6 @@ function Init() {
     id: "download_now",
     contexts: ["link"]
 });
-	chrome.contextMenus.create({
-    title: "Queue download",
-    id: "queue_download",
-    contexts: ["link"]
-});
-
 }
 
 function Connect() {
@@ -41,6 +45,13 @@ function Connect() {
 	port.onMessage.addListener(function(msg) {
 		console.log("Receive " + msg);
 	});
+	console.debug("connected");
+}
+
+function Disconnect() {
+	port.disconnect();
+	IsConnect = false;
+	console.debug("disconnected");
 }
 
 function SendMessage(fileName, link) {
