@@ -1,35 +1,12 @@
-var port = null;
-var IsConnect = false;
-
 chrome.runtime.onInstalled.addListener(Init);
-chrome.runtime.onSuspend.addListener(Disconnect);
 chrome.contextMenus.onClicked.addListener(showMessageBox);
 
 function showMessageBox(info, tab) {
 	var link = decodeURIComponent(info.linkUrl);
-	var index = link.search(/[^/\\&\?]+\.\w{3,4}(?=([\?&].*$|$))/);
+	var index = link.search(/[^/\\\?]+\.\w{3,4}(?=([\?&].*$|$))/);
 	var fileName = link.substring(index);
-
 	alert("will download from " + link + " soon\n File name : " + fileName);
-
-	try{
-		if (IsConnect == false) {
-			IsConnect = true;
-			Connect();
-		}
-		SendMessage(fileName, link);
-	}
-	catch(err) {
-		console.debug("said from catch");
-		IsConnect = false;
-		if (IsConnect == false) {
-			IsConnect = true;
-			Connect();
-		}
-		SendMessage(fileName, link);
-	}
-	
-	console.debug("sended");
+	SendMessage(fileName,link);
 }
 
 function Init() {
@@ -40,20 +17,10 @@ function Init() {
 });
 }
 
-function Connect() {
-	port = chrome.extension.connectNative("com.aliveplex.tirkx_downloader");
-	port.onMessage.addListener(function(msg) {
-		console.log("Receive " + msg);
-	});
-	console.debug("connected");
-}
-
-function Disconnect() {
-	port.disconnect();
-	IsConnect = false;
-	console.debug("disconnected");
-}
-
 function SendMessage(fileName, link) {
-	port.postMessage({ FileName: fileName, DownloadLink: link });
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST","http://localhost:6230/", false);
+	xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+	var JSONstring = JSON.stringify({ FileName: fileName, DownloadLink: link });
+	xhr.send(JSONstring);
 }
