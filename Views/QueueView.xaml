@@ -47,9 +47,20 @@
                     </Rectangle>
                 </Button.Content>
             </Button>
+            <Button Style="{StaticResource HeadButton}"
+                    DockPanel.Dock="Left"
+                    x:Name="StartQueue">
+                <Button.Content>
+                    <Rectangle Fill="Blue" Width="35" Height="35">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_download}" Stretch="Fill"/>
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
         </DockPanel>
         <DockPanel Grid.Row="1">
-            <ListView ItemsSource="{Binding QueueDownloadList}"
+            <ListView ItemsSource="{Binding Path=QueueDownloadList, Mode=OneWay}"
                       cal:Message.Attach="[Event SelectionChanged] = [Action SelectItem($this)]"
                       DockPanel.Dock="Top"
                       Margin="0,0,0,15">
@@ -64,6 +75,9 @@
                         <GridViewColumn Header="Status"
                                         Width="100"
                                         DisplayMemberBinding="{Binding Status}" />
+                        <GridViewColumn Header="Progress"
+                                        Width="100"
+                                        DisplayMemberBinding="{Binding DownloadProgress}" />
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -83,10 +97,12 @@
             <Border.BorderBrush>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
             </Border.BorderBrush>
-            <Grid>
+            <Grid DataContext="{Binding Path=SelectedItem}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="130" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="250" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
@@ -99,39 +115,97 @@
                 <TextBlock Text="File name"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="0" Grid.Column="0" />
-                <TextBlock x:Name="SelectedItem_FileName"
+                <TextBlock Text="{Binding Path=FileName }"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="0" Grid.Column="1" />
                 <TextBlock Text="Download link"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="1" Grid.Column="0" />
-                <TextBlock x:Name="SelectedItem_DownloadLink"
+                <TextBlock Text="{Binding Path=DownloadLink}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="1" Grid.Column="1" />
                 <TextBlock Text="Save location"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="2" Grid.Column="0" />
-                <TextBlock x:Name="SelectedItem_SaveLocation"
+                <TextBlock Text="{Binding Path=SaveLocation}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="2" Grid.Column="1" />
                 <TextBlock Text="Add date"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="3" Grid.Column="0" />
-                <TextBlock x:Name="SelectedItem_AddDate"
+                <TextBlock Text="{Binding Path=AddDate}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="3" Grid.Column="1" />
                 <TextBlock Text="Complete date"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="4" Grid.Column="0" />
-                <TextBlock x:Name="SelectedItem_CompleteDate"
+                <TextBlock Text="{Binding Path=CompleteDate}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="4" Grid.Column="1" />
                 <TextBlock Text="Status"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="5" Grid.Column="0" />
-                <TextBlock x:Name="SelectedItem_Status"
+                <TextBlock Text="{Binding Path=Status}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="5" Grid.Column="1" />
+                <TextBlock Text="File size"
+                           Style="{StaticResource DetailDescription}"
+                           Grid.Row="0" Grid.Column="2"
+                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="0" Grid.Column="3"
+                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
+                    <TextBlock Text="{Binding Path=DownloadDetail.FileSize}"
+                           Style="{StaticResource MasterDetail}" />
+                    <TextBlock Text=" MB"
+                               Style="{StaticResource DetailDescription}" />
+                </StackPanel>
+                <TextBlock Text="Tranfer rate"
+                           Style="{StaticResource DetailDescription}"
+                           Grid.Row="1" Grid.Column="2"
+                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1" Grid.Column="3"
+                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
+                    <TextBlock Text="{Binding Path=DownloadDetail.TranferRate}"
+                           Style="{StaticResource MasterDetail}" />
+                    <TextBlock Text=" KB/s"
+                               Style="{StaticResource DetailDescription}" />
+                </StackPanel>
+                <TextBlock Text="Recieved size"
+                           Style="{StaticResource DetailDescription}"
+                           Grid.Row="2" Grid.Column="2"
+                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="2" Grid.Column="3"
+                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
+                    <TextBlock Text="{Binding Path=DownloadDetail.RecievedSize}"
+                           Style="{StaticResource MasterDetail}" />
+                    <TextBlock Text=" MB"
+                               Style="{StaticResource DetailDescription}" />
+                </StackPanel>
+                <TextBlock Text="Error message"
+                           Style="{StaticResource DetailDescription}"
+                           Grid.Row="3" Grid.Column="2"
+                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="3" Grid.Column="3"
+                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
+                    <TextBlock Text="{Binding Path=DownloadDetail.ErrorMessage}"
+                           Style="{StaticResource MasterDetail}" />
+                </StackPanel>
+                <TextBlock Text="Progress"
+                           Style="{StaticResource DetailDescription}"
+                           Grid.Row="4" Grid.Column="2"
+                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="4" Grid.Column="3"
+                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
+                    <TextBlock Text="{Binding Path=DownloadDetail.DownloadProgress}"
+                           Style="{StaticResource MasterDetail}" />
+                    <TextBlock Text=" %"
+                               Style="{StaticResource DetailDescription}" />
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
