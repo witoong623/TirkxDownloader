@@ -5,20 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Caliburn.Micro;
+using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class QueueViewModel : Screen, IContentList, IHandle<DownloadInfo>
+    public class QueueViewModel : Screen, IContentList, IHandle<DownloadInfo>, IHandle<string>
     {
         private DownloadInfo selectedItem;
         private readonly IEventAggregator EventAggregator;
+        private readonly DownloadEngine Engine;
 
         public BindableCollection<DownloadInfo> QueueDownloadList { get; private set; }
 
-        public QueueViewModel(IEventAggregator eventAggregator)
+        public QueueViewModel(IEventAggregator eventAggregator, DownloadEngine engine)
         {
             EventAggregator = eventAggregator;
+            Engine = engine;
             DisplayName = "Queue/Downloading";
             QueueDownloadList = new BindableCollection<DownloadInfo>();
 
@@ -45,12 +48,17 @@ namespace TirkxDownloader.ViewModels
 
         public bool CanDownload
         {
-            get { return SelectedItem != null && SelectedItem.Status == DownloadStatus.Queue; }
+            get
+            {
+                return SelectedItem != null && (SelectedItem.Status == DownloadStatus.Queue ||
+                    SelectedItem.Status == DownloadStatus.Error);
+            }
         }
 
         public bool CanStop
         {
-            get { return SelectedItem != null && SelectedItem.Status == DownloadStatus.Downloading; }
+            get { return SelectedItem != null && (SelectedItem.Status == DownloadStatus.Downloading || 
+                SelectedItem.Status == DownloadStatus.Preparing); }
         }
 
         public bool CanDelete
@@ -60,7 +68,7 @@ namespace TirkxDownloader.ViewModels
 
         protected override void OnInitialize()
         {
-            for (int i = 0; i < 5; i++)
+            /*for (int i = 0; i < 5; i++)
             {
                 QueueDownloadList.Add(new DownloadInfo
                 {   
@@ -69,19 +77,17 @@ namespace TirkxDownloader.ViewModels
                     SaveLocation = "D drive",
                     AddDate = DateTime.Now,
                     CompleteDate = null,
-                    Status = DownloadStatus.Complete
                 });
             }
 
             QueueDownloadList.Add(new DownloadInfo
             {
-                FileName = "Shin sekai yori",
-                DownloadLink = "tirkx download thread",
-                SaveLocation = "D drive",
+                FileName = "[WindSky-FS] Owari no Seraph - 01 (MX 1280x720 x264 AAC).mp4",
+                DownloadLink = "http://windsky.3dfxwave.com/Seraph/[WindSky-FS] Owari no Seraph - 01 (MX 1280x720 x264 AAC).mp4",
+                SaveLocation = @"D:/",
                 AddDate = DateTime.Now,
                 CompleteDate = null,
-                Status = DownloadStatus.Downloading
-            });
+            });*/
         }
 
         public void SelectItem(DownloadInfo info)
@@ -91,10 +97,12 @@ namespace TirkxDownloader.ViewModels
 
         public void Download()
         {
-            SelectedItem.Status = DownloadStatus.Downloading;
-            NotifyOfPropertyChange(() => SelectedItem);
-            NotifyOfPropertyChange(() => CanDownload);
-            NotifyOfPropertyChange(() => CanStop);
+            Engine.StartDownload(SelectedItem);
+        }
+
+        public void StartQueue()
+        {
+            Engine.StartQueueDownload(QueueDownloadList);
         }
 
         public void Delete()
@@ -106,15 +114,32 @@ namespace TirkxDownloader.ViewModels
 
         public void Stop()
         {
-            SelectedItem.Status = DownloadStatus.Queue;
-            NotifyOfPropertyChange(() => SelectedItem);
-            NotifyOfPropertyChange(() => CanDownload);
-            NotifyOfPropertyChange(() => CanStop);
+            Engine.StopDownload(selectedItem);
         }
 
+        public void StopQueue()
+        {
+            Engine.StopQueueDownload(QueueDownloadList);
+        }
+
+        // Use to invoke NotifyOfPropertyChange from LoadingDetail instance
+        public void Handle(string propertyName)
+        {
+            if (propertyName.Equals("CanDownload"))
+            {
+                NotifyOfPropertyChange(propertyName);
+            }
+            else if (propertyName.Equals("CanStop"))
+            {
+                NotifyOfPropertyChange(propertyName);
+            }
+        }
+
+        // Receive message from add windows to queue
         public void Handle(DownloadInfo message)
         {
             QueueDownloadList.Add(message);
+            NotifyOfPropertyChange(() => IsEmpty);
         }
     }
 }
