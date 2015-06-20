@@ -1,20 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using Caliburn.Micro;
 
 namespace TirkxDownloader.Framework
 {
-    public enum DownloadStatus { Queue, Complete, Downloading, Error }
+    public enum DownloadStatus { Queue, Complete, Downloading, Error, Preparing, Stop }
 
-    public class DownloadInfo
+    public class DownloadInfo : PropertyChangedBase
     {
-        public string FileName { get; set; }
+        private string fileName;
+        private DateTime? completeDate;
+        private LoadingDetail downloadDetail;
+
+        
         public string DownloadLink { get; set; }
         public string SaveLocation { get; set; }
         public DateTime AddDate { get; set; }
-        public DateTime? CompleteDate { get; set; }
-        public DownloadStatus Status { get; set; }
+        public IEventAggregator EventAggretagor { get; set; }
+
+        public string FileName
+        {
+            get { return fileName; }
+            set
+            {
+                fileName = value;
+                NotifyOfPropertyChange(() => FileName);
+            }
+        }
+
+        public string FullName
+        {
+            get { return Path.Combine(SaveLocation, FileName); }
+        }
+
+        public DateTime? CompleteDate
+        {
+            get { return completeDate; }
+            set
+            {
+                completeDate = value;
+                NotifyOfPropertyChange(() => CompleteDate);
+            }
+        }
+
+        public DownloadStatus Status
+        {
+            get
+            {
+                if (DownloadDetail == null)
+                {
+                    return DownloadStatus.Queue;
+                }
+                else
+                {
+                    return DownloadDetail.LoadingStatus;
+                }
+            }
+        }
+
+        public LoadingDetail DownloadDetail
+        {
+            get { return downloadDetail; }
+            set
+            {
+                downloadDetail = value;
+                NotifyOfPropertyChange(() => downloadDetail);
+            }
+        }
     }
 }
