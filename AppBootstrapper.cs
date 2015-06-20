@@ -28,6 +28,7 @@ namespace TirkxDownloader
             container.Singleton<QueueViewModel>();
             container.Singleton<DownloadedViewModel>();
             container.Singleton<MessageReciever>();
+            container.Singleton<DownloadEngine>();
         }
 
         protected override object GetInstance(Type service, string key)
