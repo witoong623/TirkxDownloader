@@ -47,13 +47,23 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <metro:TransitioningContentControl x:Name="ActiveItem"
+        <metro:TransitioningContentControl cal:View.Model="{Binding ActiveItem}"
                                            Margin="5,5,10,5"
                                            Grid.Row="0"
                                            Grid.Column="1" />
         <StatusBar Grid.ColumnSpan="2"
                    Grid.Row="1">
-            <StatusBarItem Content="test" />
+            <StatusBarItem>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Path=QueueEngineMessage}"
+                               Margin="5,0,0,0"/>
+                </Grid>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
 </metro:MetroWindow>
