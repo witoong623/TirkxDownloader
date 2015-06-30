@@ -13,6 +13,7 @@ namespace TirkxDownloader.Models
 {
     public class MessageReciever
     {
+        private readonly HttpListener Listener;
         private readonly DownloadEngine Engine;
         private readonly IEventAggregator EventAggregator;
         private readonly IWindowManager WindowManager;
@@ -24,6 +25,8 @@ namespace TirkxDownloader.Models
             EventAggregator = eventAggregator;
             Engine = engine;
             BackgroundThread = new Thread(StartReciever);
+            Listener = new HttpListener();
+            Listener.Prefixes.Add("http://localhost:6230/");
         }
 
         private void StartReciever()
@@ -31,22 +34,34 @@ namespace TirkxDownloader.Models
             while (true)
             {
                 var fileInfo = GetFileInfo();
-                Execute.OnUIThread(() => WindowManager.ShowDialog(
-                    new NewDownloadViewModel(WindowManager, EventAggregator, fileInfo, Engine)));
+
+                if (fileInfo != null)
+                {
+                    Execute.OnUIThread(() => WindowManager.ShowDialog(
+                        new NewDownloadViewModel(WindowManager, EventAggregator, fileInfo, Engine)));
+                }
             }
         }
 
         private TirkxFileInfo GetFileInfo()
         {
-            using (var listener = new HttpListener())
+            try
             {
-                listener.Prefixes.Add("http://localhost:6230/");
-                listener.Start();
-                var requestContext = listener.GetContext();
+                Listener.Start();
+                var requestContext = Listener.GetContext();
                 var streamReader = new StreamReader(requestContext.Request.InputStream, requestContext.Request.ContentEncoding);
                 string jsonString = streamReader.ReadToEnd();
+                Listener.Stop();
 
                 return JsonConvert.DeserializeObject<TirkxFileInfo>(jsonString);
+            }
+            catch (ThreadAbortException)
+            {
+                return null;
+            }
+            catch (HttpListenerException)
+            {
+                return null;
             }
         }
 
@@ -57,6 +72,7 @@ namespace TirkxDownloader.Models
 
         public void Stop()
         {
+            Listener.Close();
             BackgroundThread.Abort();
         }
     }
