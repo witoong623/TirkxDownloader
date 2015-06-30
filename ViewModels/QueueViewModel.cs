@@ -66,30 +66,6 @@ namespace TirkxDownloader.ViewModels
             get { return SelectedItem != null; }
         }
 
-        protected override void OnInitialize()
-        {
-            /*for (int i = 0; i < 5; i++)
-            {
-                QueueDownloadList.Add(new DownloadInfo
-                {   
-                    FileName = "School days",
-                    DownloadLink = "tirkx download thread",
-                    SaveLocation = "D drive",
-                    AddDate = DateTime.Now,
-                    CompleteDate = null,
-                });
-            }
-
-            QueueDownloadList.Add(new DownloadInfo
-            {
-                FileName = "[WindSky-FS] Owari no Seraph - 01 (MX 1280x720 x264 AAC).mp4",
-                DownloadLink = "http://windsky.3dfxwave.com/Seraph/[WindSky-FS] Owari no Seraph - 01 (MX 1280x720 x264 AAC).mp4",
-                SaveLocation = @"D:/",
-                AddDate = DateTime.Now,
-                CompleteDate = null,
-            });*/
-        }
-
         public void SelectItem(DownloadInfo info)
         {
             SelectedItem = info;
@@ -119,7 +95,7 @@ namespace TirkxDownloader.ViewModels
 
         public void StopQueue()
         {
-            Engine.StopQueueDownload(QueueDownloadList);
+            Engine.StopQueueDownload();
         }
 
         // Use to invoke NotifyOfPropertyChange from LoadingDetail instance

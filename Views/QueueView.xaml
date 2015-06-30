@@ -77,7 +77,7 @@
                                         DisplayMemberBinding="{Binding Status}" />
                         <GridViewColumn Header="Progress"
                                         Width="100"
-                                        DisplayMemberBinding="{Binding DownloadProgress}" />
+                                        DisplayMemberBinding="{Binding Path=DownloadDetail.PercentProgress, StringFormat=N2}" />
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -102,7 +102,7 @@
                     <ColumnDefinition Width="130" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="180" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
@@ -167,7 +167,7 @@
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="1" Grid.Column="3"
                             Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.TranferRate}"
+                    <TextBlock Text="{Binding Path=DownloadDetail.Throughput}"
                            Style="{StaticResource MasterDetail}" />
                     <TextBlock Text=" KB/s"
                                Style="{StaticResource DetailDescription}" />
@@ -179,32 +179,34 @@
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="2" Grid.Column="3"
                             Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.RecievedSize}"
+                    <TextBlock Text="{Binding Path=DownloadDetail.RecievedSize, StringFormat=N2}"
                            Style="{StaticResource MasterDetail}" />
                     <TextBlock Text=" MB"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
-                <TextBlock Text="Error message"
+                <TextBlock Text="Progress"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="3" Grid.Column="2"
                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="3" Grid.Column="3"
                             Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.ErrorMessage}"
+                    <TextBlock Text="{Binding Path=DownloadDetail.PercentProgress, StringFormat=N2}"
                            Style="{StaticResource MasterDetail}" />
+                    <TextBlock Text=" %"
+                               Style="{StaticResource DetailDescription}" />
                 </StackPanel>
-                <TextBlock Text="Progress"
+                <TextBlock Text="Error message"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="4" Grid.Column="2"
                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="4" Grid.Column="3"
+                            Grid.RowSpan="2"
                             Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.DownloadProgress}"
-                           Style="{StaticResource MasterDetail}" />
-                    <TextBlock Text=" %"
-                               Style="{StaticResource DetailDescription}" />
+                    <TextBlock Text="{Binding Path=DownloadDetail.ErrorMessage}"
+                               Style="{StaticResource MasterDetail}"
+                               TextWrapping="Wrap"/>
                 </StackPanel>
             </Grid>
         </Border>
