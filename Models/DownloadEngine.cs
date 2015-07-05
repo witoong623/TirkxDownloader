@@ -142,8 +142,15 @@ namespace TirkxDownloader.Models
                 {
                     workerThread.Abort();
                 }
+            }
 
-                WorkerTheradList.Remove(file.Key);
+            var completeThread = (from file in WorkerTheradList
+                                  where file.Key.Status == DownloadStatus.Complete || file.Key.Status == DownloadStatus.Stop
+                                  select file).ToArray();
+
+            for (int i = 0; i < completeThread.Length; i++)
+            {
+                WorkerTheradList.Remove(completeThread[i].Key);
             }
         }
     }
