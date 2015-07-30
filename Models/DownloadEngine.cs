@@ -7,17 +7,29 @@ using TirkxDownloader.Framework;
 
 namespace TirkxDownloader.Models
 {
-    public class DownloadEngine
+    public class DownloadEngine : PropertyChangedBase
     {
         private int MaxCurrentlyDownload;
+        private string engineErrorMessage;
         private CounterWarpper CurrentlyDownload;
         private Thread QueueWorker;
         private Dictionary<DownloadInfo, Thread> WorkerTheradList;
         private IEventAggregator EventAggregate;
 
+        public bool IsWorking { get; private set; }
+
         public int CurrentDownload
         {
             get { return CurrentlyDownload.Counter; }
+        }
+        public string EngineErrorMessage
+        {
+            get { return engineErrorMessage; }
+            set
+            {
+                engineErrorMessage = value;
+                NotifyOfPropertyChange(() => EngineErrorMessage);
+            }
         }
 
         public DownloadEngine(IEventAggregator eventAggregator)
@@ -54,20 +66,28 @@ namespace TirkxDownloader.Models
 
         public void StopDownload(DownloadInfo downloadInfo)
         {
-            var workerThread = WorkerTheradList[downloadInfo];
-
-            if (workerThread.IsAlive)
+            try
             {
-                workerThread.Abort();
-            }
+                var workerThread = WorkerTheradList[downloadInfo];
 
-            WorkerTheradList.Remove(downloadInfo);
+                if (workerThread.IsAlive)
+                {
+                    workerThread.Abort();
+                }
+
+                WorkerTheradList.Remove(downloadInfo);
+            }
+            catch (KeyNotFoundException)
+            {
+                return;
+            }
         }
 
         public void StartQueueDownload(BindableCollection<DownloadInfo> downloadInfoList)
         {
             QueueWorker = new Thread(StartQueueDownloadImp);
             QueueWorker.Start(downloadInfoList);
+            IsWorking = true;
             EventAggregate.PublishOnUIThread("EngineWorking");
         }
 
@@ -110,10 +130,20 @@ namespace TirkxDownloader.Models
                 } while (workRemaining != 0);
 
                 EventAggregate.PublishOnUIThread("EngineNotWorking");
+                IsWorking = false;
             }
             catch (ThreadAbortException)
             {
                 EventAggregate.PublishOnUIThread("EngineNotWorking");
+                IsWorking = false;
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                EventAggregate.PublishOnUIThread("EngineNotWorking");
+                EngineErrorMessage = ex.Message;
+                IsWorking = false;
 
                 return;
             }
@@ -133,6 +163,8 @@ namespace TirkxDownloader.Models
             {
                 QueueWorker.Abort();
             }
+
+            IsWorking = false;
 
             foreach (var file in WorkerTheradList)
             {
