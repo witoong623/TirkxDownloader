@@ -58,6 +58,17 @@
                     </Rectangle>
                 </Button.Content>
             </Button>
+            <Button Style="{StaticResource HeadButton}"
+                    DockPanel.Dock="Left"
+                    x:Name="StopQueue">
+                <Button.Content>
+                    <Rectangle Fill="Blue" Width="35" Height="35">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_control_stop}" Stretch="Fill"/>
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
         </DockPanel>
         <DockPanel Grid.Row="1">
             <ListView ItemsSource="{Binding Path=QueueDownloadList, Mode=OneWay}"
