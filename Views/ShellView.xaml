@@ -62,6 +62,8 @@
                     <TextBlock Grid.Column="0"
                                Text="{Binding Path=QueueEngineMessage}"
                                Margin="5,0,0,0"/>
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Path=Engine.EngineErrorMessage}" />
                 </Grid>
             </StatusBarItem>
         </StatusBar>
