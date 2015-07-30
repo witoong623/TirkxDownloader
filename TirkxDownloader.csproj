@@ -98,7 +98,9 @@
     </Compile>
     <Compile Include="Framework\CounterWarpper.cs" />
     <Compile Include="Framework\DownloadInfo.cs" />
+    <Compile Include="Framework\Extension.cs" />
     <Compile Include="Framework\LoadingDetail.cs" />
+    <Compile Include="Framework\Pair.cs" />
     <Compile Include="Framework\ThreadParameter.cs" />
     <Compile Include="Framework\TirkxFileInfo.cs" />
     <Compile Include="Models\DownloadEngine.cs" />
