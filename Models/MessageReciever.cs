@@ -35,7 +35,7 @@ namespace TirkxDownloader.Models
             {
                 var fileInfo = GetFileInfo();
 
-                if (fileInfo != null)
+                if (fileInfo != null && !Engine.IsWorking)
                 {
                     Execute.OnUIThread(() => WindowManager.ShowDialog(
                         new NewDownloadViewModel(WindowManager, EventAggregator, fileInfo, Engine)));
