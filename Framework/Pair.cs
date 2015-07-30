@@ -24,7 +24,7 @@ namespace TirkxDownloader.Framework
             get { return second; }
         }
 
-        public override bool Equals(Pair<TFirst, TSecond> other)
+        public bool Equals(Pair<TFirst, TSecond> other)
         {
             if (other == null)
             {
