@@ -11,5 +11,8 @@
     "contextMenus",
     "http://localhost/",
     "nativeMessaging"
-  ]
+  ],
+  "icons": {
+    "32": "sakuramini.png"
+  }
 }

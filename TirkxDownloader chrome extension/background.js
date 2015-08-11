@@ -5,7 +5,6 @@ function showMessageBox(info, tab) {
 	var link = decodeURIComponent(info.linkUrl);
 	var index = link.search(/[^/\\\?]+\.\w{3,4}(?=([\?&].*$|$))/);
 	var fileName = link.substring(index);
-	alert("will download from " + link + " soon\n File name : " + fileName);
 	SendMessage(fileName,link);
 }
 
