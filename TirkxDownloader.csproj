@@ -106,7 +106,8 @@
     <Compile Include="Models\DownloadEngine.cs" />
     <Compile Include="Models\DownloadProcess.cs" />
     <Compile Include="Models\MessageReciever.cs" />
-    <Compile Include="ViewModels\NewDownloadViewModel.cs" />
+    <Compile Include="ViewModels\NewWindowViewModel\NewDownloadViewModel.cs" />
+    <Compile Include="ViewModels\NewWindowViewModel\SettingShellViewModel.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
