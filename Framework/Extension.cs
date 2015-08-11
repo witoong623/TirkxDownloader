@@ -30,5 +30,17 @@ namespace TirkxDownloader.Framework
                 }
             }
         }
+
+        public static T[] Dequeue<T>(this Queue<T> queue, int count)
+        {
+            T[] list = new T[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                list[i] = queue.Dequeue();
+            }
+
+            return list;
+        }
     }
 }
