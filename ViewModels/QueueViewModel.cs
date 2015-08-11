@@ -66,6 +66,16 @@ namespace TirkxDownloader.ViewModels
             get { return SelectedItem != null; }
         }
 
+        public bool CanStartQueue
+        {
+            get { return !Engine.IsWorking; }
+        }
+
+        public bool CanStopQueue
+        {
+            get { return Engine.IsWorking; }
+        }
+
         public void SelectItem(DownloadInfo info)
         {
             SelectedItem = info;
@@ -106,6 +116,14 @@ namespace TirkxDownloader.ViewModels
                 NotifyOfPropertyChange(propertyName);
             }
             else if (propertyName.Equals("CanStop"))
+            {
+                NotifyOfPropertyChange(propertyName);
+            }
+            else if (propertyName.Equals("CanStartQueue"))
+            {
+                NotifyOfPropertyChange(propertyName);
+            }
+            else if (propertyName.Equals("CanStopQueue"))
             {
                 NotifyOfPropertyChange(propertyName);
             }
