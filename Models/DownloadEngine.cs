@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using TirkxDownloader.Framework;
 
@@ -12,8 +14,9 @@ namespace TirkxDownloader.Models
         private int MaxCurrentlyDownload;
         private string engineErrorMessage;
         private CounterWarpper CurrentlyDownload;
-        private Thread QueueWorker;
-        private Dictionary<DownloadInfo, Thread> WorkerTheradList;
+        private CancellationTokenSource CancelQueueDownload;
+        private Queue<DownloadInfo> DownloadQueue;
+        private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> TaskList;
         private IEventAggregator EventAggregate;
 
         public bool IsWorking { get; private set; }
@@ -22,6 +25,7 @@ namespace TirkxDownloader.Models
         {
             get { return CurrentlyDownload.Counter; }
         }
+
         public string EngineErrorMessage
         {
             get { return engineErrorMessage; }
@@ -35,7 +39,8 @@ namespace TirkxDownloader.Models
         public DownloadEngine(IEventAggregator eventAggregator)
         {
             CurrentlyDownload = new CounterWarpper();
-            WorkerTheradList = new Dictionary<DownloadInfo, Thread>();
+            TaskList = new Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>>();
+            DownloadQueue = new Queue<DownloadInfo>();
             EventAggregate = eventAggregator;
             MaxCurrentlyDownload = 1;
         }
@@ -54,28 +59,18 @@ namespace TirkxDownloader.Models
 
             downloadInfo.DownloadDetail = new LoadingDetail(downloadInfo);
             var downloadProgress = new DownloadProcess();
-            var workerThread = new Thread(downloadProgress.StartProgress);
-            WorkerTheradList.Add(downloadInfo, workerThread);
-            workerThread.Start(new ThreadParameter 
-            { 
-                Counter = CurrentlyDownload, 
-                EventAggregate = EventAggregate, 
-                DownloadInformation = downloadInfo 
-            });
+            var cts = new CancellationTokenSource();
+            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, CurrentlyDownload, EventAggregate, cts.Token));
+            TaskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
 
         public void StopDownload(DownloadInfo downloadInfo)
         {
             try
             {
-                var workerThread = WorkerTheradList[downloadInfo];
-
-                if (workerThread.IsAlive)
-                {
-                    workerThread.Abort();
-                }
-
-                WorkerTheradList.Remove(downloadInfo);
+                var taskCancel = TaskList[downloadInfo];
+                taskCancel.Second.Cancel();
+                TaskList.Remove(downloadInfo);
             }
             catch (KeyNotFoundException)
             {
@@ -85,104 +80,126 @@ namespace TirkxDownloader.Models
 
         public void StartQueueDownload(BindableCollection<DownloadInfo> downloadInfoList)
         {
-            QueueWorker = new Thread(StartQueueDownloadImp);
-            QueueWorker.Start(downloadInfoList);
+            if (IsWorking || downloadInfoList.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var downloadItem in downloadInfoList)
+            {
+                if (downloadItem.Status != DownloadStatus.Complete && !DownloadQueue.Contains(downloadItem))
+                {
+                    DownloadQueue.Enqueue(downloadItem);
+                }
+            }
+
+            Trace.WriteLine("Thread number is " + Thread.CurrentThread.ManagedThreadId);
             IsWorking = true;
+            CancelQueueDownload = new CancellationTokenSource();
+            Task.Run(() => StartQueueDownloadImp(CancelQueueDownload.Token));
             EventAggregate.PublishOnUIThread("EngineWorking");
+            NotifyCanQueue();
         }
 
-        private void StartQueueDownloadImp(object param)
+        private async Task StartQueueDownloadImp(CancellationToken ct)
         {
+            Trace.WriteLine("Thread number is " + Thread.CurrentThread.ManagedThreadId);
             try
             {
-                var downloadInfoList = (BindableCollection<DownloadInfo>)param;
-                int workRemaining = 0;
+                int queueRemaining = 0;
+                int runningTaskRemaining = 0;
+                int dequeueCount = 0;
 
                 do
                 {
-                    for (int i = 0; i < downloadInfoList.Count; i++)
+                    foreach (var downloadItem in DownloadQueue)
                     {
                         if (CurrentlyDownload.Counter >= MaxCurrentlyDownload)
                         {
                             break;
                         }
 
-                        if (downloadInfoList[i].Status == DownloadStatus.Queue || downloadInfoList[i].Status == DownloadStatus.Error)
+                        StartDownload(downloadItem);
+                        dequeueCount++;
+                        await Task.Delay(TimeSpan.FromSeconds(1));
+                    }
+
+                    DownloadQueue.Dequeue(dequeueCount);
+                    dequeueCount = 0;
+                    var task = TaskList.Select(x => x.Value.First).ToArray();
+                    var timeout = Task.Delay(TimeSpan.FromSeconds(10));
+                    Task[] waitedTask = new Task[task.Length + 1];
+                    task.CopyTo(waitedTask, 1);
+                    waitedTask[0] = timeout;
+                    var completedTask = await Task.WhenAny(waitedTask);
+
+                    // If completedTask isn't timeout, it's download task
+                    if (completedTask != timeout)
+                    {
+                        // Find completed task from TaskList
+                        var completedDownload = TaskList.Where(t => t.Value.First.Status == TaskStatus.RanToCompletion ||
+                            t.Value.First.Status == TaskStatus.Faulted || t.Value.First.Status == TaskStatus.Canceled).
+                            Select(t => t.Key);
+
+                        // Delete every task that completed
+                        foreach (var downloadInfo in completedDownload)
                         {
-                            StartDownload(downloadInfoList[i]);
-                            Thread.Sleep(1000);
+                            TaskList.Remove(downloadInfo);
                         }
                     }
 
-                    var downloading = from file in downloadInfoList
-                                      where file.Status == DownloadStatus.Downloading || file.Status == DownloadStatus.Preparing
-                                      select file;
+                    queueRemaining = DownloadQueue.Count(file => file.Status != DownloadStatus.Queue);
+                    runningTaskRemaining = TaskList.Count(t => t.Value.First.Status == TaskStatus.WaitingForActivation);
 
-                    foreach (var file in downloading)
-                    {
-                        var workerThread = WorkerTheradList[file];
-                        workerThread.Join(5000);
-                    }
+                    // Check if cancelation is requested
+                    ct.ThrowIfCancellationRequested();
+                } while (queueRemaining != 0 || runningTaskRemaining != 0);
 
-                    workRemaining = downloadInfoList.Count(file => file.Status != DownloadStatus.Downloading || 
-                        file.Status != DownloadStatus.Complete);
-
-                } while (workRemaining != 0);
-
-                EventAggregate.PublishOnUIThread("EngineNotWorking");
                 IsWorking = false;
+                EventAggregate.PublishOnUIThread("EngineNotWorking");
+                NotifyCanQueue();
             }
-            catch (ThreadAbortException)
+            catch (OperationCanceledException)
             {
-                EventAggregate.PublishOnUIThread("EngineNotWorking");
                 IsWorking = false;
+                EventAggregate.PublishOnUIThread("EngineNotWorking");
+                NotifyCanQueue();
+                // Cancel all of running task
+                foreach (var cancelToken in TaskList.Values)
+                {
+                    cancelToken.Second.Cancel();
+                }
+
+                await Task.WhenAll(TaskList.Select(t => t.Value.First).ToArray());
+                // Clean up collection
+                DownloadQueue.Clear();
+                TaskList.Clear();
 
                 return;
             }
             catch (Exception ex)
             {
-                EventAggregate.PublishOnUIThread("EngineNotWorking");
-                EngineErrorMessage = ex.Message;
                 IsWorking = false;
-
+                EventAggregate.PublishOnUIThread("EngineNotWorking");
+                NotifyCanQueue();
+                EngineErrorMessage = ex.Message;
+                
                 return;
             }
         }
 
+        private void NotifyCanQueue()
+        {
+            EventAggregate.PublishOnUIThread("CanStartQueue");
+            EventAggregate.PublishOnUIThread("CanStopQueue");
+        }
+
         public void StopQueueDownload()
         {
-            if (QueueWorker == null)
+            if (CancelQueueDownload != null)
             {
-                return;
-            }
-            else if (!QueueWorker.IsAlive)
-            {
-                return;
-            }
-            else
-            {
-                QueueWorker.Abort();
-            }
-
-            IsWorking = false;
-
-            foreach (var file in WorkerTheradList)
-            {
-                var workerThread = file.Value;
-
-                if (workerThread.IsAlive)
-                {
-                    workerThread.Abort();
-                }
-            }
-
-            var completeThread = (from file in WorkerTheradList
-                                  where file.Key.Status == DownloadStatus.Complete || file.Key.Status == DownloadStatus.Stop
-                                  select file).ToArray();
-
-            for (int i = 0; i < completeThread.Length; i++)
-            {
-                WorkerTheradList.Remove(completeThread[i].Key);
+                CancelQueueDownload.Cancel();
+                CancelQueueDownload.Dispose();
             }
         }
     }

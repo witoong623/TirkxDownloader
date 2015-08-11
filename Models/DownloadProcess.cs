@@ -13,6 +13,7 @@ namespace TirkxDownloader.Models
     public class DownloadProcess
     {
         private bool IsFileCreated;
+        private HttpWebResponse WebResponse;
         private Stream InStream;
         private DownloadInfo CurrentFile;
         private CounterWarpper Counter;
@@ -24,55 +25,59 @@ namespace TirkxDownloader.Models
             Counter = counter;
             CurrentFile = downloadInf;
             EventAggregate = eventAggregate;
+            this.ct = ct;
 
             CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Preparing;
             Counter.Increase();
             EventAggregate.PublishOnUIThread("CanDownload");
             EventAggregate.PublishOnUIThread("CanStop");
 
-            if (!await GetFileInfo())
+            try
             {
-                return;
+                await GetFileInfo();
+                await CreateFile();
+                await Download();
             }
-
-            if (!await CreateLocalFile())
+            catch (OperationCanceledException)
             {
-                return;
+                DeleteLocalFile();
+                Counter.Decrease();
             }
-
-            if (!await Download())
+            catch
             {
-                return;
+                DeleteLocalFile();
+                Counter.Decrease();
+            }
+            finally
+            {
+                InStream.Close();
             }
         }
 
-        private async Task<bool> GetFileInfo()
+        private async Task GetFileInfo()
         {
             try
             {
                 var request = (HttpWebRequest)HttpWebRequest.Create(CurrentFile.DownloadLink);
                 FillCredential(request);
 
-                var respone = await request.GetResponseAsync(ct);
-                CurrentFile.DownloadDetail.FileSize = respone.ContentLength;
-                InStream = respone.GetResponseStream();
-
-                return true;
+                WebResponse = await request.GetResponseAsync(ct);
+                CurrentFile.DownloadDetail.FileSize = WebResponse.ContentLength;
+                InStream = WebResponse.GetResponseStream();
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
                 CurrentFile.DownloadDetail.ErrorMessage = "Download was canceled";
 
-                return false;
+                throw;
             }
             catch (WebException ex)
             {
                 CurrentFile.DownloadDetail.ErrorMessage = ex.Message;
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
-                Counter.Decrease();
 
-                return false;
+                throw;
             }
         }
 
@@ -81,11 +86,11 @@ namespace TirkxDownloader.Models
             request.UseDefaultCredentials = true;
         }
 
-        private async Task<bool> CreateLocalFile()
+        private async Task CreateFile()
         {
             try
             {
-                return await Task.Run<bool>(() =>
+                await Task.Run(() =>
                 {
                     try
                     {
@@ -109,16 +114,12 @@ namespace TirkxDownloader.Models
                         using (var file = File.Create(CurrentFile.FullName)) { }
                         IsFileCreated = true;
 
-                        return true;
                     }
                     catch (Exception ex)
                     {
                         CurrentFile.DownloadDetail.ErrorMessage = ex.Message;
                         CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
                         DeleteLocalFile();
-                        Counter.Decrease();
-
-                        return false;
                     }
                 }, ct);
             }
@@ -127,14 +128,14 @@ namespace TirkxDownloader.Models
                 CurrentFile.DownloadDetail.ErrorMessage = "Download was canceled";
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
 
-                return false;
+                throw;
             }
             catch (AggregateException ex)
             {
                 CurrentFile.DownloadDetail.ErrorMessage = ex.InnerException.Message;
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
 
-                return false;
+                throw;
             }
         }
 
@@ -146,7 +147,7 @@ namespace TirkxDownloader.Models
             }
         }
 
-        private async Task<bool> Download()
+        private async Task Download()
         {
             try
             {
@@ -165,6 +166,7 @@ namespace TirkxDownloader.Models
                     {
                         readByte = await InStream.ReadAsync(buffer, 0, maxReadSize);
                         byteCalRound += readByte;
+                        downloadedSize += readByte;
                         roundCount++;
 
                         if (roundCount == 5)
@@ -173,42 +175,38 @@ namespace TirkxDownloader.Models
                             var interval = (now - lastUpdate).TotalSeconds;
                             var speed = (int)Math.Floor(byteCalRound / interval);
                             lastUpdate = now;
-                            downloadedSize += readByte;
-                            CurrentFile.DownloadDetail.RecievedSize = byteCalRound;
+                            CurrentFile.DownloadDetail.RecievedSize = downloadedSize;
                             CurrentFile.DownloadDetail.Throughput = speed;
-                            CurrentFile.DownloadDetail.PercentProgress = byteCalRound;
+                            CurrentFile.DownloadDetail.PercentProgress = downloadedSize;
 
                             byteCalRound = 0;
                             roundCount = 0;
+                            ct.ThrowIfCancellationRequested();
                         }
 
                         await stream.WriteAsync(buffer, 0, readByte);
                     } while (readByte != 0);
                 }
                 
+                // Download completed
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Complete;
+                Counter.Decrease();
                 EventAggregate.PublishOnUIThread("CanDownload");
                 EventAggregate.PublishOnUIThread("CanStop");
-                Counter.Decrease();
-
-                return true;
             }
-            catch (ThreadAbortException)
+            catch (OperationCanceledException)
             {
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
-                DeleteLocalFile();
-                Counter.Decrease();
+                InStream.Close();
 
-                return false;
+                throw;
             }
             catch (Exception ex)
             {
                 CurrentFile.DownloadDetail.ErrorMessage = ex.Message;
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
-                DeleteLocalFile();
-                Counter.Decrease();
 
-                return false;
+                throw;
             }
         }
     }
