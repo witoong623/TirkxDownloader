@@ -8,7 +8,7 @@
         Icon="/TirkxDownloader;component/Resources/sakuramini.ico">
     <metro:MetroWindow.RightWindowCommands>
         <metro:WindowCommands>
-            <Button>
+            <Button cal:Message.Attach="OpenSetting">
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="18" Height="18"
                                Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">

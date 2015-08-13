@@ -166,7 +166,7 @@
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="0" Grid.Column="3"
                             Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.FileSize}"
+                    <TextBlock Text="{Binding Path=DownloadDetail.FileSize, StringFormat=N2}"
                            Style="{StaticResource MasterDetail}" />
                     <TextBlock Text=" MB"
                                Style="{StaticResource DetailDescription}" />
