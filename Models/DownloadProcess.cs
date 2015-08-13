@@ -18,6 +18,7 @@ namespace TirkxDownloader.Models
         private DownloadInfo CurrentFile;
         private CounterWarpper Counter;
         private CancellationToken ct;
+        private long length;
         private IEventAggregator EventAggregate;
 
         public async Task StartProgress(DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, CancellationToken ct)
@@ -41,16 +42,15 @@ namespace TirkxDownloader.Models
             catch (OperationCanceledException)
             {
                 DeleteLocalFile();
-                Counter.Decrease();
             }
             catch
             {
                 DeleteLocalFile();
-                Counter.Decrease();
             }
             finally
             {
                 InStream.Close();
+                Counter.Decrease();
             }
         }
 
@@ -63,6 +63,7 @@ namespace TirkxDownloader.Models
 
                 WebResponse = await request.GetResponseAsync(ct);
                 CurrentFile.DownloadDetail.FileSize = WebResponse.ContentLength;
+                length = WebResponse.ContentLength;
                 InStream = WebResponse.GetResponseStream();
             }
             catch (OperationCanceledException)
@@ -164,7 +165,7 @@ namespace TirkxDownloader.Models
 
                     do
                     {
-                        readByte = await InStream.ReadAsync(buffer, 0, maxReadSize);
+                        readByte = await InStream.ReadAsync(buffer, 0, maxReadSize, ct);
                         byteCalRound += readByte;
                         downloadedSize += readByte;
                         roundCount++;
@@ -181,7 +182,6 @@ namespace TirkxDownloader.Models
 
                             byteCalRound = 0;
                             roundCount = 0;
-                            ct.ThrowIfCancellationRequested();
                         }
 
                         await stream.WriteAsync(buffer, 0, readByte);
@@ -190,14 +190,12 @@ namespace TirkxDownloader.Models
                 
                 // Download completed
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Complete;
-                Counter.Decrease();
                 EventAggregate.PublishOnUIThread("CanDownload");
                 EventAggregate.PublishOnUIThread("CanStop");
             }
             catch (OperationCanceledException)
             {
                 CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
-                InStream.Close();
 
                 throw;
             }

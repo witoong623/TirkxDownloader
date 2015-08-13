@@ -171,11 +171,6 @@ namespace TirkxDownloader.Models
                 }
 
                 await Task.WhenAll(TaskList.Select(t => t.Value.First).ToArray());
-                // Clean up collection
-                DownloadQueue.Clear();
-                TaskList.Clear();
-
-                return;
             }
             catch (Exception ex)
             {
@@ -183,8 +178,18 @@ namespace TirkxDownloader.Models
                 EventAggregate.PublishOnUIThread("EngineNotWorking");
                 NotifyCanQueue();
                 EngineErrorMessage = ex.Message;
-                
-                return;
+
+                // In case that exception is thrown before polling
+                if (!CancelQueueDownload.IsCancellationRequested)
+                {
+                    CancelQueueDownload.Dispose();
+                }
+            }
+            finally
+            {
+                // Clean up collection
+                DownloadQueue.Clear();
+                TaskList.Clear();
             }
         }
 
@@ -196,11 +201,15 @@ namespace TirkxDownloader.Models
 
         public void StopQueueDownload()
         {
-            if (CancelQueueDownload != null)
+            try
             {
-                CancelQueueDownload.Cancel();
-                CancelQueueDownload.Dispose();
+                if (CancelQueueDownload != null)
+                {
+                    CancelQueueDownload.Cancel();
+                    CancelQueueDownload.Dispose();
+                }
             }
+            catch { }
         }
     }
 }
