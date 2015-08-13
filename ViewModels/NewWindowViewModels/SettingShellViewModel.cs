@@ -13,5 +13,11 @@ namespace TirkxDownloader.ViewModels
 {
     public class SettingShellViewModel : Conductor<IContentList>.Collection.OneActive
     {
+        public SettingShellViewModel()
+        {
+            DisplayName = "Setting";
+            Items.Add(new AuthorizationViewModel());
+            ActivateItem(Items[0]);
+        }
     }
 }
