@@ -24,9 +24,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>0.1.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -53,12 +55,28 @@
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>831ED344B43F7FF73DE056817C854CD0578A68CB</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>TirkxDownloader_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro">
       <HintPath>packages\Caliburn.Micro.Core.2.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform">
       <HintPath>packages\Caliburn.Micro.2.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\CredentialManagement.1.0.2\lib\net35\CredentialManagement.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
       <HintPath>packages\MahApps.Metro.1.1.2.0\lib\net45\MahApps.Metro.dll</HintPath>
@@ -69,7 +87,10 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -96,6 +117,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Framework\AuthorizationInfo.cs" />
     <Compile Include="Framework\CounterWarpper.cs" />
     <Compile Include="Framework\DownloadInfo.cs" />
     <Compile Include="Framework\Extension.cs" />
@@ -103,18 +125,26 @@
     <Compile Include="Framework\Pair.cs" />
     <Compile Include="Framework\ThreadParameter.cs" />
     <Compile Include="Framework\TirkxFileInfo.cs" />
+    <Compile Include="Models\AuthorizationStore.cs" />
     <Compile Include="Models\DownloadEngine.cs" />
     <Compile Include="Models\DownloadProcess.cs" />
     <Compile Include="Models\MessageReciever.cs" />
-    <Compile Include="ViewModels\NewWindowViewModel\NewDownloadViewModel.cs" />
-    <Compile Include="ViewModels\NewWindowViewModel\SettingShellViewModel.cs" />
+    <Compile Include="ViewModels\NewWindowViewModels\AuthorizationViewModel.cs" />
+    <Compile Include="ViewModels\NewWindowViewModels\NewDownloadViewModel.cs" />
+    <Compile Include="ViewModels\NewWindowViewModels\SettingShellViewModel.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\DownloadedViewModel.cs" />
     <Compile Include="Views\Converter\NullToVisibilityConverter.cs" />
-    <Compile Include="Views\NewDownloadView.xaml.cs">
+    <Compile Include="Views\NewWindowViews\AuthorizationView.xaml.cs">
+      <DependentUpon>AuthorizationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NewWindowViews\NewDownloadView.xaml.cs">
       <DependentUpon>NewDownloadView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NewWindowViews\SettingShellView.xaml.cs">
+      <DependentUpon>SettingShellView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\QueueView.xaml.cs">
       <DependentUpon>QueueView.xaml</DependentUpon>
@@ -151,6 +181,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="TirkxDownloader_TemporaryKey.pfx" />
     <Resource Include="Resources\Entypo.ttf" />
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +213,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NewDownloadView.xaml">
+    <Page Include="Views\NewWindowViews\AuthorizationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NewWindowViews\NewDownloadView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NewWindowViews\SettingShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -210,6 +249,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
