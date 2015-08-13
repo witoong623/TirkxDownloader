@@ -37,7 +37,7 @@ namespace TirkxDownloader.ViewModels
             EventAggregator = eventAggregator;
             Reciever = messageRevicer;
             Engine = engine;
-            DisplayName = "Tirkx Downloader";
+            DisplayName = "Tirkx Downloader 0.1 beta";
             queueEngineMessage = "Engine isn't working";
 
             Items.Add(queueViewModel);
@@ -66,6 +66,11 @@ namespace TirkxDownloader.ViewModels
             {
                 callback(false);
             }
+        }
+
+        public void OpenSetting()
+        {
+            WindowManager.ShowDialog(new SettingShellViewModel());
         }
 
         protected override void OnDeactivate(bool close)
