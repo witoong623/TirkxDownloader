@@ -13,19 +13,19 @@ namespace TirkxDownloader.ViewModels
     public class QueueViewModel : Screen, IContentList, IHandle<DownloadInfo>, IHandle<string>
     {
         private DownloadInfo selectedItem;
-        private readonly IEventAggregator EventAggregator;
-        private readonly DownloadEngine Engine;
+        private readonly IEventAggregator eventAggregator;
+        private readonly DownloadEngine engine;
 
         public BindableCollection<DownloadInfo> QueueDownloadList { get; private set; }
 
         public QueueViewModel(IEventAggregator eventAggregator, DownloadEngine engine)
         {
-            EventAggregator = eventAggregator;
-            Engine = engine;
+            this.eventAggregator = eventAggregator;
+            this.engine = engine;
             DisplayName = "Queue/Downloading";
             QueueDownloadList = new BindableCollection<DownloadInfo>();
 
-            EventAggregator.Subscribe(this);
+            this.eventAggregator.Subscribe(this);
         }
 
         public bool IsEmpty
@@ -68,12 +68,12 @@ namespace TirkxDownloader.ViewModels
 
         public bool CanStartQueue
         {
-            get { return !Engine.IsWorking; }
+            get { return !engine.IsWorking; }
         }
 
         public bool CanStopQueue
         {
-            get { return Engine.IsWorking; }
+            get { return engine.IsWorking; }
         }
 
         public void SelectItem(DownloadInfo info)
@@ -83,12 +83,12 @@ namespace TirkxDownloader.ViewModels
 
         public void Download()
         {
-            Engine.StartDownload(SelectedItem);
+            engine.StartDownload(SelectedItem);
         }
 
         public void StartQueue()
         {
-            Engine.StartQueueDownload(QueueDownloadList);
+            engine.StartQueueDownload(QueueDownloadList);
         }
 
         public void Delete()
@@ -100,12 +100,12 @@ namespace TirkxDownloader.ViewModels
 
         public void Stop()
         {
-            Engine.StopDownload(selectedItem);
+            engine.StopDownload(selectedItem);
         }
 
         public void StopQueue()
         {
-            Engine.StopQueueDownload();
+            engine.StopQueueDownload();
         }
 
         // Use to invoke NotifyOfPropertyChange from LoadingDetail instance

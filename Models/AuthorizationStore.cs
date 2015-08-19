@@ -31,6 +31,12 @@ namespace TirkxDownloader.Models
         public IList<AuthorizationInfo> GetAllCredential()
         {
             var domains = new List<string>();
+            var credentials = new List<AuthorizationInfo>();
+
+            if (!File.Exists("Target domain"))
+            {
+                return credentials;
+            }
 
             using (var str = new StreamReader("Target domain", Encoding.UTF8))
             {
@@ -42,7 +48,7 @@ namespace TirkxDownloader.Models
                 }
             }
 
-            var credentials = new List<AuthorizationInfo>();
+            
             AuthorizationInfo authorization;
 
             foreach (var domain in domains)
@@ -66,7 +72,7 @@ namespace TirkxDownloader.Models
             var credential = new Credential
             {
                 Target = target,
-                PersistanceType = PersistanceType.Enterprise,
+                PersistanceType = PersistanceType.LocalComputer,
                 Username = username,
                 Password = password
             };

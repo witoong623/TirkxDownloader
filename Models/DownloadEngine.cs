@@ -11,20 +11,17 @@ namespace TirkxDownloader.Models
 {
     public class DownloadEngine : PropertyChangedBase
     {
-        private int MaxCurrentlyDownload;
+        private int maxCurrentlyDownload;
         private string engineErrorMessage;
-        private CounterWarpper CurrentlyDownload;
-        private CancellationTokenSource CancelQueueDownload;
-        private Queue<DownloadInfo> DownloadQueue;
-        private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> TaskList;
-        private IEventAggregator EventAggregate;
+        private CounterWarpper counterWarpper;
+        private CancellationTokenSource cancelQueueDownload;
+        private Queue<DownloadInfo> downloadQueue;
+        private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> taskList;
+        private IEventAggregator eventAggregate;
 
         public bool IsWorking { get; private set; }
 
-        public int CurrentDownload
-        {
-            get { return CurrentlyDownload.Counter; }
-        }
+        public int Downloading { get { return counterWarpper.Downloading; } }
 
         public string EngineErrorMessage
         {
@@ -38,16 +35,16 @@ namespace TirkxDownloader.Models
 
         public DownloadEngine(IEventAggregator eventAggregator)
         {
-            CurrentlyDownload = new CounterWarpper();
-            TaskList = new Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>>();
-            DownloadQueue = new Queue<DownloadInfo>();
-            EventAggregate = eventAggregator;
-            MaxCurrentlyDownload = 1;
+            counterWarpper = new CounterWarpper();
+            taskList = new Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>>();
+            downloadQueue = new Queue<DownloadInfo>();
+            eventAggregate = eventAggregator;
+            maxCurrentlyDownload = 1;
         }
 
         public void StartDownload(DownloadInfo downloadInfo)
         {
-            if (CurrentlyDownload.Counter >= MaxCurrentlyDownload)
+            if (counterWarpper.Downloading >= maxCurrentlyDownload)
             {
                 return;
             }
@@ -60,17 +57,17 @@ namespace TirkxDownloader.Models
             downloadInfo.DownloadDetail = new LoadingDetail(downloadInfo);
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, CurrentlyDownload, EventAggregate, cts.Token));
-            TaskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
+            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, counterWarpper, eventAggregate, cts.Token));
+            taskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
 
         public void StopDownload(DownloadInfo downloadInfo)
         {
             try
             {
-                var taskCancel = TaskList[downloadInfo];
+                var taskCancel = taskList[downloadInfo];
                 taskCancel.Second.Cancel();
-                TaskList.Remove(downloadInfo);
+                taskList.Remove(downloadInfo);
             }
             catch (KeyNotFoundException)
             {
@@ -85,25 +82,18 @@ namespace TirkxDownloader.Models
                 return;
             }
 
-            foreach (var downloadItem in downloadInfoList)
-            {
-                if (downloadItem.Status != DownloadStatus.Complete && !DownloadQueue.Contains(downloadItem))
-                {
-                    DownloadQueue.Enqueue(downloadItem);
-                }
-            }
-
-            Trace.WriteLine("Thread number is " + Thread.CurrentThread.ManagedThreadId);
+            // check if items in collection isn't complete and don't already have in queue
+            downloadInfoList.Where(x => x.Status != DownloadStatus.Complete && !downloadQueue.Contains(x)).
+                Apply(x => downloadQueue.Enqueue((x)));
             IsWorking = true;
-            CancelQueueDownload = new CancellationTokenSource();
-            Task.Run(() => StartQueueDownloadImp(CancelQueueDownload.Token));
-            EventAggregate.PublishOnUIThread("EngineWorking");
+            cancelQueueDownload = new CancellationTokenSource();
+            Task.Run(() => StartQueueDownloadImp(cancelQueueDownload.Token));
+            eventAggregate.PublishOnUIThread("EngineWorking");
             NotifyCanQueue();
         }
 
         private async Task StartQueueDownloadImp(CancellationToken ct)
         {
-            Trace.WriteLine("Thread number is " + Thread.CurrentThread.ManagedThreadId);
             try
             {
                 int queueRemaining = 0;
@@ -112,9 +102,9 @@ namespace TirkxDownloader.Models
 
                 do
                 {
-                    foreach (var downloadItem in DownloadQueue)
+                    foreach (var downloadItem in downloadQueue)
                     {
-                        if (CurrentlyDownload.Counter >= MaxCurrentlyDownload)
+                        if (counterWarpper.Downloading >= maxCurrentlyDownload)
                         {
                             break;
                         }
@@ -124,9 +114,9 @@ namespace TirkxDownloader.Models
                         await Task.Delay(TimeSpan.FromSeconds(1));
                     }
 
-                    DownloadQueue.Dequeue(dequeueCount);
+                    downloadQueue.Dequeue(dequeueCount);
                     dequeueCount = 0;
-                    var task = TaskList.Select(x => x.Value.First).ToArray();
+                    var task = taskList.Select(x => x.Value.First).ToArray();
                     var timeout = Task.Delay(TimeSpan.FromSeconds(10));
                     Task[] waitedTask = new Task[task.Length + 1];
                     task.CopyTo(waitedTask, 1);
@@ -137,79 +127,78 @@ namespace TirkxDownloader.Models
                     if (completedTask != timeout)
                     {
                         // Find completed task from TaskList
-                        var completedDownload = TaskList.Where(t => t.Value.First.Status == TaskStatus.RanToCompletion ||
+                        var completedDownload = taskList.Where(t => t.Value.First.Status == TaskStatus.RanToCompletion ||
                             t.Value.First.Status == TaskStatus.Faulted || t.Value.First.Status == TaskStatus.Canceled).
-                            Select(t => t.Key);
+                            Select(t => t.Key).ToArray(); ;
 
                         // Delete every task that completed
                         foreach (var downloadInfo in completedDownload)
                         {
-                            TaskList.Remove(downloadInfo);
+                            taskList.Remove(downloadInfo);
                         }
                     }
 
-                    queueRemaining = DownloadQueue.Count(file => file.Status != DownloadStatus.Queue);
-                    runningTaskRemaining = TaskList.Count(t => t.Value.First.Status == TaskStatus.WaitingForActivation);
-
+                    queueRemaining = downloadQueue.Count(file => file.Status == DownloadStatus.Queue);
+                    runningTaskRemaining = taskList.Count(t => t.Value.First.Status == TaskStatus.WaitingForActivation);
                     // Check if cancelation is requested
                     ct.ThrowIfCancellationRequested();
                 } while (queueRemaining != 0 || runningTaskRemaining != 0);
 
                 IsWorking = false;
-                EventAggregate.PublishOnUIThread("EngineNotWorking");
+                eventAggregate.PublishOnUIThread("EngineNotWorking");
                 NotifyCanQueue();
             }
             catch (OperationCanceledException)
             {
                 IsWorking = false;
-                EventAggregate.PublishOnUIThread("EngineNotWorking");
+                eventAggregate.PublishOnUIThread("EngineNotWorking");
                 NotifyCanQueue();
                 // Cancel all of running task
-                foreach (var cancelToken in TaskList.Values)
-                {
-                    cancelToken.Second.Cancel();
-                }
+                taskList.Values.Apply(x => x.Second.Cancel());
 
-                await Task.WhenAll(TaskList.Select(t => t.Value.First).ToArray());
+                await Task.WhenAll(taskList.Select(t => t.Value.First).ToArray());
             }
             catch (Exception ex)
             {
                 IsWorking = false;
-                EventAggregate.PublishOnUIThread("EngineNotWorking");
+                eventAggregate.PublishOnUIThread("EngineNotWorking");
                 NotifyCanQueue();
                 EngineErrorMessage = ex.Message;
 
                 // In case that exception is thrown before polling
-                if (!CancelQueueDownload.IsCancellationRequested)
+                if (!cancelQueueDownload.IsCancellationRequested)
                 {
-                    CancelQueueDownload.Dispose();
+                    cancelQueueDownload.Dispose();
                 }
             }
             finally
             {
                 // Clean up collection
-                DownloadQueue.Clear();
-                TaskList.Clear();
+                downloadQueue.Clear();
+                taskList.Clear();
             }
         }
 
         private void NotifyCanQueue()
         {
-            EventAggregate.PublishOnUIThread("CanStartQueue");
-            EventAggregate.PublishOnUIThread("CanStopQueue");
+            eventAggregate.PublishOnUIThread("CanStartQueue");
+            eventAggregate.PublishOnUIThread("CanStopQueue");
         }
 
         public void StopQueueDownload()
         {
             try
             {
-                if (CancelQueueDownload != null)
+                if (cancelQueueDownload != null)
                 {
-                    CancelQueueDownload.Cancel();
-                    CancelQueueDownload.Dispose();
+                    cancelQueueDownload.Cancel();
+                    cancelQueueDownload.Dispose();
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
     }
 }

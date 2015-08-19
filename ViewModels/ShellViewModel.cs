@@ -15,10 +15,10 @@ namespace TirkxDownloader.ViewModels
     public class ShellViewModel : Conductor<IContentList>.Collection.OneActive, IHandle<string>
     {
         private string queueEngineMessage;
-        private readonly IWindowManager WindowManager;
-        private readonly IEventAggregator EventAggregator;
-        private readonly MessageReciever Reciever;
-        private readonly DownloadEngine Engine;
+        private readonly SettingShellViewModel settingScreen;
+        private readonly IWindowManager windowManager;
+        private readonly IEventAggregator eventAggregator;
+        private readonly MessageReciever reciever;
 
         public string QueueEngineMessage
         {
@@ -29,40 +29,42 @@ namespace TirkxDownloader.ViewModels
                 NotifyOfPropertyChange(() => QueueEngineMessage);
             }
         }
+
+        public DownloadEngine Downloader { get; private set; }
         
-        public ShellViewModel(QueueViewModel queueViewModel, DownloadedViewModel downloadViewModel,
-            IWindowManager windowManager, IEventAggregator eventAggregator, MessageReciever messageRevicer, DownloadEngine engine)
+        public ShellViewModel(IEnumerable<IContentList> screen, IWindowManager windowManager, SettingShellViewModel setting,
+            IEventAggregator eventAggregator, MessageReciever messageRevicer, DownloadEngine engine)
         {
-            WindowManager = windowManager;
-            EventAggregator = eventAggregator;
-            Reciever = messageRevicer;
-            Engine = engine;
+            settingScreen = setting;
+            this.windowManager = windowManager;
+            this.eventAggregator = eventAggregator;
+            reciever = messageRevicer;
+            Downloader = engine;
             DisplayName = "Tirkx Downloader 0.1 beta";
             queueEngineMessage = "Engine isn't working";
 
-            Items.Add(queueViewModel);
-            Items.Add(downloadViewModel);
+            Items.AddRange(screen);
             ActivateItem(Items[0]);
-            EventAggregator.Subscribe(this);
+            this.eventAggregator.Subscribe(this);
             messageRevicer.Start();
         }
 
         public override async void CanClose(Action<bool> callback)
         {
-            var DialogResult = MessageDialogResult.Affirmative;
+            var dialogResult = MessageDialogResult.Affirmative;
 
-            if (Engine.CurrentDownload != 0)
+            if (Downloader.Downloading != 0)
             {
                 var metroWindow = (MetroWindow)GetView();
-                DialogResult = await metroWindow.ShowMessageAsync("Do you really want to close?", "There is item being download\nDo you want to stop and close it?",
+                dialogResult = await metroWindow.ShowMessageAsync("Do you really want to close?", "There is item being download\nDo you want to stop and close it?",
                     MessageDialogStyle.AffirmativeAndNegative);
             }
 
-            if (DialogResult == MessageDialogResult.Affirmative)
+            if (dialogResult == MessageDialogResult.Affirmative)
             {
                 callback(true);
             }
-            else if (DialogResult == MessageDialogResult.Negative)
+            else if (dialogResult == MessageDialogResult.Negative)
             {
                 callback(false);
             }
@@ -70,15 +72,15 @@ namespace TirkxDownloader.ViewModels
 
         public void OpenSetting()
         {
-            WindowManager.ShowDialog(new SettingShellViewModel());
+            windowManager.ShowWindow(settingScreen);
         }
 
         protected override void OnDeactivate(bool close)
         {
             if (close)
             {
-                Reciever.Stop();
-                Engine.StopQueueDownload();
+                reciever.Stop();
+                Downloader.StopQueueDownload();
             }
         }
 

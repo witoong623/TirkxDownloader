@@ -12,26 +12,26 @@ namespace TirkxDownloader.Models
 {
     public class DownloadProcess
     {
-        private bool IsFileCreated;
-        private HttpWebResponse WebResponse;
-        private Stream InStream;
-        private DownloadInfo CurrentFile;
-        private CounterWarpper Counter;
+        private bool isFileCreated;
+        private HttpWebResponse webResponse;
+        private Stream inStream;
+        private DownloadInfo currentFile;
+        private CounterWarpper counter;
         private CancellationToken ct;
         private long length;
-        private IEventAggregator EventAggregate;
+        private IEventAggregator eventAggregate;
 
         public async Task StartProgress(DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, CancellationToken ct)
         {
-            Counter = counter;
-            CurrentFile = downloadInf;
-            EventAggregate = eventAggregate;
+            this.counter = counter;
+            currentFile = downloadInf;
+            this.eventAggregate = eventAggregate;
             this.ct = ct;
 
-            CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Preparing;
-            Counter.Increase();
-            EventAggregate.PublishOnUIThread("CanDownload");
-            EventAggregate.PublishOnUIThread("CanStop");
+            currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Preparing;
+            this.counter.Increase();
+            this.eventAggregate.PublishOnUIThread("CanDownload");
+            this.eventAggregate.PublishOnUIThread("CanStop");
 
             try
             {
@@ -49,34 +49,36 @@ namespace TirkxDownloader.Models
             }
             finally
             {
-                InStream.Close();
-                Counter.Decrease();
+                inStream.Close();
+                this.counter.Decrease();
             }
+
+            return;
         }
 
         private async Task GetFileInfo()
         {
             try
             {
-                var request = (HttpWebRequest)HttpWebRequest.Create(CurrentFile.DownloadLink);
+                var request = (HttpWebRequest)HttpWebRequest.Create(currentFile.DownloadLink);
                 FillCredential(request);
 
-                WebResponse = await request.GetResponseAsync(ct);
-                CurrentFile.DownloadDetail.FileSize = WebResponse.ContentLength;
-                length = WebResponse.ContentLength;
-                InStream = WebResponse.GetResponseStream();
+                webResponse = await request.GetResponseAsync(ct);
+                currentFile.DownloadDetail.FileSize = webResponse.ContentLength;
+                length = webResponse.ContentLength;
+                inStream = webResponse.GetResponseStream();
             }
             catch (OperationCanceledException)
             {
-                CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
-                CurrentFile.DownloadDetail.ErrorMessage = "Download was canceled";
+                currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
+                currentFile.DownloadDetail.ErrorMessage = "Download was canceled";
 
                 throw;
             }
             catch (WebException ex)
             {
-                CurrentFile.DownloadDetail.ErrorMessage = ex.Message;
-                CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
+                currentFile.DownloadDetail.ErrorMessage = ex.Message;
+                currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
 
                 throw;
             }
@@ -95,10 +97,10 @@ namespace TirkxDownloader.Models
                 {
                     try
                     {
-                        if (File.Exists(CurrentFile.FullName))
+                        if (File.Exists(currentFile.FullName))
                         {
-                            var localFile = new FileInfo(CurrentFile.FullName);
-                            var fileName = Path.GetFileNameWithoutExtension(CurrentFile.FileName);
+                            var localFile = new FileInfo(currentFile.FullName);
+                            var fileName = Path.GetFileNameWithoutExtension(currentFile.FileName);
                             var ext = localFile.Extension;
                             int count = 1;
                             var newFileName = "";
@@ -107,34 +109,34 @@ namespace TirkxDownloader.Models
                             {
                                 newFileName = fileName + "(" + count + ")";
                                 count++;
-                            } while (File.Exists(Path.Combine(CurrentFile.SaveLocation, newFileName + ext)));
+                            } while (File.Exists(Path.Combine(currentFile.SaveLocation, newFileName + ext)));
 
-                            CurrentFile.FileName = newFileName + ext;
+                            currentFile.FileName = newFileName + ext;
                         }
 
-                        using (var file = File.Create(CurrentFile.FullName)) { }
-                        IsFileCreated = true;
+                        using (var file = File.Create(currentFile.FullName)) { }
+                        isFileCreated = true;
 
                     }
                     catch (Exception ex)
                     {
-                        CurrentFile.DownloadDetail.ErrorMessage = ex.Message;
-                        CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
+                        currentFile.DownloadDetail.ErrorMessage = ex.Message;
+                        currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
                         DeleteLocalFile();
                     }
                 }, ct);
             }
             catch (TaskCanceledException)
             {
-                CurrentFile.DownloadDetail.ErrorMessage = "Download was canceled";
-                CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
+                currentFile.DownloadDetail.ErrorMessage = "Download was canceled";
+                currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
 
                 throw;
             }
             catch (AggregateException ex)
             {
-                CurrentFile.DownloadDetail.ErrorMessage = ex.InnerException.Message;
-                CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
+                currentFile.DownloadDetail.ErrorMessage = ex.InnerException.Message;
+                currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
 
                 throw;
             }
@@ -142,9 +144,9 @@ namespace TirkxDownloader.Models
 
         private void DeleteLocalFile()
         {
-            if (IsFileCreated)
+            if (isFileCreated)
             {
-                File.Delete(CurrentFile.FullName);
+                File.Delete(currentFile.FullName);
             }
         }
 
@@ -152,7 +154,7 @@ namespace TirkxDownloader.Models
         {
             try
             {
-                using (FileStream stream = new FileStream(CurrentFile.FullName, FileMode.Open, FileAccess.Write, FileShare.None, 65536))
+                using (FileStream stream = new FileStream(currentFile.FullName, FileMode.Open, FileAccess.Write, FileShare.None, 65536))
                 {
                     int maxReadSize = 102400;
                     int readByte = 0;
@@ -160,12 +162,12 @@ namespace TirkxDownloader.Models
                     int roundCount = 0;
                     int byteCalRound = 0;
                     byte[] buffer = new byte[maxReadSize];
-                    CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Downloading;
+                    currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Downloading;
                     DateTime lastUpdate = DateTime.Now;
 
                     do
                     {
-                        readByte = await InStream.ReadAsync(buffer, 0, maxReadSize, ct);
+                        readByte = await inStream.ReadAsync(buffer, 0, maxReadSize, ct);
                         byteCalRound += readByte;
                         downloadedSize += readByte;
                         roundCount++;
@@ -176,9 +178,9 @@ namespace TirkxDownloader.Models
                             var interval = (now - lastUpdate).TotalSeconds;
                             var speed = (int)Math.Floor(byteCalRound / interval);
                             lastUpdate = now;
-                            CurrentFile.DownloadDetail.RecievedSize = downloadedSize;
-                            CurrentFile.DownloadDetail.Throughput = speed;
-                            CurrentFile.DownloadDetail.PercentProgress = downloadedSize;
+                            currentFile.DownloadDetail.RecievedSize = downloadedSize;
+                            currentFile.DownloadDetail.Throughput = speed;
+                            currentFile.DownloadDetail.PercentProgress = downloadedSize;
 
                             byteCalRound = 0;
                             roundCount = 0;
@@ -189,20 +191,20 @@ namespace TirkxDownloader.Models
                 }
                 
                 // Download completed
-                CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Complete;
-                EventAggregate.PublishOnUIThread("CanDownload");
-                EventAggregate.PublishOnUIThread("CanStop");
+                currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Complete;
+                eventAggregate.PublishOnUIThread("CanDownload");
+                eventAggregate.PublishOnUIThread("CanStop");
             }
             catch (OperationCanceledException)
             {
-                CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
+                currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Stop;
 
                 throw;
             }
             catch (Exception ex)
             {
-                CurrentFile.DownloadDetail.ErrorMessage = ex.Message;
-                CurrentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
+                currentFile.DownloadDetail.ErrorMessage = ex.Message;
+                currentFile.DownloadDetail.LoadingStatus = DownloadStatus.Error;
 
                 throw;
             }

@@ -11,10 +11,10 @@ namespace TirkxDownloader.ViewModels
 {
     public class NewDownloadViewModel : Screen
     {
-        private readonly DownloadEngine Engine;
-        private readonly IWindowManager WindowManager;
-        private readonly IEventAggregator EventAggregator;
-        private MetroWindow View;
+        private readonly DownloadEngine engine;
+        private readonly IWindowManager windowManager;
+        private readonly IEventAggregator eventAggregator;
+        private MetroWindow view;
 
         public DownloadInfo CurrentItem { get; private set; }
 
@@ -31,11 +31,11 @@ namespace TirkxDownloader.ViewModels
         public NewDownloadViewModel(IWindowManager windowManager,
             IEventAggregator eventAggregator, TirkxFileInfo fileInfo, DownloadEngine engine)
         {
-            WindowManager = windowManager;
-            EventAggregator = eventAggregator;
-            Engine = engine;
+            this.windowManager = windowManager;
+            this.eventAggregator = eventAggregator;
+            this.engine = engine;
             DisplayName = "New download file";
-            View = (MetroWindow)GetView();
+            view = (MetroWindow)GetView();
 
             CurrentItem = new DownloadInfo
             {
@@ -61,8 +61,8 @@ namespace TirkxDownloader.ViewModels
         public void Download()
         {
             CurrentItem.AddDate = DateTime.Now;
-            EventAggregator.PublishOnUIThread(CurrentItem);
-            Engine.StartDownload(CurrentItem);
+            eventAggregator.PublishOnUIThread(CurrentItem);
+            engine.StartDownload(CurrentItem);
 
             var window = (MetroWindow)GetView();
             window.Close();
@@ -71,7 +71,7 @@ namespace TirkxDownloader.ViewModels
         public void Queue()
         {
             CurrentItem.AddDate = DateTime.Now;
-            EventAggregator.PublishOnUIThread(CurrentItem);
+            eventAggregator.PublishOnUIThread(CurrentItem);
 
             var window = (MetroWindow)GetView();
             window.Close();

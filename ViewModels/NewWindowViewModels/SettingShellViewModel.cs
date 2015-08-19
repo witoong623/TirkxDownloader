@@ -11,13 +11,29 @@ using TirkxDownloader.Models;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class SettingShellViewModel : Conductor<IContentList>.Collection.OneActive
+    public class SettingShellViewModel : Conductor<ISetting>.Collection.OneActive
     {
-        public SettingShellViewModel()
+        public SettingShellViewModel(IEnumerable<ISetting> screen)
         {
             DisplayName = "Setting";
-            Items.Add(new AuthorizationViewModel());
+            Items.AddRange(screen);
+        }
+
+        protected override void OnActivate()
+        {
             ActivateItem(Items[0]);
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            if (close)
+            {
+                Items.OfType<IDeactivate>().Apply(x => x.Deactivate(true));
+            }
+            else
+            {
+                ScreenExtensions.TryDeactivate(ActiveItem, false);
+            }
         }
     }
 }

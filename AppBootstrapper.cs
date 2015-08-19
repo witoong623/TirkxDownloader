@@ -22,13 +22,21 @@ namespace TirkxDownloader
         protected override void Configure()
         {
             container = new SimpleContainer();
+            // Framework
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
+
+            // Screen
             container.Singleton<ShellViewModel>();
-            container.Singleton<QueueViewModel>();
-            container.Singleton<DownloadedViewModel>();
+            container.Singleton<SettingShellViewModel>();
+            container.Singleton<IContentList, QueueViewModel>();
+            container.Singleton<IContentList, DownloadedViewModel>();
+            container.Singleton<ISetting, AuthorizationViewModel>();
+
+            // Serveice
             container.Singleton<MessageReciever>();
             container.Singleton<DownloadEngine>();
+            container.Singleton<AuthorizationStore>();
         }
 
         protected override object GetInstance(Type service, string key)

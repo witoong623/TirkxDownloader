@@ -67,6 +67,9 @@
   <PropertyGroup>
     <SignManifests>false</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\sakuramini.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro">
       <HintPath>packages\Caliburn.Micro.Core.2.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
@@ -121,6 +124,7 @@
     <Compile Include="Framework\CounterWarpper.cs" />
     <Compile Include="Framework\DownloadInfo.cs" />
     <Compile Include="Framework\Extension.cs" />
+    <Compile Include="Framework\ISetting.cs" />
     <Compile Include="Framework\LoadingDetail.cs" />
     <Compile Include="Framework\Pair.cs" />
     <Compile Include="Framework\ThreadParameter.cs" />

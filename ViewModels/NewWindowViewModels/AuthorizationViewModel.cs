@@ -4,16 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
+using TirkxDownloader.Models;
+using TirkxDownloader.Framework;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class AuthorizationViewModel : Screen, IContentList
+    public class AuthorizationViewModel : Screen, ISetting
     {
-        public AuthorizationViewModel()
+        private AuthorizationStore authorization;
+        public BindableCollection<AuthorizationInfo> Credentials { get; private set; }
+        public AuthorizationViewModel(AuthorizationStore credentialsStorage)
         {
             DisplayName = "Authorization";
+            authorization = credentialsStorage;
+            Credentials = new BindableCollection<AuthorizationInfo>();
+            
         }
 
-        public bool IsEmpty { get { return false; } }
+        protected override void OnInitialize()
+        {
+            Credentials.AddRange(authorization.GetAllCredential());
+            Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
+            Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
+            Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
+            Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
+            Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
+            Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
+        }
+
+        public bool IsSet { get; private set; }
+
+        public void Add()
+        {
+
+        }
     }
 }
