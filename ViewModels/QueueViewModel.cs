@@ -28,11 +28,7 @@ namespace TirkxDownloader.ViewModels
             this.eventAggregator.Subscribe(this);
         }
 
-        public bool IsEmpty
-        {
-            get { return QueueDownloadList.Count == 0; }
-        }
-
+        #region notify methods
         public DownloadInfo SelectedItem
         {
             get { return selectedItem; }
@@ -81,33 +77,13 @@ namespace TirkxDownloader.ViewModels
             SelectedItem = info;
         }
 
-        public void Download()
+        public bool IsEmpty
         {
-            engine.StartDownload(SelectedItem);
+            get { return QueueDownloadList.Count == 0; }
         }
+        #endregion
 
-        public void StartQueue()
-        {
-            engine.StartQueueDownload(QueueDownloadList);
-        }
-
-        public void Delete()
-        {
-            QueueDownloadList.Remove(SelectedItem);
-            NotifyOfPropertyChange(() => SelectedItem);
-            NotifyOfPropertyChange(() => IsEmpty);
-        }
-
-        public void Stop()
-        {
-            engine.StopDownload(selectedItem);
-        }
-
-        public void StopQueue()
-        {
-            engine.StopQueueDownload();
-        }
-
+        #region Hanndle message method
         // Use to invoke NotifyOfPropertyChange from LoadingDetail instance
         public void Handle(string propertyName)
         {
@@ -135,5 +111,35 @@ namespace TirkxDownloader.ViewModels
             QueueDownloadList.Add(message);
             NotifyOfPropertyChange(() => IsEmpty);
         }
+        #endregion
+
+        public void Download()
+        {
+            engine.StartDownload(SelectedItem);
+        }
+
+        public void StartQueue()
+        {
+            engine.StartQueueDownload(QueueDownloadList);
+        }
+
+        public void Delete()
+        {
+            QueueDownloadList.Remove(SelectedItem);
+            NotifyOfPropertyChange(() => SelectedItem);
+            NotifyOfPropertyChange(() => IsEmpty);
+        }
+
+        public void Stop()
+        {
+            engine.StopDownload(selectedItem);
+        }
+
+        public void StopQueue()
+        {
+            engine.StopQueueDownload();
+        }
+
+        
     }
 }
