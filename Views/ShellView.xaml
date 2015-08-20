@@ -60,10 +60,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0"
-                               Text="{Binding Path=QueueEngineMessage}"
-                               Margin="5,0,50,0"/>
-                    <StackPanel Grid.Column="1"
+                    <StackPanel Grid.Column="0"
                                 Orientation="Horizontal">
                         <TextBlock Text="File downloading "
                                    Margin="0,0,10,0" />
@@ -71,8 +68,7 @@
                                    Margin="0,0,10,0" />
                         <TextBlock Text="files" />
                     </StackPanel>
-                    
-                    <TextBlock Grid.Column="2"
+                    <TextBlock Grid.Column="1"
                                Text="{Binding Path=Downloader.EngineErrorMessage}" />
                 </Grid>
             </StatusBarItem>

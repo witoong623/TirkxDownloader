@@ -19,6 +19,7 @@ namespace TirkxDownloader.Models
         private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> taskList;
         private IEventAggregator eventAggregate;
 
+        #region Properties
         public bool IsWorking { get; private set; }
 
         public int Downloading { get { return counterWarpper.Downloading; } }
@@ -32,6 +33,7 @@ namespace TirkxDownloader.Models
                 NotifyOfPropertyChange(() => EngineErrorMessage);
             }
         }
+        #endregion
 
         public DownloadEngine(IEventAggregator eventAggregator)
         {
@@ -88,7 +90,6 @@ namespace TirkxDownloader.Models
             IsWorking = true;
             cancelQueueDownload = new CancellationTokenSource();
             Task.Run(() => StartQueueDownloadImp(cancelQueueDownload.Token));
-            eventAggregate.PublishOnUIThread("EngineWorking");
             NotifyCanQueue();
         }
 
@@ -145,13 +146,11 @@ namespace TirkxDownloader.Models
                 } while (queueRemaining != 0 || runningTaskRemaining != 0);
 
                 IsWorking = false;
-                eventAggregate.PublishOnUIThread("EngineNotWorking");
                 NotifyCanQueue();
             }
             catch (OperationCanceledException)
             {
                 IsWorking = false;
-                eventAggregate.PublishOnUIThread("EngineNotWorking");
                 NotifyCanQueue();
                 // Cancel all of running task
                 taskList.Values.Apply(x => x.Second.Cancel());
@@ -161,7 +160,6 @@ namespace TirkxDownloader.Models
             catch (Exception ex)
             {
                 IsWorking = false;
-                eventAggregate.PublishOnUIThread("EngineNotWorking");
                 NotifyCanQueue();
                 EngineErrorMessage = ex.Message;
 
