@@ -12,7 +12,7 @@ using TirkxDownloader.Models;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class ShellViewModel : Conductor<IContentList>.Collection.OneActive, IHandle<string>
+    public class ShellViewModel : Conductor<IContentList>.Collection.OneActive
     {
         private string queueEngineMessage;
         private readonly SettingShellViewModel settingScreen;
@@ -41,11 +41,9 @@ namespace TirkxDownloader.ViewModels
             reciever = messageRevicer;
             Downloader = engine;
             DisplayName = "Tirkx Downloader 0.1 beta";
-            queueEngineMessage = "Engine isn't working";
 
             Items.AddRange(screen);
             ActivateItem(Items[0]);
-            this.eventAggregator.Subscribe(this);
             messageRevicer.Start();
         }
 
@@ -81,18 +79,6 @@ namespace TirkxDownloader.ViewModels
             {
                 reciever.Stop();
                 Downloader.StopQueueDownload();
-            }
-        }
-
-        public void Handle(string message)
-        {
-            if (message.Equals("EngineWorking"))
-            {
-                QueueEngineMessage = "Engine is working";
-            }
-            else if (message.Equals("EngineNotWorking"))
-            {
-                QueueEngineMessage = "Engine isn't working";
             }
         }
     }
