@@ -6,12 +6,12 @@ namespace TirkxDownloader.Framework
 {
     public class LoadingDetail : PropertyChangedBase
     {
-        private int throughput;
-        private double fileSize;
-        private double recievedSize;
-        private double percentProgress;
-        private string errorMessage;
-        private DownloadStatus loadingStatus;
+        private int _throughput;
+        private double _fileSize;
+        private double _recievedSize;
+        private double _percentProgress;
+        private string _errorMessage;
+        private DownloadStatus _loadingStatus;
 
         public DownloadInfo Parent { get; set; }
 
@@ -23,60 +23,60 @@ namespace TirkxDownloader.Framework
 
         public double FileSize
         {
-            get { return fileSize; }
+            get { return _fileSize; }
             set
             {
-                fileSize = value / 1048576;
+                _fileSize = value / 1048576;
                 NotifyOfPropertyChange(() => FileSize);
             }
         }
 
         public DownloadStatus LoadingStatus
         {
-            get { return loadingStatus; }
+            get { return _loadingStatus; }
             set
             {
-                loadingStatus = value;
+                _loadingStatus = value;
                 Parent.NotifyOfPropertyChange(() => Parent.Status);
             }
         }
 
         public string ErrorMessage
         {
-            get { return errorMessage; }
+            get { return _errorMessage; }
             set
             {
-                errorMessage = value;
+                _errorMessage = value;
                 NotifyOfPropertyChange(() => ErrorMessage);
             }
         }
 
         public int Throughput
         {
-            get { return throughput; }
+            get { return _throughput; }
             set
             {
-                throughput = value / 1024;
+                _throughput = value / 1024;
                 NotifyOfPropertyChange(() => Throughput);
             }
         }
 
         public double PercentProgress
         {
-            get { return percentProgress; }
+            get { return _percentProgress; }
             set
             {
-                percentProgress = value / 1048576 * 100 / fileSize;
+                _percentProgress = value / 1048576 * 100 / _fileSize;
                 NotifyOfPropertyChange(() => PercentProgress);
             }
         }
 
         public double RecievedSize
         {
-            get { return recievedSize; }
+            get { return _recievedSize; }
             set
             {
-                recievedSize = value / 1048576;
+                _recievedSize = value / 1048576;
                 NotifyOfPropertyChange(() => RecievedSize);
             }
         }

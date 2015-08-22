@@ -161,61 +161,51 @@
                            Grid.Row="5" Grid.Column="1" />
                 <TextBlock Text="File size"
                            Style="{StaticResource DetailDescription}"
-                           Grid.Row="0" Grid.Column="2"
-                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                           Grid.Row="0" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
-                            Grid.Row="0" Grid.Column="3"
-                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.FileSize, StringFormat=N2}"
+                            Grid.Row="0" Grid.Column="3">
+                    <TextBlock Text="{Binding Path=FileSize, StringFormat=N2}"
                            Style="{StaticResource MasterDetail}" />
                     <TextBlock Text=" MB"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
                 <TextBlock Text="Tranfer rate"
                            Style="{StaticResource DetailDescription}"
-                           Grid.Row="1" Grid.Column="2"
-                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                           Grid.Row="1" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
-                            Grid.Row="1" Grid.Column="3"
-                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.Throughput}"
+                            Grid.Row="1" Grid.Column="3">
+                    <TextBlock Text="{Binding Path=Throughput}"
                            Style="{StaticResource MasterDetail}" />
                     <TextBlock Text=" KB/s"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
                 <TextBlock Text="Recieved size"
                            Style="{StaticResource DetailDescription}"
-                           Grid.Row="2" Grid.Column="2"
-                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                           Grid.Row="2" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
-                            Grid.Row="2" Grid.Column="3"
-                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.RecievedSize, StringFormat=N2}"
+                            Grid.Row="2" Grid.Column="3">
+                    <TextBlock Text="{Binding Path=RecievedSize, StringFormat=N2}"
                            Style="{StaticResource MasterDetail}" />
                     <TextBlock Text=" MB"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
                 <TextBlock Text="Progress"
                            Style="{StaticResource DetailDescription}"
-                           Grid.Row="3" Grid.Column="2"
-                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                           Grid.Row="3" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
-                            Grid.Row="3" Grid.Column="3"
-                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.PercentProgress, StringFormat=N2}"
-                           Style="{StaticResource MasterDetail}" />
+                            Grid.Row="3" Grid.Column="3">
+                    <TextBlock Text="{Binding Path=PercentProgress, StringFormat=N2}"
+                               Style="{StaticResource MasterDetail}" />
                     <TextBlock Text=" %"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
                 <TextBlock Text="Error message"
                            Style="{StaticResource DetailDescription}"
-                           Grid.Row="4" Grid.Column="2"
-                           Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" />
+                           Grid.Row="4" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="4" Grid.Column="3"
-                            Grid.RowSpan="2"
-                            Visibility="{Binding Path=DownloadDetail, Converter={StaticResource NullToVisibilityConverter}}" >
-                    <TextBlock Text="{Binding Path=DownloadDetail.ErrorMessage}"
+                            Grid.RowSpan="2">
+                    <TextBlock Text="{Binding Path=ErrorMessage}"
                                Style="{StaticResource MasterDetail}"
                                TextWrapping="Wrap"/>
                 </StackPanel>

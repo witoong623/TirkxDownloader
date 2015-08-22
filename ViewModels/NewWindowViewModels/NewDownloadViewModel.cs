@@ -1,20 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MahApps.Metro.Controls;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
+using Nito.AsyncEx;
 
 namespace TirkxDownloader.ViewModels
 {
     public class NewDownloadViewModel : Screen
     {
-        private readonly DownloadEngine engine;
-        private readonly IWindowManager windowManager;
-        private readonly IEventAggregator eventAggregator;
-        private MetroWindow view;
+        private INotifyTaskCompletion _detailDownloadTask;
+        private readonly DownloadEngine _downloader;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly DetailProvider _detailProvider;
 
         public DownloadInfo CurrentItem { get; private set; }
 
@@ -28,20 +30,25 @@ namespace TirkxDownloader.ViewModels
             get { return CanQueue; }
         }
 
-        public NewDownloadViewModel(IWindowManager windowManager,
-            IEventAggregator eventAggregator, TirkxFileInfo fileInfo, DownloadEngine engine)
+        public NewDownloadViewModel(IEventAggregator eventAggregator,
+            HttpDownloadLink fileInfo, DownloadEngine downloader, DetailProvider detailProvide)
         {
-            this.windowManager = windowManager;
-            this.eventAggregator = eventAggregator;
-            this.engine = engine;
-            DisplayName = "New download file";
-            view = (MetroWindow)GetView();
+            _eventAggregator = eventAggregator;
+            _downloader = downloader;
+            _detailProvider = detailProvide;
 
             CurrentItem = new DownloadInfo
             {
                 FileName = fileInfo.FileName,
                 DownloadLink = fileInfo.DownloadLink
             };
+        }
+
+        protected override void OnInitialize()
+        {
+            DisplayName = "New download file";
+            Task getDetailTask = _detailProvider.GetFileDetail(CurrentItem, CancellationToken.None);
+            _detailDownloadTask = NotifyTaskCompletion.Create(getDetailTask);
         }
 
         public void BrowseFolder()
@@ -61,8 +68,8 @@ namespace TirkxDownloader.ViewModels
         public void Download()
         {
             CurrentItem.AddDate = DateTime.Now;
-            eventAggregator.PublishOnUIThread(CurrentItem);
-            engine.StartDownload(CurrentItem);
+            _eventAggregator.PublishOnUIThread(CurrentItem);
+            _downloader.StartDownload(CurrentItem);
 
             var window = (MetroWindow)GetView();
             window.Close();
@@ -71,7 +78,7 @@ namespace TirkxDownloader.ViewModels
         public void Queue()
         {
             CurrentItem.AddDate = DateTime.Now;
-            eventAggregator.PublishOnUIThread(CurrentItem);
+            _eventAggregator.PublishOnUIThread(CurrentItem);
 
             var window = (MetroWindow)GetView();
             window.Close();

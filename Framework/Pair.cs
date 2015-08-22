@@ -5,23 +5,23 @@ namespace TirkxDownloader.Framework
 {
     public sealed class Pair<TFirst, TSecond> : IEquatable<Pair<TFirst, TSecond>>
     {
-        private readonly TFirst first;
-        private readonly TSecond second;
+        private readonly TFirst _first;
+        private readonly TSecond _second;
 
         public Pair(TFirst first, TSecond second)
         {
-            this.first = first;
-            this.second = second;
+            this._first = first;
+            this._second = second;
         }
 
         public TFirst First
         {
-            get { return first; }
+            get { return _first; }
         }
 
         public TSecond Second
         {
-            get { return second; }
+            get { return _second; }
         }
 
         public bool Equals(Pair<TFirst, TSecond> other)
@@ -31,14 +31,14 @@ namespace TirkxDownloader.Framework
                 return false;
             }
 
-            return EqualityComparer<TFirst>.Default.Equals(first, other.first) &&
-                EqualityComparer<TSecond>.Default.Equals(second, other.second);
+            return EqualityComparer<TFirst>.Default.Equals(_first, other._first) &&
+                EqualityComparer<TSecond>.Default.Equals(_second, other._second);
         }
 
         public override int GetHashCode()
         {
-            return EqualityComparer<TFirst>.Default.GetHashCode(first) * 37 +
-               EqualityComparer<TSecond>.Default.GetHashCode(second);
+            return EqualityComparer<TFirst>.Default.GetHashCode(_first) * 37 +
+               EqualityComparer<TSecond>.Default.GetHashCode(_second);
         }
     }
 }

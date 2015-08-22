@@ -11,25 +11,25 @@ namespace TirkxDownloader.Models
 {
     public class DownloadEngine : PropertyChangedBase
     {
-        private int maxCurrentlyDownload;
-        private string engineErrorMessage;
-        private CounterWarpper counterWarpper;
-        private CancellationTokenSource cancelQueueDownload;
-        private Queue<DownloadInfo> downloadQueue;
-        private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> taskList;
-        private IEventAggregator eventAggregate;
+        private int _maxCurrentlyDownload;
+        private string _engineErrorMessage;
+        private CounterWarpper _counterWarpper;
+        private CancellationTokenSource _cancelQueueDownload;
+        private Queue<DownloadInfo> _downloadQueue;
+        private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> _taskList;
+        private IEventAggregator _eventAggregate;
 
         #region Properties
         public bool IsWorking { get; private set; }
 
-        public int Downloading { get { return counterWarpper.Downloading; } }
+        public int Downloading { get { return _counterWarpper.Downloading; } }
 
         public string EngineErrorMessage
         {
-            get { return engineErrorMessage; }
+            get { return _engineErrorMessage; }
             set
             {
-                engineErrorMessage = value;
+                _engineErrorMessage = value;
                 NotifyOfPropertyChange(() => EngineErrorMessage);
             }
         }
@@ -37,16 +37,16 @@ namespace TirkxDownloader.Models
 
         public DownloadEngine(IEventAggregator eventAggregator)
         {
-            counterWarpper = new CounterWarpper();
-            taskList = new Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>>();
-            downloadQueue = new Queue<DownloadInfo>();
-            eventAggregate = eventAggregator;
-            maxCurrentlyDownload = 1;
+            _counterWarpper = new CounterWarpper();
+            _taskList = new Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>>();
+            _downloadQueue = new Queue<DownloadInfo>();
+            _eventAggregate = eventAggregator;
+            _maxCurrentlyDownload = 1;
         }
 
         public void StartDownload(DownloadInfo downloadInfo)
         {
-            if (counterWarpper.Downloading >= maxCurrentlyDownload)
+            if (_counterWarpper.Downloading >= _maxCurrentlyDownload)
             {
                 return;
             }
@@ -56,20 +56,20 @@ namespace TirkxDownloader.Models
                 return;
             }
 
-            downloadInfo.DownloadDetail = new LoadingDetail(downloadInfo);
+            downloadInfo.Status = DownloadStatus.Preparing;
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, counterWarpper, eventAggregate, cts.Token));
-            taskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
+            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, _counterWarpper, _eventAggregate, cts.Token));
+            _taskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
 
         public void StopDownload(DownloadInfo downloadInfo)
         {
             try
             {
-                var taskCancel = taskList[downloadInfo];
+                var taskCancel = _taskList[downloadInfo];
                 taskCancel.Second.Cancel();
-                taskList.Remove(downloadInfo);
+                _taskList.Remove(downloadInfo);
             }
             catch (KeyNotFoundException)
             {
@@ -85,11 +85,11 @@ namespace TirkxDownloader.Models
             }
 
             // check if items in collection isn't complete and don't already have in queue
-            downloadInfoList.Where(x => x.Status != DownloadStatus.Complete && !downloadQueue.Contains(x)).
-                Apply(x => downloadQueue.Enqueue((x)));
+            downloadInfoList.Where(x => x.Status != DownloadStatus.Complete && !_downloadQueue.Contains(x)).
+                Apply(x => _downloadQueue.Enqueue((x)));
             IsWorking = true;
-            cancelQueueDownload = new CancellationTokenSource();
-            Task.Run(() => StartQueueDownloadImp(cancelQueueDownload.Token));
+            _cancelQueueDownload = new CancellationTokenSource();
+            Task.Run(() => StartQueueDownloadImp(_cancelQueueDownload.Token));
             NotifyCanQueue();
         }
 
@@ -103,9 +103,9 @@ namespace TirkxDownloader.Models
 
                 do
                 {
-                    foreach (var downloadItem in downloadQueue)
+                    foreach (var downloadItem in _downloadQueue)
                     {
-                        if (counterWarpper.Downloading >= maxCurrentlyDownload)
+                        if (_counterWarpper.Downloading >= _maxCurrentlyDownload)
                         {
                             break;
                         }
@@ -115,9 +115,9 @@ namespace TirkxDownloader.Models
                         await Task.Delay(TimeSpan.FromSeconds(1));
                     }
 
-                    downloadQueue.Dequeue(dequeueCount);
+                    _downloadQueue.Dequeue(dequeueCount);
                     dequeueCount = 0;
-                    var task = taskList.Select(x => x.Value.First).ToArray();
+                    var task = _taskList.Select(x => x.Value.First).ToArray();
                     var timeout = Task.Delay(TimeSpan.FromSeconds(10));
                     Task[] waitedTask = new Task[task.Length + 1];
                     task.CopyTo(waitedTask, 1);
@@ -128,19 +128,19 @@ namespace TirkxDownloader.Models
                     if (completedTask != timeout)
                     {
                         // Find completed task from TaskList
-                        var completedDownload = taskList.Where(t => t.Value.First.Status == TaskStatus.RanToCompletion ||
+                        var completedDownload = _taskList.Where(t => t.Value.First.Status == TaskStatus.RanToCompletion ||
                             t.Value.First.Status == TaskStatus.Faulted || t.Value.First.Status == TaskStatus.Canceled).
                             Select(t => t.Key).ToArray(); ;
 
                         // Delete every task that completed
                         foreach (var downloadInfo in completedDownload)
                         {
-                            taskList.Remove(downloadInfo);
+                            _taskList.Remove(downloadInfo);
                         }
                     }
 
-                    queueRemaining = downloadQueue.Count(file => file.Status == DownloadStatus.Queue);
-                    runningTaskRemaining = taskList.Count(t => t.Value.First.Status == TaskStatus.WaitingForActivation);
+                    queueRemaining = _downloadQueue.Count(file => file.Status == DownloadStatus.Queue);
+                    runningTaskRemaining = _taskList.Count(t => t.Value.First.Status == TaskStatus.WaitingForActivation);
                     // Check if cancelation is requested
                     ct.ThrowIfCancellationRequested();
                 } while (queueRemaining != 0 || runningTaskRemaining != 0);
@@ -153,9 +153,9 @@ namespace TirkxDownloader.Models
                 IsWorking = false;
                 NotifyCanQueue();
                 // Cancel all of running task
-                taskList.Values.Apply(x => x.Second.Cancel());
+                _taskList.Values.Apply(x => x.Second.Cancel());
 
-                await Task.WhenAll(taskList.Select(t => t.Value.First).ToArray());
+                await Task.WhenAll(_taskList.Select(t => t.Value.First).ToArray());
             }
             catch (Exception ex)
             {
@@ -164,33 +164,33 @@ namespace TirkxDownloader.Models
                 EngineErrorMessage = ex.Message;
 
                 // In case that exception is thrown before polling
-                if (!cancelQueueDownload.IsCancellationRequested)
+                if (!_cancelQueueDownload.IsCancellationRequested)
                 {
-                    cancelQueueDownload.Dispose();
+                    _cancelQueueDownload.Dispose();
                 }
             }
             finally
             {
                 // Clean up collection
-                downloadQueue.Clear();
-                taskList.Clear();
+                _downloadQueue.Clear();
+                _taskList.Clear();
             }
         }
 
         private void NotifyCanQueue()
         {
-            eventAggregate.PublishOnUIThread("CanStartQueue");
-            eventAggregate.PublishOnUIThread("CanStopQueue");
+            _eventAggregate.PublishOnUIThread("CanStartQueue");
+            _eventAggregate.PublishOnUIThread("CanStopQueue");
         }
 
         public void StopQueueDownload()
         {
             try
             {
-                if (cancelQueueDownload != null)
+                if (_cancelQueueDownload != null)
                 {
-                    cancelQueueDownload.Cancel();
-                    cancelQueueDownload.Dispose();
+                    _cancelQueueDownload.Cancel();
+                    _cancelQueueDownload.Dispose();
                 }
             }
             catch

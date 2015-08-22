@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using TirkxDownloader.ViewModels;
@@ -13,67 +12,73 @@ namespace TirkxDownloader.Models
 {
     public class MessageReciever
     {
-        private readonly HttpListener listener;
-        private readonly DownloadEngine engine;
-        private readonly IEventAggregator eventAggregator;
-        private readonly IWindowManager windowManager;
-        private Thread backgroundThread;
+        private readonly HttpListener _listener;
+        private readonly DownloadEngine _downloader;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly IWindowManager _windowManager;
+        private readonly CancellationTokenSource _cts;
+        private readonly DetailProvider _detailProvider;
 
-        public MessageReciever(IWindowManager windowManager, IEventAggregator eventAggregator, DownloadEngine engine)
+        public MessageReciever(IWindowManager windowManager, IEventAggregator eventAggregator, DownloadEngine engine,
+            DetailProvider detailProvide)
         {
-            this.windowManager = windowManager;
-            this.eventAggregator = eventAggregator;
-            this.engine = engine;
-            backgroundThread = new Thread(StartReciever);
-            listener = new HttpListener();
-            listener.Prefixes.Add("http://localhost:6230/");
+            this._windowManager = windowManager;
+            this._eventAggregator = eventAggregator;
+            _downloader = engine;
+            _detailProvider = detailProvide;
+            _listener = new HttpListener();
+            _listener.Prefixes.Add("http://localhost:6230/");
         }
 
-        private void StartReciever()
-        {
-            while (true)
-            {
-                var fileInfo = GetFileInfo();
-
-                if (fileInfo != null && !engine.IsWorking)
-                {
-                    Execute.OnUIThread(() => windowManager.ShowDialog(
-                        new NewDownloadViewModel(windowManager, eventAggregator, fileInfo, engine)));
-                }
-            }
-        }
-
-        private TirkxFileInfo GetFileInfo()
+        private async void StartReciever()
         {
             try
             {
-                listener.Start();
-                var requestContext = listener.GetContext();
+                while (true)
+                {
+                    var fileInfo = await GetFileInfo();
+
+                    if (fileInfo != null && !_downloader.IsWorking)
+                    {
+                        Execute.OnUIThread(() => _windowManager.ShowDialog(
+                            new NewDownloadViewModel(_windowManager, _eventAggregator, fileInfo, _downloader, _detailProvider)));
+                    }
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (HttpListenerException) { }
+        }
+
+        private async Task<HttpDownloadLink> GetFileInfo()
+        {
+            try
+            {
+                _listener.Start();
+                var requestContext = await _listener.GetContextAsync();
                 var streamReader = new StreamReader(requestContext.Request.InputStream, requestContext.Request.ContentEncoding);
                 string jsonString = streamReader.ReadToEnd();
-                listener.Stop();
+                _listener.Stop();
 
-                return JsonConvert.DeserializeObject<TirkxFileInfo>(jsonString);
+                return JsonConvert.DeserializeObject<HttpDownloadLink>(jsonString);
             }
-            catch (ThreadAbortException)
+            catch (ObjectDisposedException)
             {
-                return null;
+                throw;
             }
             catch (HttpListenerException)
             {
-                return null;
+                throw;
             }
         }
 
         public void Start()
         {
-            backgroundThread.Start();
+            Task.Run(() => StartReciever());
         }
 
         public void Stop()
         {
-            listener.Close();
-            backgroundThread.Abort();
+            _listener.Close();
         }
     }
 }

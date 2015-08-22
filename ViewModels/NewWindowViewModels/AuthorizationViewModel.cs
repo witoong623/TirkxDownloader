@@ -11,19 +11,19 @@ namespace TirkxDownloader.ViewModels
 {
     public class AuthorizationViewModel : Screen, ISetting
     {
-        private AuthorizationStore authorization;
+        private AuthorizationStore _authorization;
         public BindableCollection<AuthorizationInfo> Credentials { get; private set; }
         public AuthorizationViewModel(AuthorizationStore credentialsStorage)
         {
             DisplayName = "Authorization";
-            authorization = credentialsStorage;
+            _authorization = credentialsStorage;
             Credentials = new BindableCollection<AuthorizationInfo>();
             
         }
 
         protected override void OnInitialize()
         {
-            Credentials.AddRange(authorization.GetAllCredential());
+            Credentials.AddRange(_authorization.GetAllCredential());
             Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
             Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });
             Credentials.Add(new AuthorizationInfo { TargetName = "Tirkx" });

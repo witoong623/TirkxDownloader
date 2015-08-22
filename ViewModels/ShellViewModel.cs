@@ -14,18 +14,18 @@ namespace TirkxDownloader.ViewModels
 {
     public class ShellViewModel : Conductor<IContentList>.Collection.OneActive
     {
-        private string queueEngineMessage;
-        private readonly SettingShellViewModel settingScreen;
-        private readonly IWindowManager windowManager;
-        private readonly IEventAggregator eventAggregator;
-        private readonly MessageReciever reciever;
+        private string _queueEngineMessage;
+        private readonly SettingShellViewModel _settingScreen;
+        private readonly IWindowManager _windowManager;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly MessageReciever _reciever;
 
         public string QueueEngineMessage
         {
-            get { return queueEngineMessage; }
+            get { return _queueEngineMessage; }
             set
             {
-                queueEngineMessage = value;
+                _queueEngineMessage = value;
                 NotifyOfPropertyChange(() => QueueEngineMessage);
             }
         }
@@ -35,10 +35,10 @@ namespace TirkxDownloader.ViewModels
         public ShellViewModel(IEnumerable<IContentList> screen, IWindowManager windowManager, SettingShellViewModel setting,
             IEventAggregator eventAggregator, MessageReciever messageRevicer, DownloadEngine engine)
         {
-            settingScreen = setting;
-            this.windowManager = windowManager;
-            this.eventAggregator = eventAggregator;
-            reciever = messageRevicer;
+            _settingScreen = setting;
+            this._windowManager = windowManager;
+            this._eventAggregator = eventAggregator;
+            _reciever = messageRevicer;
             Downloader = engine;
             DisplayName = "Tirkx Downloader 0.1 beta";
 
@@ -70,14 +70,14 @@ namespace TirkxDownloader.ViewModels
 
         public void OpenSetting()
         {
-            windowManager.ShowWindow(settingScreen);
+            _windowManager.ShowWindow(_settingScreen);
         }
 
         protected override void OnDeactivate(bool close)
         {
             if (close)
             {
-                reciever.Stop();
+                _reciever.Stop();
                 Downloader.StopQueueDownload();
             }
         }

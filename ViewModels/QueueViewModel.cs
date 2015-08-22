@@ -12,29 +12,29 @@ namespace TirkxDownloader.ViewModels
 {
     public class QueueViewModel : Screen, IContentList, IHandle<DownloadInfo>, IHandle<string>
     {
-        private DownloadInfo selectedItem;
-        private readonly IEventAggregator eventAggregator;
-        private readonly DownloadEngine engine;
+        private DownloadInfo _selectedItem;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly DownloadEngine _engine;
 
         public BindableCollection<DownloadInfo> QueueDownloadList { get; private set; }
 
         public QueueViewModel(IEventAggregator eventAggregator, DownloadEngine engine)
         {
-            this.eventAggregator = eventAggregator;
-            this.engine = engine;
+            this._eventAggregator = eventAggregator;
+            this._engine = engine;
             DisplayName = "Queue/Downloading";
             QueueDownloadList = new BindableCollection<DownloadInfo>();
 
-            this.eventAggregator.Subscribe(this);
+            this._eventAggregator.Subscribe(this);
         }
 
         #region notify methods
         public DownloadInfo SelectedItem
         {
-            get { return selectedItem; }
+            get { return _selectedItem; }
             set
             {
-                selectedItem = value;
+                _selectedItem = value;
                 NotifyOfPropertyChange(() => SelectedItem);
                 NotifyOfPropertyChange(() => CanDownload);
                 NotifyOfPropertyChange(() => CanStop);
@@ -64,12 +64,12 @@ namespace TirkxDownloader.ViewModels
 
         public bool CanStartQueue
         {
-            get { return !engine.IsWorking; }
+            get { return !_engine.IsWorking; }
         }
 
         public bool CanStopQueue
         {
-            get { return engine.IsWorking; }
+            get { return _engine.IsWorking; }
         }
 
         public void SelectItem(DownloadInfo info)
@@ -115,12 +115,12 @@ namespace TirkxDownloader.ViewModels
 
         public void Download()
         {
-            engine.StartDownload(SelectedItem);
+            _engine.StartDownload(SelectedItem);
         }
 
         public void StartQueue()
         {
-            engine.StartQueueDownload(QueueDownloadList);
+            _engine.StartQueueDownload(QueueDownloadList);
         }
 
         public void Delete()
@@ -132,12 +132,12 @@ namespace TirkxDownloader.ViewModels
 
         public void Stop()
         {
-            engine.StopDownload(selectedItem);
+            _engine.StopDownload(_selectedItem);
         }
 
         public void StopQueue()
         {
-            engine.StopQueueDownload();
+            _engine.StopQueueDownload();
         }
 
         

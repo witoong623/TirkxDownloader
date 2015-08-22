@@ -9,9 +9,15 @@ namespace TirkxDownloader.Framework
 
     public class DownloadInfo : PropertyChangedBase
     {
-        private string fileName;
-        private DateTime? completeDate;
-        private LoadingDetail downloadDetail;
+        private int _throughput;
+        private double _fileSize;
+        private double _recievedSize;
+        private double _percentProgress;
+        private string _errorMessage;
+        private DownloadStatus _status;
+        private string _fileName;
+        private DateTime? _completeDate;
+        private LoadingDetail _downloadDetail;
 
         
         public string DownloadLink { get; set; }
@@ -21,10 +27,10 @@ namespace TirkxDownloader.Framework
 
         public string FileName
         {
-            get { return fileName; }
+            get { return _fileName; }
             set
             {
-                fileName = value;
+                _fileName = value;
                 NotifyOfPropertyChange(() => FileName);
             }
         }
@@ -36,37 +42,74 @@ namespace TirkxDownloader.Framework
 
         public DateTime? CompleteDate
         {
-            get { return completeDate; }
+            get { return _completeDate; }
             set
             {
-                completeDate = value;
+                _completeDate = value;
                 NotifyOfPropertyChange(() => CompleteDate);
             }
         }
 
         public DownloadStatus Status
         {
-            get
+            get { return _status; }
+            set
             {
-                if (DownloadDetail == null)
-                {
-                    return DownloadStatus.Queue;
-                }
-                else
-                {
-                    return DownloadDetail.LoadingStatus;
-                }
+                _status = value;
+                NotifyOfPropertyChange("Status");
             }
         }
 
-        public LoadingDetail DownloadDetail
+        #region download detail
+        public double FileSize
         {
-            get { return downloadDetail; }
+            get { return _fileSize; }
             set
             {
-                downloadDetail = value;
-                NotifyOfPropertyChange(() => downloadDetail);
+                _fileSize = value / 1048576;
+                NotifyOfPropertyChange(() => FileSize);
             }
         }
+
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set
+            {
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => ErrorMessage);
+            }
+        }
+
+        public int Throughput
+        {
+            get { return _throughput; }
+            set
+            {
+                _throughput = value / 1024;
+                NotifyOfPropertyChange(() => Throughput);
+            }
+        }
+
+        public double PercentProgress
+        {
+            get { return _percentProgress; }
+            set
+            {
+                _percentProgress = value / 1048576 * 100 / _fileSize;
+                NotifyOfPropertyChange(() => PercentProgress);
+            }
+        }
+
+        public double RecievedSize
+        {
+            get { return _recievedSize; }
+            set
+            {
+                _recievedSize = value / 1048576;
+                NotifyOfPropertyChange(() => RecievedSize);
+            }
+        }
+        #endregion
     }
 }

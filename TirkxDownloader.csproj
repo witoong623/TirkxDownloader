@@ -94,6 +94,18 @@
       <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nito.AsyncEx, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -124,20 +136,20 @@
     <Compile Include="Framework\CounterWarpper.cs" />
     <Compile Include="Framework\DownloadInfo.cs" />
     <Compile Include="Framework\Extension.cs" />
-    <Compile Include="Framework\ISetting.cs" />
+    <Compile Include="Framework\Interface\ISetting.cs" />
     <Compile Include="Framework\LoadingDetail.cs" />
     <Compile Include="Framework\Pair.cs" />
-    <Compile Include="Framework\ThreadParameter.cs" />
-    <Compile Include="Framework\TirkxFileInfo.cs" />
+    <Compile Include="Framework\HttpDownloadLink.cs" />
     <Compile Include="Models\AuthorizationStore.cs" />
     <Compile Include="Models\DownloadEngine.cs" />
     <Compile Include="Models\DownloadProcess.cs" />
     <Compile Include="Models\MessageReciever.cs" />
+    <Compile Include="Models\DetailProvider.cs" />
     <Compile Include="ViewModels\NewWindowViewModels\AuthorizationViewModel.cs" />
     <Compile Include="ViewModels\NewWindowViewModels\NewDownloadViewModel.cs" />
     <Compile Include="ViewModels\NewWindowViewModels\SettingShellViewModel.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
-    <Compile Include="Framework\IContentList.cs" />
+    <Compile Include="Framework\Interface\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\DownloadedViewModel.cs" />
     <Compile Include="Views\Converter\NullToVisibilityConverter.cs" />

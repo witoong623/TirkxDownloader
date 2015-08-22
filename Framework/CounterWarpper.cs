@@ -9,19 +9,19 @@ namespace TirkxDownloader.Framework
 {
     public class CounterWarpper : PropertyChangedBase
     {
-        private int counter;
+        private int _counter;
 
-        public int Downloading { get { return counter; } }
+        public int Downloading { get { return _counter; } }
 
         public void Increase()
         {
-            Interlocked.Increment(ref counter);
+            Interlocked.Increment(ref _counter);
             NotifyOfPropertyChange("Downloading");
         }
 
         public void Decrease()
         {
-            Interlocked.Decrement(ref counter);
+            Interlocked.Decrement(ref _counter);
             NotifyOfPropertyChange("Downloading");
         }
     }

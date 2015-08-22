@@ -12,7 +12,7 @@ namespace TirkxDownloader
 {
     class AppBootstrapper : BootstrapperBase
     {
-        private SimpleContainer container;
+        private SimpleContainer _container;
 
         public AppBootstrapper()
         {
@@ -21,37 +21,38 @@ namespace TirkxDownloader
 
         protected override void Configure()
         {
-            container = new SimpleContainer();
+            _container = new SimpleContainer();
             // Framework
-            container.Singleton<IWindowManager, WindowManager>();
-            container.Singleton<IEventAggregator, EventAggregator>();
+            _container.Singleton<IWindowManager, WindowManager>();
+            _container.Singleton<IEventAggregator, EventAggregator>();
 
             // Screen
-            container.Singleton<ShellViewModel>();
-            container.Singleton<SettingShellViewModel>();
-            container.Singleton<IContentList, QueueViewModel>();
-            container.Singleton<IContentList, DownloadedViewModel>();
-            container.Singleton<ISetting, AuthorizationViewModel>();
+            _container.Singleton<ShellViewModel>();
+            _container.Singleton<SettingShellViewModel>();
+            _container.Singleton<IContentList, QueueViewModel>();
+            _container.Singleton<IContentList, DownloadedViewModel>();
+            _container.Singleton<ISetting, AuthorizationViewModel>();
 
             // Serveice
-            container.Singleton<MessageReciever>();
-            container.Singleton<DownloadEngine>();
-            container.Singleton<AuthorizationStore>();
+            _container.Singleton<MessageReciever>();
+            _container.Singleton<DownloadEngine>();
+            _container.Singleton<AuthorizationStore>();
+            _container.Singleton<DetailProvider>();
         }
 
         protected override object GetInstance(Type service, string key)
         {
-            return container.GetInstance(service, key);
+            return _container.GetInstance(service, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            return container.GetAllInstances(service);
+            return _container.GetAllInstances(service);
         }
 
         protected override void BuildUp(object instance)
         {
-            container.BuildUp(instance);
+            _container.BuildUp(instance);
         }
 
         protected override void OnStartup(object sender, System.Windows.StartupEventArgs e)

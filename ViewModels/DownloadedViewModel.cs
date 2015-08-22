@@ -10,7 +10,7 @@ namespace TirkxDownloader.ViewModels
 {
     public class DownloadedViewModel : Screen, IContentList
     {
-        private DownloadInfo selectedItem;
+        private DownloadInfo _selectedItem;
 
         public BindableCollection<DownloadInfo> DownloadCompleteList { get; private set; }
 
@@ -22,10 +22,10 @@ namespace TirkxDownloader.ViewModels
 
         public DownloadInfo SelectedItem
         {
-            get { return selectedItem; }
+            get { return _selectedItem; }
             set
             {
-                selectedItem = value;
+                _selectedItem = value;
                 NotifyOfPropertyChange(() => SelectedItem);
                 NotifyOfPropertyChange(() => CanDelete);
                 NotifyOfPropertyChange(() => CanOpen);
