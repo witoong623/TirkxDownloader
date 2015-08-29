@@ -18,11 +18,11 @@ namespace TirkxDownloader.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private readonly DetailProvider _detailProvider;
 
-        public DownloadInfo CurrentItem { get; private set; }
+        public DownloadInfo CurrentItem { get; }
 
         public bool CanQueue
         {
-            get { return Directory.Exists(CurrentItem.SaveLocation); }
+            get { return Directory.Exists(CurrentItem.SaveLocation) && _detailDownloadTask.IsSuccessfullyCompleted; }
         }
 
         public bool CanDownload
@@ -49,6 +49,15 @@ namespace TirkxDownloader.ViewModels
             DisplayName = "New download file";
             Task getDetailTask = _detailProvider.GetFileDetail(CurrentItem, CancellationToken.None);
             _detailDownloadTask = NotifyTaskCompletion.Create(getDetailTask);
+
+            _detailDownloadTask.PropertyChanged += (s, args) =>
+            {
+                if (args.PropertyName.Equals(nameof(_detailDownloadTask.IsSuccessfullyCompleted)))
+                {
+                    NotifyOfPropertyChange(nameof(CanQueue));
+                    NotifyOfPropertyChange(nameof(CanDownload));
+                }
+            };
         }
 
         public void BrowseFolder()

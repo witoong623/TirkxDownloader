@@ -1,9 +1,9 @@
-﻿<metro:MetroWindow x:Class="TirkxDownloader.Views.SettingShellView"
+﻿<metro:MetroWindow x:Class="TirkxDownloader.Views.Settings.SettingShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TirkxDownloader.Views"
+        xmlns:local="clr-namespace:TirkxDownloader.Views.Settings"
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
@@ -31,6 +31,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <metro:TransitioningContentControl cal:View.Model="{Binding ActiveItem}"
+                                           cal:View.Context="{Binding Path=State, Mode=TwoWay}"
                                            Grid.Column="1" 
                                            Margin="10"/>
     </Grid>

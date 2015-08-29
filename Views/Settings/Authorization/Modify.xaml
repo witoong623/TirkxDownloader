@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="TirkxDownloader.Views.Settings.Authorization.Modify"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:local="clr-namespace:TirkxDownloader.Views.Settings.Authorization"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="0">
+            <TextBlock Style="{StaticResource NewDownloadDescription}"
+                       Text="Domain" />
+            <TextBox Style="{StaticResource NewCredential}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="1">
+            <TextBlock Style="{StaticResource NewDownloadDescription}"
+                       Text="Username" />
+            <TextBox Style="{StaticResource NewCredential}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="2">
+            <TextBlock Style="{StaticResource NewDownloadDescription}"
+                       Text="Password" />
+            <TextBox Style="{StaticResource NewCredential}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Grid.Row="3">
+            <Button cal:Message.Attach="Save"
+                    Content="{Binding SubmitMessage}"/>
+            <Button cal:Message.Attach="Cancel"
+                    Content="{Binding CancelMessage}"/>
+            <StackPanel.Resources>
+                <Style TargetType="Button"
+                       BasedOn="{StaticResource MetroButton}">
+                    <Setter Property="Margin"
+                            Value="0,0,5,0" />
+                </Style>
+            </StackPanel.Resources>
+        </StackPanel>
+    </Grid>
+</UserControl>

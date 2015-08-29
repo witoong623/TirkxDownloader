@@ -40,8 +40,8 @@ namespace TirkxDownloader.Models
 
                     if (fileInfo != null && !_downloader.IsWorking)
                     {
-                        Execute.OnUIThread(() => _windowManager.ShowDialog(
-                            new NewDownloadViewModel(_windowManager, _eventAggregator, fileInfo, _downloader, _detailProvider)));
+                        await Execute.OnUIThreadAsync(() => _windowManager.ShowDialog(
+                            new NewDownloadViewModel(_eventAggregator, fileInfo, _downloader, _detailProvider)));
                     }
                 }
             }
@@ -51,24 +51,13 @@ namespace TirkxDownloader.Models
 
         private async Task<HttpDownloadLink> GetFileInfo()
         {
-            try
-            {
-                _listener.Start();
-                var requestContext = await _listener.GetContextAsync();
-                var streamReader = new StreamReader(requestContext.Request.InputStream, requestContext.Request.ContentEncoding);
-                string jsonString = streamReader.ReadToEnd();
-                _listener.Stop();
+            _listener.Start();
+            var requestContext = await _listener.GetContextAsync();
+            var streamReader = new StreamReader(requestContext.Request.InputStream, requestContext.Request.ContentEncoding);
+            string jsonString = streamReader.ReadToEnd();
+            _listener.Stop();
 
-                return JsonConvert.DeserializeObject<HttpDownloadLink>(jsonString);
-            }
-            catch (ObjectDisposedException)
-            {
-                throw;
-            }
-            catch (HttpListenerException)
-            {
-                throw;
-            }
+            return JsonConvert.DeserializeObject<HttpDownloadLink>(jsonString);
         }
 
         public void Start()
@@ -78,7 +67,11 @@ namespace TirkxDownloader.Models
 
         public void Stop()
         {
-            _listener.Close();
+            try
+            {
+                _listener.Close();
+            }
+            catch { }
         }
     }
 }

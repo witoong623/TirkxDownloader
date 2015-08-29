@@ -17,7 +17,6 @@ namespace TirkxDownloader.Models
         private DownloadInfo _currentFile;
         private CounterWarpper _counter;
         private CancellationToken _ct;
-        private long _length;
         private IEventAggregator _eventAggregate;
 
         public async Task StartProgress(DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, CancellationToken ct)
@@ -63,8 +62,6 @@ namespace TirkxDownloader.Models
                 FillCredential(request);
 
                 _webResponse = await request.GetResponseAsync(_ct);
-                _currentFile.FileSize = _webResponse.ContentLength;
-                _length = _webResponse.ContentLength;
                 _inStream = _webResponse.GetResponseStream();
             }
             catch (OperationCanceledException)
@@ -191,6 +188,7 @@ namespace TirkxDownloader.Models
                 
                 // Download completed
                 _currentFile.Status = DownloadStatus.Complete;
+                _currentFile.CompleteDate = DateTime.Now;
                 _eventAggregate.PublishOnUIThread("CanDownload");
                 _eventAggregate.PublishOnUIThread("CanStop");
             }

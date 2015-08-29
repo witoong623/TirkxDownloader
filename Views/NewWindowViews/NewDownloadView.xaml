@@ -5,7 +5,7 @@
         xmlns:cal="http://www.caliburnproject.org"
         BorderBrush="{DynamicResource AccentColorBrush}"
         WindowStartupLocation="CenterOwner"
-        Height="220" Width="600"
+        Height="240" Width="600"
         ShowMinButton="False"
         ShowMaxRestoreButton="False"
         ResizeMode="NoResize">
@@ -38,6 +38,12 @@
                         FontSize="12"
                         FontWeight="Light"
                         Height="28"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="File size:"
+                           Style="{StaticResource NewDownloadDescription}" />
+                <TextBox Text="{Binding Path=CurrentItem.FileSize, StringFormat=N2}"
+                         Style="{StaticResource NewDownloadValue}" />
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">

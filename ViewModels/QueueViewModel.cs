@@ -22,7 +22,7 @@ namespace TirkxDownloader.ViewModels
         {
             this._eventAggregator = eventAggregator;
             this._engine = engine;
-            DisplayName = "Queue/Downloading";
+            
             QueueDownloadList = new BindableCollection<DownloadInfo>();
 
             this._eventAggregator.Subscribe(this);
@@ -82,6 +82,11 @@ namespace TirkxDownloader.ViewModels
             get { return QueueDownloadList.Count == 0; }
         }
         #endregion
+
+        protected override void OnInitialize()
+        {
+            DisplayName = "Queue/Downloading";
+        }
 
         #region Hanndle message method
         // Use to invoke NotifyOfPropertyChange from LoadingDetail instance

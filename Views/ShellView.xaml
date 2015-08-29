@@ -63,8 +63,8 @@
                     <StackPanel Grid.Column="0"
                                 Orientation="Horizontal">
                         <TextBlock Text="File downloading "
-                                   Margin="0,0,10,0" />
-                        <TextBlock Text="{Binding Path=Downloader.Downloading}"
+                                   Margin="0,0,7,0" />
+                        <TextBlock Text="{Binding Path=Downloader.DownloadCounter.Downloading}"
                                    Margin="0,0,10,0" />
                         <TextBlock Text="files" />
                     </StackPanel>

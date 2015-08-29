@@ -9,7 +9,7 @@ using TirkxDownloader.Framework;
 
 namespace TirkxDownloader.Models
 {
-    public class AuthorizationStore
+    public class AuthorizationManager
     {
         public AuthorizationInfo GetCredential(string target)
         {

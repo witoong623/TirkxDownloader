@@ -1,27 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Caliburn.Micro;
-using MahApps.Metro.Controls;
 using TirkxDownloader.Framework;
-using TirkxDownloader.Models;
 
-
-namespace TirkxDownloader.ViewModels
+namespace TirkxDownloader.ViewModels.Settings
 {
     public class SettingShellViewModel : Conductor<ISetting>.Collection.OneActive
     {
+        private SettingState _state;
         public SettingShellViewModel(IEnumerable<ISetting> screen)
         {
             DisplayName = "Setting";
             Items.AddRange(screen);
+            State = SettingState.Summary;
         }
 
         protected override void OnActivate()
         {
             ActivateItem(Items[0]);
+        }
+
+        public SettingState State
+        {
+            get { return _state; }
+            set
+            {
+                _state = value;
+                NotifyOfPropertyChange(nameof(State));
+            }
         }
 
         protected override void OnDeactivate(bool close)
@@ -36,4 +42,10 @@ namespace TirkxDownloader.ViewModels
             }
         }
     }
+
+    public enum SettingState
+    {
+        Summary,
+        Modify
+    };
 }

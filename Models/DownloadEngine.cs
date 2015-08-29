@@ -13,7 +13,6 @@ namespace TirkxDownloader.Models
     {
         private int _maxCurrentlyDownload;
         private string _engineErrorMessage;
-        private CounterWarpper _counterWarpper;
         private CancellationTokenSource _cancelQueueDownload;
         private Queue<DownloadInfo> _downloadQueue;
         private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> _taskList;
@@ -22,7 +21,7 @@ namespace TirkxDownloader.Models
         #region Properties
         public bool IsWorking { get; private set; }
 
-        public int Downloading { get { return _counterWarpper.Downloading; } }
+        public CounterWarpper DownloadCounter { get; private set; }
 
         public string EngineErrorMessage
         {
@@ -37,7 +36,7 @@ namespace TirkxDownloader.Models
 
         public DownloadEngine(IEventAggregator eventAggregator)
         {
-            _counterWarpper = new CounterWarpper();
+            DownloadCounter = new CounterWarpper();
             _taskList = new Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>>();
             _downloadQueue = new Queue<DownloadInfo>();
             _eventAggregate = eventAggregator;
@@ -46,7 +45,7 @@ namespace TirkxDownloader.Models
 
         public void StartDownload(DownloadInfo downloadInfo)
         {
-            if (_counterWarpper.Downloading >= _maxCurrentlyDownload)
+            if (DownloadCounter.Downloading >= _maxCurrentlyDownload)
             {
                 return;
             }
@@ -59,7 +58,7 @@ namespace TirkxDownloader.Models
             downloadInfo.Status = DownloadStatus.Preparing;
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, _counterWarpper, _eventAggregate, cts.Token));
+            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, DownloadCounter, _eventAggregate, cts.Token));
             _taskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
 
@@ -105,7 +104,7 @@ namespace TirkxDownloader.Models
                 {
                     foreach (var downloadItem in _downloadQueue)
                     {
-                        if (_counterWarpper.Downloading >= _maxCurrentlyDownload)
+                        if (DownloadCounter.Downloading >= _maxCurrentlyDownload)
                         {
                             break;
                         }

@@ -140,26 +140,32 @@
     <Compile Include="Framework\LoadingDetail.cs" />
     <Compile Include="Framework\Pair.cs" />
     <Compile Include="Framework\HttpDownloadLink.cs" />
-    <Compile Include="Models\AuthorizationStore.cs" />
+    <Compile Include="Models\AuthorizationManager.cs" />
     <Compile Include="Models\DownloadEngine.cs" />
     <Compile Include="Models\DownloadProcess.cs" />
     <Compile Include="Models\MessageReciever.cs" />
     <Compile Include="Models\DetailProvider.cs" />
-    <Compile Include="ViewModels\NewWindowViewModels\AuthorizationViewModel.cs" />
+    <Compile Include="ViewModels\Settings\AuthorizationViewModel.cs" />
     <Compile Include="ViewModels\NewWindowViewModels\NewDownloadViewModel.cs" />
-    <Compile Include="ViewModels\NewWindowViewModels\SettingShellViewModel.cs" />
+    <Compile Include="ViewModels\Settings\SettingShellViewModel.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\Interface\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\DownloadedViewModel.cs" />
     <Compile Include="Views\Converter\NullToVisibilityConverter.cs" />
-    <Compile Include="Views\NewWindowViews\AuthorizationView.xaml.cs">
+    <Compile Include="Views\Settings\AuthorizationView.xaml.cs">
       <DependentUpon>AuthorizationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NewWindowViews\NewDownloadView.xaml.cs">
       <DependentUpon>NewDownloadView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NewWindowViews\SettingShellView.xaml.cs">
+    <Compile Include="Views\Settings\Authorization\Modify.xaml.cs">
+      <DependentUpon>Modify.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\Authorization\Summary.xaml.cs">
+      <DependentUpon>Summary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\SettingShellView.xaml.cs">
       <DependentUpon>SettingShellView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\QueueView.xaml.cs">
@@ -229,7 +235,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NewWindowViews\AuthorizationView.xaml">
+    <Page Include="Views\Settings\AuthorizationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -237,7 +243,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NewWindowViews\SettingShellView.xaml">
+    <Page Include="Views\Settings\Authorization\Modify.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Settings\Authorization\Summary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Settings\SettingShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

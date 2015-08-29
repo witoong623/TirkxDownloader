@@ -10,17 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MahApps.Metro.Controls;
 
-namespace TirkxDownloader.Views
+namespace TirkxDownloader.Views.Settings.Authorization
 {
     /// <summary>
-    /// Interaction logic for SettingShellView.xaml
+    /// Interaction logic for Modify.xaml
     /// </summary>
-    public partial class SettingShellView : MetroWindow
+    public partial class Modify : UserControl
     {
-        public SettingShellView()
+        public Modify()
         {
             InitializeComponent();
         }

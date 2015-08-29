@@ -9,6 +9,7 @@ using MahApps.Metro.Controls.Dialogs;
 using TirkxDownloader.Views;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Models;
+using TirkxDownloader.ViewModels.Settings;
 
 namespace TirkxDownloader.ViewModels
 {
@@ -40,18 +41,22 @@ namespace TirkxDownloader.ViewModels
             this._eventAggregator = eventAggregator;
             _reciever = messageRevicer;
             Downloader = engine;
-            DisplayName = "Tirkx Downloader 0.1 beta";
-
             Items.AddRange(screen);
-            ActivateItem(Items[0]);
+            
             messageRevicer.Start();
+        }
+
+        protected override void OnInitialize()
+        {
+            DisplayName = "Tirkx Downloader 0.1 beta";
+            ActivateItem(Items[0]);
         }
 
         public override async void CanClose(Action<bool> callback)
         {
             var dialogResult = MessageDialogResult.Affirmative;
 
-            if (Downloader.Downloading != 0)
+            if (Downloader.DownloadCounter.Downloading != 0)
             {
                 var metroWindow = (MetroWindow)GetView();
                 dialogResult = await metroWindow.ShowMessageAsync("Do you really want to close?", "There is item being download\nDo you want to stop and close it?",
@@ -77,7 +82,6 @@ namespace TirkxDownloader.ViewModels
         {
             if (close)
             {
-                _reciever.Stop();
                 Downloader.StopQueueDownload();
             }
         }
