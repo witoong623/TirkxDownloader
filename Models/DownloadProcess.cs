@@ -21,15 +21,15 @@ namespace TirkxDownloader.Models
 
         public async Task StartProgress(DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, CancellationToken ct)
         {
-            this._counter = counter;
+            _counter = counter;
             _currentFile = downloadInf;
-            this._eventAggregate = eventAggregate;
-            this._ct = ct;
+            _eventAggregate = eventAggregate;
+            _ct = ct;
 
             _currentFile.Status = DownloadStatus.Preparing;
-            this._counter.Increase();
-            this._eventAggregate.PublishOnUIThread("CanDownload");
-            this._eventAggregate.PublishOnUIThread("CanStop");
+            _counter.Increase();
+            _eventAggregate.PublishOnUIThread("CanDownload");
+            _eventAggregate.PublishOnUIThread("CanStop");
 
             try
             {
@@ -45,13 +45,9 @@ namespace TirkxDownloader.Models
             {
                 DeleteLocalFile();
             }
-            finally
-            {
-                _inStream.Close();
-                this._counter.Decrease();
-            }
 
-            return;
+            _inStream.Close();
+            _counter.Decrease();
         }
 
         private async Task GetFileInfo()
@@ -174,8 +170,8 @@ namespace TirkxDownloader.Models
                             var interval = (now - lastUpdate).TotalSeconds;
                             var speed = (int)Math.Floor(byteCalRound / interval);
                             lastUpdate = now;
-                            _currentFile.RecievedSize = downloadedSize;
                             _currentFile.Throughput = speed;
+                            _currentFile.RecievedSize = downloadedSize;
                             _currentFile.PercentProgress = downloadedSize;
 
                             byteCalRound = 0;
@@ -184,6 +180,10 @@ namespace TirkxDownloader.Models
 
                         await stream.WriteAsync(buffer, 0, readByte);
                     } while (readByte != 0);
+
+                    // update last value of downloadSize to ensure that file completed at 100%
+                    _currentFile.RecievedSize = downloadedSize;
+                    _currentFile.PercentProgress = downloadedSize;
                 }
                 
                 // Download completed
