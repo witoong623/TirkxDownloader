@@ -13,6 +13,7 @@ namespace TirkxDownloader.Models
     {
         private int _maxCurrentlyDownload;
         private string _engineErrorMessage;
+        private DetailProvider _detailProvider;
         private CancellationTokenSource _cancelQueueDownload;
         private Queue<DownloadInfo> _downloadQueue;
         private Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>> _taskList;
@@ -34,12 +35,13 @@ namespace TirkxDownloader.Models
         }
         #endregion
 
-        public DownloadEngine(IEventAggregator eventAggregator)
+        public DownloadEngine(IEventAggregator eventAggregator, DetailProvider detailProvider)
         {
             DownloadCounter = new CounterWarpper();
             _taskList = new Dictionary<DownloadInfo, Pair<Task, CancellationTokenSource>>();
             _downloadQueue = new Queue<DownloadInfo>();
             _eventAggregate = eventAggregator;
+            _detailProvider = detailProvider;
             _maxCurrentlyDownload = 1;
         }
 
@@ -58,7 +60,7 @@ namespace TirkxDownloader.Models
             downloadInfo.Status = DownloadStatus.Preparing;
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, DownloadCounter, _eventAggregate, cts.Token));
+            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, DownloadCounter, _eventAggregate, cts.Token, _detailProvider));
             _taskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
 
