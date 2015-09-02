@@ -75,7 +75,7 @@ namespace TirkxDownloader.ViewModels
 
         public void OpenSetting()
         {
-            _windowManager.ShowWindow(_settingScreen);
+            _windowManager.ShowDialog(_settingScreen);
         }
 
         protected override void OnDeactivate(bool close)
