@@ -13,6 +13,7 @@
             <ColumnDefinition Width="100" />
         </Grid.ColumnDefinitions>
         <ListView Grid.Column="0"
+                  cal:Message.Attach="[Event SelectionChanged] = [Action SelectItem($this)]"
                   ItemsSource="{Binding Path=Credentials, Mode=OneWay}">
             <ListView.View>
                 <GridView>
@@ -28,7 +29,11 @@
                     Margin="0,0,0,10"
                     cal:Message.Attach="Add"/>
             <Button Content="Edit"
-                    Margin="0,0,0,10" />
+                    Margin="0,0,0,10"
+                    cal:Message.Attach="Edit"/>
+            <Button Content="Delete"
+                    Margin="0,0,0,10"
+                    cal:Message.Attach="Delete"/>
         </StackPanel>
     </Grid>
 </UserControl>

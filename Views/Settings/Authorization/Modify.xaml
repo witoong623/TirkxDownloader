@@ -18,24 +18,27 @@
                     Grid.Row="0">
             <TextBlock Style="{StaticResource NewDownloadDescription}"
                        Text="Domain" />
-            <TextBox Style="{StaticResource NewCredential}" />
+            <TextBox Style="{StaticResource NewCredential}"
+                     Text="{Binding TargetName, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal"
                     Grid.Row="1">
             <TextBlock Style="{StaticResource NewDownloadDescription}"
                        Text="Username" />
-            <TextBox Style="{StaticResource NewCredential}" />
+            <TextBox Style="{StaticResource NewCredential}"
+                     Text="{Binding Username, Mode=TwoWay}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal"
                     Grid.Row="2">
             <TextBlock Style="{StaticResource NewDownloadDescription}"
                        Text="Password" />
-            <TextBox Style="{StaticResource NewCredential}" />
+            <TextBox Style="{StaticResource NewCredential}"
+                     Text="{Binding Password, Mode=TwoWay}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Grid.Row="3">
-            <Button cal:Message.Attach="Save"
+            <Button cal:Message.Attach="Submit"
                     Content="{Binding SubmitMessage}"/>
             <Button cal:Message.Attach="Cancel"
                     Content="{Binding CancelMessage}"/>
