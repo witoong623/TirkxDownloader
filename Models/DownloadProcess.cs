@@ -17,14 +17,17 @@ namespace TirkxDownloader.Models
         private DownloadInfo _currentFile;
         private CounterWarpper _counter;
         private CancellationToken _ct;
+        private DetailProvider _detailProvider;
         private IEventAggregator _eventAggregate;
 
-        public async Task StartProgress(DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, CancellationToken ct)
+        public async Task StartProgress(DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, 
+            CancellationToken ct, DetailProvider detailProvider)
         {
             _counter = counter;
             _currentFile = downloadInf;
             _eventAggregate = eventAggregate;
             _ct = ct;
+            _detailProvider = detailProvider;
 
             _currentFile.Status = DownloadStatus.Preparing;
             _counter.Increase();
@@ -55,7 +58,7 @@ namespace TirkxDownloader.Models
             try
             {
                 var request = (HttpWebRequest)HttpWebRequest.Create(_currentFile.DownloadLink);
-                FillCredential(request);
+                await FillCredential(request);
 
                 _webResponse = await request.GetResponseAsync(_ct);
                 _inStream = _webResponse.GetResponseStream();
@@ -76,9 +79,9 @@ namespace TirkxDownloader.Models
             }
         }
 
-        private void FillCredential(HttpWebRequest request)
+        private async Task FillCredential(HttpWebRequest request)
         {
-            request.UseDefaultCredentials = true;
+            await _detailProvider.FillCredential(request);
         }
 
         private async Task CreateFile()
