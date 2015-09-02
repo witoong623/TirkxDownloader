@@ -13,16 +13,17 @@ namespace TirkxDownloader.ViewModels
 {
     public class NewDownloadViewModel : Screen
     {
-        private INotifyTaskCompletion _detailDownloadTask;
+        // private INotifyTaskCompletion _detailDownloadTask;
         private readonly DownloadEngine _downloader;
         private readonly IEventAggregator _eventAggregator;
         private readonly DetailProvider _detailProvider;
 
         public DownloadInfo CurrentItem { get; }
+        public INotifyTaskCompletion DetailDownloadTask { get; private set; }
 
         public bool CanQueue
         {
-            get { return Directory.Exists(CurrentItem.SaveLocation) && _detailDownloadTask.IsSuccessfullyCompleted; }
+            get { return Directory.Exists(CurrentItem.SaveLocation) && DetailDownloadTask.IsSuccessfullyCompleted; }
         }
 
         public bool CanDownload
@@ -48,11 +49,11 @@ namespace TirkxDownloader.ViewModels
         {
             DisplayName = "New download file";
             Task getDetailTask = _detailProvider.GetFileDetail(CurrentItem, CancellationToken.None);
-            _detailDownloadTask = NotifyTaskCompletion.Create(getDetailTask);
+            DetailDownloadTask = NotifyTaskCompletion.Create(getDetailTask);
 
-            _detailDownloadTask.PropertyChanged += (s, args) =>
+            DetailDownloadTask.PropertyChanged += (s, args) =>
             {
-                if (args.PropertyName.Equals(nameof(_detailDownloadTask.IsSuccessfullyCompleted)))
+                if (args.PropertyName.Equals(nameof(DetailDownloadTask.IsSuccessfullyCompleted)))
                 {
                     NotifyOfPropertyChange(nameof(CanQueue));
                     NotifyOfPropertyChange(nameof(CanDownload));

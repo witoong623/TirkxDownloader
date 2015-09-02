@@ -11,7 +11,7 @@
         ResizeMode="NoResize">
     <Grid Margin="20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="150*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
@@ -45,6 +45,9 @@
                 <TextBox Text="{Binding Path=CurrentItem.FileSize, StringFormat=N2}"
                          Style="{StaticResource NewDownloadValue}" />
             </StackPanel>
+            <Label Visibility="{Binding DetailDownloadTask.IsFaulted}"
+                   Content="{Binding DetailDownloadTask.ErrorMessage}"
+                   HorizontalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Download now"
