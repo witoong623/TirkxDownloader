@@ -110,6 +110,8 @@ namespace TirkxDownloader.Framework
                 NotifyOfPropertyChange(() => RecievedSize);
             }
         }
+
+        public ThrottledStream InStream { get; set; }
         #endregion
     }
 }
