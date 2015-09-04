@@ -20,7 +20,7 @@ namespace TirkxDownloader.Framework
         /// <summary>
         /// Use for lock statement
         /// </summary>
-        private readonly static object _mutexObject = new object();
+        private readonly object _mutexObject = new object();
 
         /// <summary>
         /// The base stream.
@@ -43,29 +43,27 @@ namespace TirkxDownloader.Framework
         /// Gets or sets the maximum bytes per second that can be transferred through the base stream.
         /// </summary>
         /// <value>The maximum bytes per second.</value>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">Value is negative. </exception>
         public long MaximumBytesPerSecond
         {
             get
             {
-                return _maximumBytesPerSecond;
+                lock (_mutexObject)
+                {
+                    return _maximumBytesPerSecond;
+                }
             }
             set
             {
-                if (value < 0)
+                lock (_mutexObject)
                 {
-                    throw new ArgumentOutOfRangeException("MaximumBytesPerSecond",
-                        value, "The maximum number of bytes per second can't be negative.");
-                }
-                if (_maximumBytesPerSecond != value)
-                {
-                    _maximumBytesPerSecond = value;
-                    Reset();
+                    if (_maximumBytesPerSecond != value)
+                    {
+                        _maximumBytesPerSecond = value;
+                        Reset();
+                    }
                 }
             }
         }
-
-        public int BlockSize { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports reading.
@@ -197,19 +195,10 @@ namespace TirkxDownloader.Framework
         /// <exception cref="T:System.ArgumentOutOfRangeException">offset or count is negative. </exception>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int total = 0;
-            while (count > BlockSize)
-            {
-                Throttle(BlockSize);
-                int rb = _baseStream.Read(buffer, offset, BlockSize);
-                total += rb;
-                if (rb < BlockSize)
-                    return total;
-                offset += BlockSize;
-                count -= BlockSize;
-            }
+            
             Throttle(count);
-            return total + _baseStream.Read(buffer, offset, count);
+
+            return _baseStream.Read(buffer, offset, count);
         }
 
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct)
