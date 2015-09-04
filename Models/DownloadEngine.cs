@@ -45,23 +45,23 @@ namespace TirkxDownloader.Models
             _maxCurrentlyDownload = 1;
         }
 
-        public void StartDownload(DownloadInfo downloadInfo)
+        public void StartDownload(DownloadInfo info)
         {
             if (DownloadCounter.Downloading >= _maxCurrentlyDownload)
             {
                 return;
             }
 
-            if (downloadInfo.Status == DownloadStatus.Complete)
+            if (info.Status == DownloadStatus.Complete || info.Status == DownloadStatus.Downloading || info.Status == DownloadStatus.Preparing)
             {
                 return;
             }
 
-            downloadInfo.Status = DownloadStatus.Preparing;
+            info.Status = DownloadStatus.Preparing;
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = Task.Run(() => downloadProgress.StartProgress(downloadInfo, DownloadCounter, _eventAggregate, cts.Token, _detailProvider));
-            _taskList.Add(downloadInfo, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
+            var downloadTask = Task.Run(() => downloadProgress.StartProgress(info, DownloadCounter, _eventAggregate, cts.Token, _detailProvider));
+            _taskList.Add(info, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
 
         public void StopDownload(DownloadInfo downloadInfo)
