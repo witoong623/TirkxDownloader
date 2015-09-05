@@ -178,6 +178,14 @@ namespace TirkxDownloader.Framework
         }
 
         /// <summary>
+        /// Close Stream, Release all resource use by stream(must call this method for httpwebresponse's stream base)
+        /// </summary>
+        public override void Close()
+        {
+            _baseStream.Close();
+        }
+
+        /// <summary>
         /// Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
         /// </summary>
         /// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between offset and (offset + count - 1) replaced by the bytes read from the current source.</param>
