@@ -165,7 +165,6 @@ namespace TirkxDownloader.Framework
             _baseStream = baseStream;
             _stopWatch = Stopwatch.StartNew();
             MaximumBytesPerSecond = maximumBytesPerSecond;
-            BlockSize = 512;
             _byteCount = 0;
         }
 
@@ -266,13 +265,6 @@ namespace TirkxDownloader.Framework
         /// <exception cref="T:System.ArgumentOutOfRangeException">offset or count is negative. </exception>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            while (count > BlockSize)
-            {
-                Throttle(BlockSize);
-                _baseStream.Write(buffer, offset, BlockSize);
-                offset += BlockSize;
-                count -= BlockSize;
-            }
             Throttle(count);
             _baseStream.Write(buffer, offset, count);
         }
@@ -341,48 +333,6 @@ namespace TirkxDownloader.Framework
                         {
                             // Eatup ThreadAbortException.
                         }
-
-                        // A sleep has been done, reset.
-                        Reset();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="bufferSizeInBytes"></param>
-        /// <returns></returns>
-        protected async Task ThrottleAsync(int bufferSizeInBytes)
-        {
-            // Make sure the buffer isn't empty.
-            if (_maximumBytesPerSecond <= 0 || bufferSizeInBytes <= 0)
-            {
-                return;
-            }
-
-            _byteCount += bufferSizeInBytes;
-            if (_byteCount < 16)
-                return;
-
-            long elapsedMilliseconds = _stopWatch.ElapsedMilliseconds;
-
-            if (elapsedMilliseconds > 0)
-            {
-                // Calculate the current bps.
-                long bps = _byteCount * 1000L / elapsedMilliseconds;
-
-                // If the bps are more then the maximum bps, try to throttle.
-                if (bps > _maximumBytesPerSecond)
-                {
-                    // Calculate the time to sleep.
-                    long wakeElapsed = _byteCount * 1000L / _maximumBytesPerSecond;
-                    int toSleep = (int)(wakeElapsed - elapsedMilliseconds);
-
-                    if (toSleep > 1)
-                    {
-                        await Task.Delay(toSleep);
 
                         // A sleep has been done, reset.
                         Reset();
