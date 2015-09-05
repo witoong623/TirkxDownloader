@@ -13,7 +13,7 @@ namespace TirkxDownloader.Models
     {
         private bool _isFileCreated;
         private HttpWebResponse _webResponse;
-        private Stream _inStream;
+        private ThrottledStream _inStream;
         private DownloadInfo _currentFile;
         private CounterWarpper _counter;
         private CancellationToken _ct;
@@ -61,7 +61,8 @@ namespace TirkxDownloader.Models
                 await FillCredential(request);
 
                 _webResponse = await request.GetResponseAsync(_ct);
-                _inStream = _webResponse.GetResponseStream();
+                _inStream = new ThrottledStream(_webResponse.GetResponseStream());
+                _currentFile.InStream = _inStream;
             }
             catch (OperationCanceledException)
             {
@@ -88,52 +89,32 @@ namespace TirkxDownloader.Models
         {
             try
             {
-                await Task.Run(() =>
+                if (File.Exists(_currentFile.FullName))
                 {
-                    try
+                    var localFile = new FileInfo(_currentFile.FullName);
+                    var fileName = Path.GetFileNameWithoutExtension(_currentFile.FileName);
+                    var ext = localFile.Extension;
+                    int count = 1;
+                    var newFileName = "";
+
+                    do
                     {
-                        if (File.Exists(_currentFile.FullName))
-                        {
-                            var localFile = new FileInfo(_currentFile.FullName);
-                            var fileName = Path.GetFileNameWithoutExtension(_currentFile.FileName);
-                            var ext = localFile.Extension;
-                            int count = 1;
-                            var newFileName = "";
+                        newFileName = fileName + "(" + count + ")";
+                        count++;
+                    } while (File.Exists(Path.Combine(_currentFile.SaveLocation, newFileName + ext)));
 
-                            do
-                            {
-                                newFileName = fileName + "(" + count + ")";
-                                count++;
-                            } while (File.Exists(Path.Combine(_currentFile.SaveLocation, newFileName + ext)));
+                    _currentFile.FileName = newFileName + ext;
+                }
 
-                            _currentFile.FileName = newFileName + ext;
-                        }
+                using (var file = File.Create(_currentFile.FullName)) { }
+                _isFileCreated = true;
 
-                        using (var file = File.Create(_currentFile.FullName)) { }
-                        _isFileCreated = true;
-
-                    }
-                    catch (Exception ex)
-                    {
-                        _currentFile.ErrorMessage = ex.Message;
-                        _currentFile.Status = DownloadStatus.Error;
-                        DeleteLocalFile();
-                    }
-                }, _ct);
             }
-            catch (TaskCanceledException)
+            catch (Exception ex)
             {
-                _currentFile.ErrorMessage = "Download was canceled";
-                _currentFile.Status = DownloadStatus.Stop;
-
-                throw;
-            }
-            catch (AggregateException ex)
-            {
-                _currentFile.ErrorMessage = ex.InnerException.Message;
+                _currentFile.ErrorMessage = ex.Message;
                 _currentFile.Status = DownloadStatus.Error;
-
-                throw;
+                DeleteLocalFile();
             }
         }
 
