@@ -19,12 +19,13 @@ namespace TirkxDownloader.Models
             _authenticationManager = authenticationManager;
         }
 
-        public async Task GetFileDetail(DownloadInfo detail, CancellationToken ct)
+        public async Task TestFileAvailable(DownloadInfo detail, CancellationToken ct)
         {
             try
             {
                 var request = (HttpWebRequest)HttpWebRequest.Create(detail.DownloadLink);
                 request.Method = "HEAD";
+                await FillCredential(request);
                 var response = await request.GetResponseAsync(ct);
                 detail.FileSize = response.ContentLength;
                 response.Close();
