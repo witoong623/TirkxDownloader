@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Caliburn.Micro;
+using NodaTime;
 
 namespace TirkxDownloader.Framework
 {
@@ -16,6 +16,7 @@ namespace TirkxDownloader.Framework
         private string _errorMessage;
         private DownloadStatus _status;
         private string _fileName;
+        private Duration? _eta;
         private DateTime? _completeDate;
         private LoadingDetail _downloadDetail;
 
@@ -108,6 +109,16 @@ namespace TirkxDownloader.Framework
             {
                 _recievedSize = value / 1048576;
                 NotifyOfPropertyChange(() => RecievedSize);
+            }
+        }
+
+        public Duration? ETA
+        {
+            get { return _eta; }
+            set
+            {
+                _eta = value;
+                NotifyOfPropertyChange(nameof(ETA));
             }
         }
 
