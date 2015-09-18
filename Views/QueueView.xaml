@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:framework="clr-namespace:TirkxDownloader.Framework"
              mc:Ignorable="d">
@@ -74,7 +75,8 @@
             <ListView ItemsSource="{Binding Path=QueueDownloadList, Mode=OneWay}"
                       cal:Message.Attach="[Event SelectionChanged] = [Action SelectItem($this)]"
                       DockPanel.Dock="Top"
-                      Margin="0,0,0,15">
+                      Margin="0,0,0,15"
+                      x:Name="QueueListView">
                 <ListView.BorderBrush>
                     <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
                 </ListView.BorderBrush>
@@ -89,8 +91,42 @@
                         <GridViewColumn Header="Progress"
                                         Width="100"
                                         DisplayMemberBinding="{Binding Path=PercentProgress, StringFormat=N2}" />
+                        <GridViewColumn Header="ETA"
+                                        Width="100"
+                                        DisplayMemberBinding="{Binding Path=ETA, StringFormat=H:mm:ss}" />
                     </GridView>
                 </ListView.View>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Limit bandwidth">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <cal:ActionMessage MethodName="BandwidthThrottling">
+                                        <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+                        <MenuItem Header="Download">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <cal:ActionMessage MethodName="Download">
+                                        <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+                        <MenuItem Header="Stop">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <cal:ActionMessage MethodName="Stop">
+                                        <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListView.ContextMenu>
             </ListView>
         </DockPanel>
         <Border Grid.Row="1"
