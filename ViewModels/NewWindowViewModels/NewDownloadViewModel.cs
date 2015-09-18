@@ -48,7 +48,7 @@ namespace TirkxDownloader.ViewModels
         protected override void OnInitialize()
         {
             DisplayName = "New download file";
-            Task getDetailTask = _detailProvider.GetFileDetail(CurrentItem, CancellationToken.None);
+            Task getDetailTask = _detailProvider.TestFileAvailable(CurrentItem, CancellationToken.None);
             DetailDownloadTask = NotifyTaskCompletion.Create(getDetailTask);
 
             DetailDownloadTask.PropertyChanged += (s, args) =>
