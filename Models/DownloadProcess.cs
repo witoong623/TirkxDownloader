@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
+using NodaTime;
 using TirkxDownloader.Framework;
 
 namespace TirkxDownloader.Models
@@ -12,7 +13,8 @@ namespace TirkxDownloader.Models
     public class DownloadProcess
     {
         private bool _isFileCreated;
-        private HttpWebResponse _webResponse;
+        private long _fileSize;
+        private long _maximumBytesPerSecond;
         private ThrottledStream _inStream;
         private DownloadInfo _currentFile;
         private CounterWarpper _counter;
@@ -20,9 +22,10 @@ namespace TirkxDownloader.Models
         private DetailProvider _detailProvider;
         private IEventAggregator _eventAggregate;
 
-        public async Task StartProgress(DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, 
+        public async Task StartProgress(long maximumBytesPerSecond, DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, 
             CancellationToken ct, DetailProvider detailProvider)
         {
+            _maximumBytesPerSecond = maximumBytesPerSecond;
             _counter = counter;
             _currentFile = downloadInf;
             _eventAggregate = eventAggregate;
@@ -60,8 +63,9 @@ namespace TirkxDownloader.Models
                 var request = (HttpWebRequest)HttpWebRequest.Create(_currentFile.DownloadLink);
                 await FillCredential(request);
 
-                _webResponse = await request.GetResponseAsync(_ct);
-                _inStream = new ThrottledStream(_webResponse.GetResponseStream());
+                var webResponse = await request.GetResponseAsync(_ct);
+                _fileSize = webResponse.ContentLength;
+                _inStream = new ThrottledStream(webResponse.GetResponseStream(), _maximumBytesPerSecond);
                 _currentFile.InStream = _inStream;
             }
             catch (OperationCanceledException)
@@ -132,6 +136,7 @@ namespace TirkxDownloader.Models
             {
                 using (FileStream stream = new FileStream(_currentFile.FullName, FileMode.Open, FileAccess.Write, FileShare.None, 65536))
                 {
+                    int UpdateRound = 4;
                     int maxReadSize = 102400;
                     int readByte = 0;
                     long downloadedSize = 0;
@@ -148,18 +153,24 @@ namespace TirkxDownloader.Models
                         downloadedSize += readByte;
                         roundCount++;
 
-                        if (roundCount == 5)
+                        if (roundCount == UpdateRound)
                         {
                             var now = DateTime.Now;
-                            var interval = (now - lastUpdate).TotalSeconds;
-                            var speed = (int)Math.Floor(byteCalRound / interval);
+                            double interval = (now - lastUpdate).TotalSeconds;
+                            int speed = (int)Math.Floor(byteCalRound / interval);
                             lastUpdate = now;
+                            var etaTimespan = TimeSpan.FromSeconds((_fileSize - downloadedSize) / speed);
+                            Duration eta = Duration.FromSeconds((long)etaTimespan.TotalSeconds);
+
                             _currentFile.Throughput = speed;
+                            _currentFile.ETA = eta;
                             _currentFile.RecievedSize = downloadedSize;
                             _currentFile.PercentProgress = downloadedSize;
 
                             byteCalRound = 0;
                             roundCount = 0;
+                            // Calculate update round from kilobyte per secound
+                            UpdateRound = speed / 10240 + 1;
                         }
 
                         await stream.WriteAsync(buffer, 0, readByte);
