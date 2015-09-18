@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Caliburn.Micro;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
 
@@ -123,6 +125,11 @@ namespace TirkxDownloader.ViewModels
             _engine.StartDownload(SelectedItem);
         }
 
+        public void Download(DownloadInfo info)
+        {
+            _engine.StartDownload(info);
+        }
+
         public void StartQueue()
         {
             _engine.StartQueueDownload(QueueDownloadList);
@@ -140,11 +147,45 @@ namespace TirkxDownloader.ViewModels
             _engine.StopDownload(_selectedItem);
         }
 
+        public void Stop(DownloadInfo info)
+        {
+            _engine.StopDownload(info);
+        }
+
         public void StopQueue()
         {
             _engine.StopQueueDownload();
         }
 
-        
+        public async void BandwidthThrottling(DownloadInfo info)
+        {
+            if (info.InStream == null)
+            {
+                return;
+            }
+
+            MetroWindow metroWindow = (MetroWindow)((Screen)Parent).GetView();
+
+            string bandwidthText = await metroWindow.ShowInputAsync(
+                "Bandwidth Control", 
+                "Enter bandwidth to use 0 for unlimited (in KB/s)",
+                new MetroDialogSettings
+                {
+                    DefaultText = (info.InStream.MaximumBytesPerSecond / 1024).ToString(),
+                    AffirmativeButtonText = "OK",
+                    NegativeButtonText = "Cancel"
+                });
+
+            int bandwidth;
+            bool flag = int.TryParse(bandwidthText, out bandwidth);
+
+            if (!flag || bandwidth < 0)
+            {
+                return;
+            }
+
+            info.InStream.MaximumBytesPerSecond = bandwidth * 1024;
+            _engine.MaximumBytesPerSecond = bandwidth * 1024;
+        }
     }
 }
