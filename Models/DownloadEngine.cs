@@ -12,7 +12,9 @@ namespace TirkxDownloader.Models
     public class DownloadEngine : PropertyChangedBase
     {
         private int _maxCurrentlyDownload;
+        private long _maximumBytesPerSecond;
         private string _engineErrorMessage;
+        private readonly object _mutexObject = new object();
         private DetailProvider _detailProvider;
         private CancellationTokenSource _cancelQueueDownload;
         private Queue<DownloadInfo> _downloadQueue;
@@ -21,6 +23,24 @@ namespace TirkxDownloader.Models
 
         #region Properties
         public bool IsWorking { get; private set; }
+
+        public long MaximumBytesPerSecond
+        {
+            get
+            {
+                lock (_mutexObject)
+                {
+                    return _maximumBytesPerSecond;
+                }
+            }
+            set
+            {
+                lock (_mutexObject)
+                {
+                    _maximumBytesPerSecond = value;
+                }
+            }
+        }
 
         public CounterWarpper DownloadCounter { get; private set; }
 
