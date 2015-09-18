@@ -65,6 +65,8 @@ namespace TirkxDownloader.Framework
             }
         }
 
+        public int BlockSize { get; set; }
+
         /// <summary>
         /// Gets a value indicating whether the current stream supports reading.
         /// </summary>
@@ -164,6 +166,7 @@ namespace TirkxDownloader.Framework
 
             _baseStream = baseStream;
             _stopWatch = Stopwatch.StartNew();
+            BlockSize = 512;
             MaximumBytesPerSecond = maximumBytesPerSecond;
             _byteCount = 0;
         }
@@ -202,10 +205,19 @@ namespace TirkxDownloader.Framework
         /// <exception cref="T:System.ArgumentOutOfRangeException">offset or count is negative. </exception>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            
+            int total = 0;
+            while (count > BlockSize)
+            {
+                Throttle(BlockSize);
+                int rb = _baseStream.Read(buffer, offset, BlockSize);
+                total += rb;
+                if (rb < BlockSize)
+                    return total;
+                offset += BlockSize;
+                count -= BlockSize;
+            }
             Throttle(count);
-
-            return _baseStream.Read(buffer, offset, count);
+            return total + _baseStream.Read(buffer, offset, count);
         }
 
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct)
