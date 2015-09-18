@@ -5,7 +5,7 @@
         xmlns:cal="http://www.caliburnproject.org"
         BorderBrush="{DynamicResource AccentColorBrush}"
         WindowStartupLocation="CenterOwner"
-        Height="240" Width="600"
+        Height="250" Width="600"
         ShowMinButton="False"
         ShowMaxRestoreButton="False"
         ResizeMode="NoResize">
@@ -45,7 +45,7 @@
                 <TextBox Text="{Binding Path=CurrentItem.FileSize, StringFormat=N2}"
                          Style="{StaticResource NewDownloadValue}" />
             </StackPanel>
-            <Label Visibility="{Binding DetailDownloadTask.IsFaulted}"
+            <Label Visibility="{Binding DetailDownloadTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"
                    Content="{Binding DetailDownloadTask.ErrorMessage}"
                    HorizontalAlignment="Center"/>
         </StackPanel>
