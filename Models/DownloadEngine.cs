@@ -80,7 +80,14 @@ namespace TirkxDownloader.Models
             info.Status = DownloadStatus.Preparing;
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = Task.Run(() => downloadProgress.StartProgress(info, DownloadCounter, _eventAggregate, cts.Token, _detailProvider));
+            var downloadTask = Task.Run(() => downloadProgress.StartProgress(
+                maximumBytesPerSecond: MaximumBytesPerSecond,
+                downloadInf: info, 
+                counter: DownloadCounter, 
+                eventAggregate: _eventAggregate, 
+                ct: cts.Token, 
+                detailProvider: _detailProvider));
+
             _taskList.Add(info, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
 
@@ -167,6 +174,7 @@ namespace TirkxDownloader.Models
                 } while (queueRemaining != 0 || runningTaskRemaining != 0);
 
                 IsWorking = false;
+                MaximumBytesPerSecond = 0;
                 NotifyCanQueue();
             }
             catch (OperationCanceledException)
