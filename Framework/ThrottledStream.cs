@@ -220,27 +220,21 @@ namespace TirkxDownloader.Framework
             return total + _baseStream.Read(buffer, offset, count);
         }
 
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct)
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct)
         {
             int total = 0;
-            TaskCompletionSource<int> readTask = new TaskCompletionSource<int>();
-
-            try
+            while (count > BlockSize)
             {
-                total = Read(buffer, offset, count);
-                ct.ThrowIfCancellationRequested();
-                readTask.TrySetResult(total);
+                await ThrottleAsync(BlockSize);
+                int rb = _baseStream.Read(buffer, offset, BlockSize);
+                total += rb;
+                if (rb < BlockSize)
+                    return total;
+                offset += BlockSize;
+                count -= BlockSize;
             }
-            catch (OperationCanceledException)
-            {
-                readTask.TrySetCanceled();
-            }
-            catch (Exception ex)
-            {
-                readTask.TrySetException(ex);
-            }
-
-            return readTask.Task;
+            await ThrottleAsync(count);
+            return total + _baseStream.Read(buffer, offset, count);
         }
 
         /// <summary>
@@ -348,6 +342,55 @@ namespace TirkxDownloader.Framework
                         {
                             // The time to sleep is more then a millisecond, so sleep.
                             Thread.Sleep(toSleep);
+                        }
+                        catch (ThreadAbortException)
+                        {
+                            // Eatup ThreadAbortException.
+                        }
+
+                        // A sleep has been done, reset.
+                        Reset();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Async throttles for the specified buffer size in bytes.
+        /// </summary>
+        /// <param name="bufferSizeInBytes">The buffer size in bytes.</param>
+        protected async Task ThrottleAsync(int bufferSizeInBytes)
+        {
+            // Make sure the buffer isn't empty.
+            if (_maximumBytesPerSecond <= 0 || bufferSizeInBytes <= 0)
+            {
+                return;
+            }
+
+            _byteCount += bufferSizeInBytes;
+            if (_byteCount < 16)
+                return;
+
+            long elapsedMilliseconds = _stopWatch.ElapsedMilliseconds;
+
+            if (elapsedMilliseconds > 0)
+            {
+                // Calculate the current bps.
+                long bps = _byteCount * 1000L / elapsedMilliseconds;
+
+                // If the bps are more then the maximum bps, try to throttle.
+                if (bps > _maximumBytesPerSecond)
+                {
+                    // Calculate the time to sleep.
+                    long wakeElapsed = _byteCount * 1000L / _maximumBytesPerSecond;
+                    int toSleep = (int)(wakeElapsed - elapsedMilliseconds);
+
+                    if (toSleep > 1)
+                    {
+                        try
+                        {
+                            // The time to sleep is more then a millisecond, so sleep.
+                            await Task.Delay(toSleep);
                         }
                         catch (ThreadAbortException)
                         {
