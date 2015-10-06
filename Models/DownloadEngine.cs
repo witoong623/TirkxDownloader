@@ -80,13 +80,13 @@ namespace TirkxDownloader.Models
             info.Status = DownloadStatus.Preparing;
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = Task.Run(() => downloadProgress.StartProgress(
+            var downloadTask = downloadProgress.StartProgress(
                 maximumBytesPerSecond: MaximumBytesPerSecond,
-                downloadInf: info, 
-                counter: DownloadCounter, 
-                eventAggregate: _eventAggregate, 
-                ct: cts.Token, 
-                detailProvider: _detailProvider));
+                downloadInf: info,
+                counter: DownloadCounter,
+                eventAggregate: _eventAggregate,
+                ct: cts.Token,
+                detailProvider: _detailProvider);
 
             _taskList.Add(info, new Pair<Task, CancellationTokenSource>(downloadTask, cts));
         }
