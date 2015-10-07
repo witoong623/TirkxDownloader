@@ -140,6 +140,7 @@
     <Compile Include="Framework\CounterWarpper.cs" />
     <Compile Include="Framework\DownloadInfo.cs" />
     <Compile Include="Framework\Extension.cs" />
+    <Compile Include="Framework\Interface\IDownloader.cs" />
     <Compile Include="Framework\Interface\ISetting.cs" />
     <Compile Include="Framework\LoadingDetail.cs" />
     <Compile Include="Framework\Pair.cs" />

@@ -5,6 +5,11 @@ function showMessageBox(info, tab) {
 	var link = decodeURIComponent(info.linkUrl);
 	var index = link.search(/[^/\\\?]+\.\w{3,4}(?=([\?&].*$|$))/);
 	var fileName = link.substring(index);
+	// check if this is actually download link
+	if (fileName.indexOf(".") == -1) {
+		alert("This file cannot be download by this program");
+		return;
+	}
 	SendMessage(fileName,link);
 }
 
