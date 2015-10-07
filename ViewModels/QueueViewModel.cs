@@ -137,6 +137,7 @@ namespace TirkxDownloader.ViewModels
 
         public void Delete()
         {
+            SelectedItem.Status = DownloadStatus.Stop;
             QueueDownloadList.Remove(SelectedItem);
             NotifyOfPropertyChange(() => SelectedItem);
             NotifyOfPropertyChange(() => IsEmpty);
