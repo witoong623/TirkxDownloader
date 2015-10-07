@@ -18,8 +18,9 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="File name:"
                            Style="{StaticResource NewDownloadDescription}" />
-                <TextBox x:Name="CurrentItem_FileName"
-                         Style="{StaticResource NewDownloadValue}" />
+                <TextBox Text="{Binding Path=CurrentItem.FileName, Mode=TwoWay}"
+                         Style="{StaticResource NewDownloadValue}"
+                         IsEnabled="True"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Download link:"
