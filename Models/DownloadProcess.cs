@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -156,7 +155,7 @@ namespace TirkxDownloader.Models
                         if (roundCount == UpdateRound)
                         {
                             var now = DateTime.Now;
-                            double interval = (now - lastUpdate).TotalSeconds;
+                            double interval = (now - lastUpdate).TotalMilliseconds / 1000;
                             int speed = (int)Math.Floor(byteCalRound / interval);
                             lastUpdate = now;
                             var etaTimespan = TimeSpan.FromSeconds((_fileSize - downloadedSize) / speed);
