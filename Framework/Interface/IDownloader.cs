@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace TirkxDownloader.Framework.Interface
 {
-    interface IDownloader
+    public interface IDownloader
     {
-
+        bool IsDownloading { get; }
     }
 }
