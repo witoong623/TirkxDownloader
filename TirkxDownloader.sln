@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A3260B
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TirkxDownloaderTests", "TirkxDownloaderTests\TirkxDownloaderTests.csproj", "{8A65C570-489C-459D-8DA8-BF987B655BEB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,17 +32,6 @@ Global
 		{E530F669-57C7-440D-9078-C7CAC70B2508}.Release|x64.Build.0 = Release|x64
 		{E530F669-57C7-440D-9078-C7CAC70B2508}.Release|x86.ActiveCfg = Release|x64
 		{E530F669-57C7-440D-9078-C7CAC70B2508}.Release|x86.Build.0 = Release|x64
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Debug|x64.Build.0 = Debug|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Debug|x86.Build.0 = Debug|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Release|x64.ActiveCfg = Release|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Release|x64.Build.0 = Release|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Release|x86.ActiveCfg = Release|Any CPU
-		{8A65C570-489C-459D-8DA8-BF987B655BEB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
