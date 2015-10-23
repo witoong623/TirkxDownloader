@@ -57,5 +57,25 @@ namespace TirkxDownloader.Framework
                 RegexOptions.IgnoreCase | RegexOptions.Singleline
             ).IsMatch(str);
         }
+
+        public static async Task<HttpListenerContext> GetContextAsync(this HttpListener listener, CancellationToken ct)
+        {
+            using (ct.Register(() => listener.Abort(), useSynchronizationContext: false))
+            {
+                try
+                {
+                    return await listener.GetContextAsync();
+                }
+                catch (HttpListenerException listenerEx)
+                {
+                    if (ct.IsCancellationRequested)
+                    {
+                        throw new OperationCanceledException(listenerEx.Message, listenerEx, ct);
+                    }
+
+                    throw;
+                }
+            }
+        }
     }
 }
