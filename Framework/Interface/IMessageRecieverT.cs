@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TirkxDownloader.Framework.Interface
@@ -10,7 +8,7 @@ namespace TirkxDownloader.Framework.Interface
     /// This interface should be implemented for recieve JSON then parse it and return to caller
     /// </summary>
     /// <typeparam name="T">Type of message, must be JSON compatibility</typeparam>
-    interface IMessageReciever<T>
+    public interface IMessageReciever<T>
     {
         ICollection<string> Prefixes { get; }
 
@@ -18,14 +16,11 @@ namespace TirkxDownloader.Framework.Interface
 
         Task<T> GetMessageAsync();
 
+        Task<T> GetMessageAsync(CancellationToken ct);
+
         /// <summary>
         /// Call this method when terminate application
         /// </summary>
         void Close();
-
-        /// <summary>
-        /// Call this method when you want to stop reciever
-        /// </summary>
-        void StopReciever();
     }
 }
