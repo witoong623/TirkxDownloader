@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using Newtonsoft.Json;
-using TirkxDownloader.ViewModels;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
 using System.Collections.Generic;
@@ -34,25 +33,39 @@ namespace TirkxDownloader.Models
         }
 
         /// <summary>
-        /// Let Reciever send messages as event
+        /// Start listener and let Reciever send messages as event
         /// </summary>
         public async void StartSendEvent(CancellationToken ct)
         {
             try
             {
-                while (ct.IsCancellationRequested)
+                while (!ct.IsCancellationRequested)
                 {
-                    await _eventAggregator.PublishOnUIThreadAsync(await GetMessageAsync());
+                    await _eventAggregator.PublishOnUIThreadAsync(await GetMessageAsync(ct));
                 }
             }
             catch (OperationCanceledException) { }
             catch { }
         }
 
-        public async Task<T> GetMessageAsync()
+        /// <summary>
+        /// Asynchronous get message <typeparamref name="T"/> from reciever
+        /// </summary>
+        /// <returns>Message of type <typeparamref name="T"/></returns>
+        public Task<T> GetMessageAsync()
+        {
+            return GetMessageAsync(CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Asynchronous get message <typeparamref name="T"/> from reciever, specify <typeparamref name="CancellationToken"/>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Message of type <typeparamref name="T"/></returns>
+        public async Task<T> GetMessageAsync(CancellationToken ct)
         {
             _listener.Start();
-            var requestContext = await _listener.GetContextAsync();
+            var requestContext = await _listener.GetContextAsync(ct);
             var streamReader = new StreamReader(requestContext.Request.InputStream, requestContext.Request.ContentEncoding);
             string jsonString = streamReader.ReadToEnd();
             _listener.Stop();
@@ -61,19 +74,11 @@ namespace TirkxDownloader.Models
         }
 
         /// <summary>
-        /// Stop reciever from listen to message
+        /// Close listener
         /// </summary>
         public void Close()
         {
             _listener.Close();
-        }
-
-        /// <summary>
-        /// Close Listener
-        /// </summary>
-        public void StopReciever()
-        {
-            _listener.Stop();
         }
     }
 }
