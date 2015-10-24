@@ -2,24 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using TirkxDownloader.Views;
 using TirkxDownloader.Framework;
+using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.Models;
 using TirkxDownloader.ViewModels.Settings;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class ShellViewModel : Conductor<IContentList>.Collection.OneActive
+    public class ShellViewModel : Conductor<IContentList>.Collection.OneActive, IHandle<HttpDownloadLink>
     {
         private string _queueEngineMessage;
-        private readonly SettingShellViewModel _settingScreen;
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _eventAggregator;
-        private readonly MessageReciever _reciever;
+        private readonly SettingShellViewModel _settingScreen;
+        private readonly DetailProvider _detailProvider;
+        private readonly MessageReciever<HttpDownloadLink> _reciever;
+        private readonly CancellationTokenSource _cts;
+        private readonly DownloadEngine _downloader;
 
         public string QueueEngineMessage
         {
@@ -30,33 +34,36 @@ namespace TirkxDownloader.ViewModels
                 NotifyOfPropertyChange(() => QueueEngineMessage);
             }
         }
-
-        public DownloadEngine Downloader { get; private set; }
         
         public ShellViewModel(IEnumerable<IContentList> screen, IWindowManager windowManager, SettingShellViewModel setting,
-            IEventAggregator eventAggregator, MessageReciever messageRevicer, DownloadEngine engine)
+            IEventAggregator eventAggregator, IMessageReciever<HttpDownloadLink> messageRevicer,
+            DownloadEngine downloader, DetailProvider detailProvider)
         {
             _settingScreen = setting;
-            this._windowManager = windowManager;
-            this._eventAggregator = eventAggregator;
-            _reciever = messageRevicer;
-            Downloader = engine;
+            _windowManager = windowManager;
+            _eventAggregator = eventAggregator;
+            _reciever = (MessageReciever<HttpDownloadLink>)messageRevicer;
+            _detailProvider = detailProvider;
+            _downloader = downloader;
+            _cts = new CancellationTokenSource();
+
+            _eventAggregator.Subscribe(this);
             Items.AddRange(screen);
-            
-            messageRevicer.Start();
         }
 
         protected override void OnInitialize()
         {
             DisplayName = "Tirkx Downloader 0.1 beta";
             ActivateItem(Items[0]);
+            _reciever.Prefixes.Add("http://localhost:6230/");
+            _reciever.StartSendEvent(_cts.Token);
         }
 
         public override async void CanClose(Action<bool> callback)
         {
             var dialogResult = MessageDialogResult.Affirmative;
 
-            if (Downloader.DownloadCounter.Downloading != 0)
+            if (_downloader.DownloadCounter.Downloading != 0)
             {
                 var metroWindow = (MetroWindow)GetView();
                 dialogResult = await metroWindow.ShowMessageAsync("Do you really want to close?", "There is item being download\nDo you want to stop and close it?",
@@ -82,7 +89,16 @@ namespace TirkxDownloader.ViewModels
         {
             if (close)
             {
-                Downloader.StopQueueDownload();
+                _downloader.StopQueueDownload();
+                _reciever.Close();
+            }
+        }
+
+        public void Handle(HttpDownloadLink message)
+        {
+            if (!_downloader.IsWorking)
+            {
+                _windowManager.ShowDialog(new NewDownloadViewModel(_eventAggregator, message, _downloader, _detailProvider));
             }
         }
     }

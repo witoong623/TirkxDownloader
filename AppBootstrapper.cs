@@ -7,6 +7,7 @@ using Caliburn.Micro;
 using TirkxDownloader.ViewModels;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
+using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.ViewModels.Settings;
 
 namespace TirkxDownloader
@@ -35,7 +36,7 @@ namespace TirkxDownloader
             _container.Singleton<ISetting, AuthorizationViewModel>();
 
             // Serveice
-            _container.Singleton<MessageReciever>();
+            _container.Singleton<IMessageReciever<HttpDownloadLink>, MessageReciever<HttpDownloadLink>>();
             _container.Singleton<DownloadEngine>();
             _container.Singleton<AuthorizationManager>();
             _container.Singleton<DetailProvider>();
