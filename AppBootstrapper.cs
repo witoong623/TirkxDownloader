@@ -36,7 +36,7 @@ namespace TirkxDownloader
             _container.Singleton<ISetting, AuthorizationViewModel>();
 
             // Serveice
-            _container.Singleton<IMessageReciever<HttpDownloadLink>, MessageReciever<HttpDownloadLink>>();
+            _container.Singleton<IMessageReciever<HttpDownloadLink>, MessageReciever>();
             _container.Singleton<DownloadEngine>();
             _container.Singleton<AuthorizationManager>();
             _container.Singleton<DetailProvider>();
