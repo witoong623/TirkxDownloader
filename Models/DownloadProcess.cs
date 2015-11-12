@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace TirkxDownloader.Models
         private DetailProvider _detailProvider;
         private IEventAggregator _eventAggregate;
 
-        public async Task StartProgress(long maximumBytesPerSecond, DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, 
+        public async Task StartDownloadProcess(long maximumBytesPerSecond, DownloadInfo downloadInf, CounterWarpper counter, IEventAggregator eventAggregate, 
             CancellationToken ct, DetailProvider detailProvider)
         {
             _maximumBytesPerSecond = maximumBytesPerSecond;
@@ -60,6 +61,7 @@ namespace TirkxDownloader.Models
             try
             {
                 var request = (HttpWebRequest)HttpWebRequest.Create(_currentFile.DownloadLink);
+                request.Timeout = 300000;
                 await FillCredential(request);
 
                 var webResponse = await request.GetResponseAsync(_ct);
@@ -155,17 +157,19 @@ namespace TirkxDownloader.Models
                         if (roundCount == UpdateRound)
                         {
                             var now = DateTime.Now;
-                            double interval = (now - lastUpdate).TotalMilliseconds / 1000;
+                            double interval = (now - lastUpdate).TotalSeconds;
                             int speed = (int)Math.Floor(byteCalRound / interval);
                             lastUpdate = now;
                             var etaTimespan = TimeSpan.FromSeconds((_fileSize - downloadedSize) / speed);
                             Duration eta = Duration.FromSeconds((long)etaTimespan.TotalSeconds);
 
-                            _currentFile.Throughput = speed;
+                            _currentFile.Speed = speed;
                             _currentFile.ETA = eta;
                             _currentFile.RecievedSize = downloadedSize;
                             _currentFile.PercentProgress = downloadedSize;
 
+                            Debug.WriteLineIf(speed < 0, string.Format(
+                                "speed = {0}, interval = {1}, byteCalround = {2}, readByte = {3}", speed, interval, byteCalRound, readByte));
                             byteCalRound = 0;
                             roundCount = 0;
                             // Calculate update round from kilobyte per secound
@@ -173,7 +177,7 @@ namespace TirkxDownloader.Models
                         }
 
                         await stream.WriteAsync(buffer, 0, readByte);
-                    } while (readByte != 0);
+                    } while (readByte != 0 && !_ct.IsCancellationRequested);
 
                     // update last value of downloadSize to ensure that file completed at 100%
                     _currentFile.RecievedSize = downloadedSize;
@@ -182,7 +186,7 @@ namespace TirkxDownloader.Models
                 
                 // Download completed
                 _currentFile.Status = DownloadStatus.Complete;
-                _currentFile.CompleteDate = DateTime.Now;
+                _currentFile.CompleteOn = DateTime.Now;
                 _eventAggregate.PublishOnUIThread("CanDownload");
                 _eventAggregate.PublishOnUIThread("CanStop");
             }

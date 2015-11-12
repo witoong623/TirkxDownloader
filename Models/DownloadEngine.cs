@@ -44,13 +44,13 @@ namespace TirkxDownloader.Models
 
         public CounterWarpper DownloadCounter { get; private set; }
 
-        public string EngineErrorMessage
+        public string DownloaderErrorMessage
         {
             get { return _engineErrorMessage; }
             set
             {
                 _engineErrorMessage = value;
-                NotifyOfPropertyChange(() => EngineErrorMessage);
+                NotifyOfPropertyChange(() => DownloaderErrorMessage);
             }
         }
         #endregion
@@ -80,7 +80,7 @@ namespace TirkxDownloader.Models
             info.Status = DownloadStatus.Preparing;
             var downloadProgress = new DownloadProcess();
             var cts = new CancellationTokenSource();
-            var downloadTask = downloadProgress.StartProgress(
+            var downloadTask = downloadProgress.StartDownloadProcess(
                 maximumBytesPerSecond: MaximumBytesPerSecond,
                 downloadInf: info,
                 counter: DownloadCounter,
@@ -190,7 +190,7 @@ namespace TirkxDownloader.Models
             {
                 IsWorking = false;
                 NotifyCanQueue();
-                EngineErrorMessage = ex.Message;
+                DownloaderErrorMessage = ex.Message;
 
                 // In case that exception is thrown before polling
                 if (!_cancelQueueDownload.IsCancellationRequested)
