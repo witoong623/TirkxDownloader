@@ -32,6 +32,7 @@ namespace TirkxDownloader.Models
 
             _detailProvider = detailProvider;
             _eventAggregator = eventAggregator;
+            MaxDownloadingItems = 1;
         }
         #endregion
 
@@ -90,7 +91,7 @@ namespace TirkxDownloader.Models
         #region methods
         public void DownloadItem(DownloadInfo item)
         {
-            throw new NotImplementedException();
+            DownloadItemImp(item);
         }
 
         public void DownloadItems(IEnumerable<DownloadInfo> items)
