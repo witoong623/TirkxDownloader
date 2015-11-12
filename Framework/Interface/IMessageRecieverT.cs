@@ -18,6 +18,8 @@ namespace TirkxDownloader.Framework.Interface
 
         Task<T> GetMessageAsync(CancellationToken ct);
 
+        void StartSendEvent(CancellationToken ct);
+
         /// <summary>
         /// Call this method when terminate application
         /// </summary>

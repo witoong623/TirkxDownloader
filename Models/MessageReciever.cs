@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace TirkxDownloader.Models
 {
-    public class MessageReciever<T> : IMessageReciever<T>
+    public class MessageReciever : IMessageReciever<HttpDownloadLink>
     {
         private readonly HttpListener _listener = new HttpListener();
         private readonly IDownloader _downloader;
@@ -52,7 +52,7 @@ namespace TirkxDownloader.Models
         /// Asynchronous get message <typeparamref name="T"/> from reciever
         /// </summary>
         /// <returns>Message of type <typeparamref name="T"/></returns>
-        public Task<T> GetMessageAsync()
+        public Task<HttpDownloadLink> GetMessageAsync()
         {
             return GetMessageAsync(CancellationToken.None);
         }
@@ -62,7 +62,7 @@ namespace TirkxDownloader.Models
         /// </summary>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Message of type <typeparamref name="T"/></returns>
-        public async Task<T> GetMessageAsync(CancellationToken ct)
+        public async Task<HttpDownloadLink> GetMessageAsync(CancellationToken ct)
         {
             _listener.Start();
             var requestContext = await _listener.GetContextAsync(ct);
@@ -70,7 +70,7 @@ namespace TirkxDownloader.Models
             string jsonString = streamReader.ReadToEnd();
             _listener.Stop();
 
-            return JsonConvert.DeserializeObject<T>(jsonString);
+            return JsonConvert.DeserializeObject<HttpDownloadLink>(jsonString);
         }
 
         /// <summary>
