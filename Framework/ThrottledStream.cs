@@ -223,10 +223,10 @@ namespace TirkxDownloader.Framework
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct)
         {
             int total = 0;
-            while (count > BlockSize)
+            while (count > BlockSize && MaximumBytesPerSecond > 0)
             {
                 await ThrottleAsync(BlockSize);
-                int rb = _baseStream.Read(buffer, offset, BlockSize);
+                int rb = await _baseStream.ReadAsync(buffer, offset, BlockSize);
                 total += rb;
                 if (rb < BlockSize)
                     return total;
@@ -234,7 +234,7 @@ namespace TirkxDownloader.Framework
                 count -= BlockSize;
             }
             await ThrottleAsync(count);
-            return total + _baseStream.Read(buffer, offset, count);
+            return total + await _baseStream.ReadAsync(buffer, offset, count);
         }
 
         /// <summary>
