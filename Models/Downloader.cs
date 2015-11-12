@@ -123,7 +123,7 @@ namespace TirkxDownloader.Models
             {
                 if (_isQueueDownloading && _downloadingItems <= MaxDownloadingItems)
                 {
-                    DownloadInfo nextItem = _queueingItems.Dequeue();
+                    DownloadInfo nextItem = item == null ? _queueingItems.Dequeue() : item;
                     var cts = new CancellationTokenSource();
                     var ct = cts.Token;
                     nextItem.DownloadComplete += DownloadItemImp;
@@ -137,13 +137,13 @@ namespace TirkxDownloader.Models
                 // Queue is empty
                 _isDownloading = false;
                 
-                if (item != null)
+                if (item == null)
                 {
-                    return;
+                    throw;
                 }
                 else
                 {
-                    throw;
+                    return;
                 }
             }
         }
@@ -171,7 +171,6 @@ namespace TirkxDownloader.Models
                 (
                     maximumBytesPerSecond: MaximumBytesPerSecond,
                     downloadInf: item,
-                    counter: new CounterWarpper(),
                     eventAggregate: _eventAggregator,
                     ct: ct,
                     detailProvider: _detailProvider
@@ -182,7 +181,11 @@ namespace TirkxDownloader.Models
 
         public void StopDownloadItem(DownloadInfo item)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _downloadingItemsDic[item].Item2.Cancel();
+            }
+            catch { }
         }
 
         public void StopDownloadItems(IEnumerable<DownloadInfo> items)
@@ -194,6 +197,10 @@ namespace TirkxDownloader.Models
                 _downloadingItemsDic.
                     Where(x => x.Key.Status == DownloadStatus.Downloading || x.Key.Status == DownloadStatus.Preparing).
                     Apply(x => x.Value.Item2.Cancel());
+            }
+            else
+            {
+                _downloadingItemsDic.Apply(x => x.Value.Item2.Cancel());
             }
         }
         #endregion

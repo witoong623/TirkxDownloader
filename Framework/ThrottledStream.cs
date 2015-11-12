@@ -226,7 +226,7 @@ namespace TirkxDownloader.Framework
             while (count > BlockSize && MaximumBytesPerSecond > 0)
             {
                 await ThrottleAsync(BlockSize);
-                int rb = await _baseStream.ReadAsync(buffer, offset, BlockSize);
+                int rb = await _baseStream.ReadAsync(buffer, offset, BlockSize, ct);
                 total += rb;
                 if (rb < BlockSize)
                     return total;
@@ -234,7 +234,7 @@ namespace TirkxDownloader.Framework
                 count -= BlockSize;
             }
             await ThrottleAsync(count);
-            return total + await _baseStream.ReadAsync(buffer, offset, count);
+            return total + await _baseStream.ReadAsync(buffer, offset, count, ct);
         }
 
         /// <summary>
