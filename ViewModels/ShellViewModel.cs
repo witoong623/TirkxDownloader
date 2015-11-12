@@ -21,7 +21,7 @@ namespace TirkxDownloader.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private readonly SettingShellViewModel _settingScreen;
         private readonly DetailProvider _detailProvider;
-        private readonly MessageReciever<HttpDownloadLink> _reciever;
+        private readonly IMessageReciever<HttpDownloadLink> _reciever;
         private readonly CancellationTokenSource _cts;
         private readonly DownloadEngine _downloader;
 
@@ -42,7 +42,7 @@ namespace TirkxDownloader.ViewModels
             _settingScreen = setting;
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
-            _reciever = (MessageReciever<HttpDownloadLink>)messageRevicer;
+            _reciever = messageRevicer;
             _detailProvider = detailProvider;
             _downloader = downloader;
             _cts = new CancellationTokenSource();
