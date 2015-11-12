@@ -77,7 +77,7 @@ namespace TirkxDownloader.ViewModels
 
         public void Download()
         {
-            CurrentItem.AddDate = DateTime.Now;
+            CurrentItem.AddOn = DateTime.Now;
             _eventAggregator.PublishOnUIThread(CurrentItem);
             _downloader.StartDownload(CurrentItem);
 
@@ -87,7 +87,7 @@ namespace TirkxDownloader.ViewModels
 
         public void Queue()
         {
-            CurrentItem.AddDate = DateTime.Now;
+            CurrentItem.AddOn = DateTime.Now;
             _eventAggregator.PublishOnUIThread(CurrentItem);
 
             var window = (MetroWindow)GetView();
