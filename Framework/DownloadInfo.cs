@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using TirkxDownloader.Framework.Interface;
 using Caliburn.Micro;
 using NodaTime;
 
@@ -20,10 +21,11 @@ namespace TirkxDownloader.Framework
         private DateTime? _completeDate;
         private LoadingDetail _downloadDetail;
 
-        
+        public event DownloadCompleteHandler DownloadComplete;
+
         public string DownloadLink { get; set; }
         public string SaveLocation { get; set; }
-        public DateTime AddDate { get; set; }
+        public DateTime AddOn { get; set; }
         public IEventAggregator EventAggretagor { get; set; }
 
         public string FileName
@@ -41,13 +43,13 @@ namespace TirkxDownloader.Framework
             get { return Path.Combine(SaveLocation, FileName); }
         }
 
-        public DateTime? CompleteDate
+        public DateTime? CompleteOn
         {
             get { return _completeDate; }
             set
             {
                 _completeDate = value;
-                NotifyOfPropertyChange(() => CompleteDate);
+                NotifyOfPropertyChange(() => CompleteOn);
             }
         }
 
@@ -82,13 +84,13 @@ namespace TirkxDownloader.Framework
             }
         }
 
-        public int Throughput
+        public int Speed
         {
             get { return _throughput; }
             set
             {
                 _throughput = value / 1024;
-                NotifyOfPropertyChange(() => Throughput);
+                NotifyOfPropertyChange(() => Speed);
             }
         }
 
@@ -123,6 +125,14 @@ namespace TirkxDownloader.Framework
         }
 
         public ThrottledStream InStream { get; set; }
+
+        public void OnDownloadComplete()
+        {
+            if (DownloadComplete != null)
+            {
+                DownloadComplete(this);
+            }
+        }
         #endregion
     }
 }
