@@ -25,6 +25,7 @@ namespace TirkxDownloader.Models
             {
                 var request = (HttpWebRequest)HttpWebRequest.Create(detail.DownloadLink);
                 request.Method = "HEAD";
+                request.Timeout = 300000;
                 await FillCredential(request);
                 var response = await request.GetResponseAsync(ct);
                 detail.FileSize = response.ContentLength;
