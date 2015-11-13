@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
+using TirkxDownloader.Framework.Interface;
 
 namespace TirkxDownloader.ViewModels
 {
@@ -16,14 +11,14 @@ namespace TirkxDownloader.ViewModels
     {
         private DownloadInfo _selectedItem;
         private readonly IEventAggregator _eventAggregator;
-        private readonly DownloadEngine _engine;
+        private readonly IDownloader _downloader;
 
         public BindableCollection<DownloadInfo> QueueDownloadList { get; private set; }
 
-        public QueueViewModel(IEventAggregator eventAggregator, DownloadEngine engine)
+        public QueueViewModel(IEventAggregator eventAggregator, IDownloader engine)
         {
-            this._eventAggregator = eventAggregator;
-            this._engine = engine;
+            _eventAggregator = eventAggregator;
+            _downloader = engine;
             
             QueueDownloadList = new BindableCollection<DownloadInfo>();
 
@@ -66,12 +61,12 @@ namespace TirkxDownloader.ViewModels
 
         public bool CanStartQueue
         {
-            get { return !_engine.IsWorking; }
+            get { return !_downloader.IsDownloading; }
         }
 
         public bool CanStopQueue
         {
-            get { return _engine.IsWorking; }
+            get { return _downloader.IsDownloading; }
         }
 
         public void SelectItem(DownloadInfo info)
@@ -122,17 +117,17 @@ namespace TirkxDownloader.ViewModels
 
         public void Download()
         {
-            _engine.StartDownload(SelectedItem);
+            _downloader.DownloadItem(SelectedItem);
         }
 
         public void Download(DownloadInfo info)
         {
-            _engine.StartDownload(info);
+            _downloader.DownloadItem(info);
         }
 
         public void StartQueue()
         {
-            _engine.StartQueueDownload(QueueDownloadList);
+            _downloader.DownloadItems(QueueDownloadList);
         }
 
         public void Delete()
@@ -145,17 +140,17 @@ namespace TirkxDownloader.ViewModels
 
         public void Stop()
         {
-            _engine.StopDownload(_selectedItem);
+            _downloader.StopDownloadItem(_selectedItem);
         }
 
         public void Stop(DownloadInfo info)
         {
-            _engine.StopDownload(info);
+            _downloader.StopDownloadItem(info);
         }
 
         public void StopQueue()
         {
-            _engine.StopQueueDownload();
+            _downloader.StopDownloadItems(null);
         }
 
         public async void BandwidthThrottling(DownloadInfo info)
@@ -186,7 +181,7 @@ namespace TirkxDownloader.ViewModels
             }
 
             info.InStream.MaximumBytesPerSecond = bandwidth * 1024;
-            _engine.MaximumBytesPerSecond = bandwidth * 1024;
+            _downloader.MaximumBytesPerSecond = bandwidth * 1024;
         }
     }
 }

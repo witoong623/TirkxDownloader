@@ -7,6 +7,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using MahApps.Metro.Controls;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
+using TirkxDownloader.Framework.Interface;
 using Nito.AsyncEx;
 
 namespace TirkxDownloader.ViewModels
@@ -14,7 +15,7 @@ namespace TirkxDownloader.ViewModels
     public class NewDownloadViewModel : Screen
     {
         // private INotifyTaskCompletion _detailDownloadTask;
-        private readonly DownloadEngine _downloader;
+        private readonly IDownloader _downloader;
         private readonly IEventAggregator _eventAggregator;
         private readonly DetailProvider _detailProvider;
 
@@ -32,7 +33,7 @@ namespace TirkxDownloader.ViewModels
         }
 
         public NewDownloadViewModel(IEventAggregator eventAggregator,
-            HttpDownloadLink fileInfo, DownloadEngine downloader, DetailProvider detailProvide)
+            HttpDownloadLink fileInfo, IDownloader downloader, DetailProvider detailProvide)
         {
             _eventAggregator = eventAggregator;
             _downloader = downloader;
@@ -79,7 +80,7 @@ namespace TirkxDownloader.ViewModels
         {
             CurrentItem.AddOn = DateTime.Now;
             _eventAggregator.PublishOnUIThread(CurrentItem);
-            _downloader.StartDownload(CurrentItem);
+            _downloader.DownloadItem(CurrentItem);
 
             var window = (MetroWindow)GetView();
             window.Close();

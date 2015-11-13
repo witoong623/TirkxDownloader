@@ -23,7 +23,7 @@ namespace TirkxDownloader.ViewModels
         private readonly DetailProvider _detailProvider;
         private readonly IMessageReciever<HttpDownloadLink> _reciever;
         private readonly CancellationTokenSource _cts;
-        private readonly DownloadEngine _downloader;
+        private readonly IDownloader _downloader;
 
         public string QueueEngineMessage
         {
@@ -34,10 +34,12 @@ namespace TirkxDownloader.ViewModels
                 NotifyOfPropertyChange(() => QueueEngineMessage);
             }
         }
+
+        public IDownloader Downloader { get { return _downloader; } }
         
         public ShellViewModel(IEnumerable<IContentList> screen, IWindowManager windowManager, SettingShellViewModel setting,
             IEventAggregator eventAggregator, IMessageReciever<HttpDownloadLink> messageRevicer,
-            DownloadEngine downloader, DetailProvider detailProvider)
+            IDownloader downloader, DetailProvider detailProvider)
         {
             _settingScreen = setting;
             _windowManager = windowManager;
@@ -63,7 +65,7 @@ namespace TirkxDownloader.ViewModels
         {
             var dialogResult = MessageDialogResult.Affirmative;
 
-            if (_downloader.DownloadCounter.Downloading != 0)
+            if (_downloader.DownloadingItems != 0)
             {
                 var metroWindow = (MetroWindow)GetView();
                 dialogResult = await metroWindow.ShowMessageAsync("Do you really want to close?", "There is item being download\nDo you want to stop and close it?",
@@ -89,17 +91,14 @@ namespace TirkxDownloader.ViewModels
         {
             if (close)
             {
-                _downloader.StopQueueDownload();
+                _downloader.StopDownloadItems(null);
                 _reciever.Close();
             }
         }
 
         public void Handle(HttpDownloadLink message)
         {
-            if (!_downloader.IsWorking)
-            {
-                _windowManager.ShowDialog(new NewDownloadViewModel(_eventAggregator, message, _downloader, _detailProvider));
-            }
+            _windowManager.ShowDialog(new NewDownloadViewModel(_eventAggregator, message, _downloader, _detailProvider));
         }
     }
 }

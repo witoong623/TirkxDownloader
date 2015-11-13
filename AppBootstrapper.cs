@@ -37,7 +37,7 @@ namespace TirkxDownloader
 
             // Serveice
             _container.Singleton<IMessageReciever<HttpDownloadLink>, MessageReciever>();
-            _container.Singleton<DownloadEngine>();
+            _container.Singleton<IDownloader, Downloader>();
             _container.Singleton<AuthorizationManager>();
             _container.Singleton<DetailProvider>();
         }
