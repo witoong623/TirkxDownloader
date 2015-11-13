@@ -122,9 +122,9 @@ namespace TirkxDownloader.Models
 
             try
             {
-                if (_isQueueDownloading && _downloadingItems <= MaxDownloadingItems)
+                if (_isQueueDownloading && _downloadingItems < MaxDownloadingItems)
                 {
-                    DownloadInfo nextItem = item == null ? _queueingItems.Dequeue() : item;
+                    DownloadInfo nextItem = GetNextDownloadInfo(item);
                     var cts = new CancellationTokenSource();
                     var ct = cts.Token;
                     nextItem.DownloadComplete += DownloadItemImp;
@@ -157,7 +157,7 @@ namespace TirkxDownloader.Models
         {
             try
             {
-                while (_downloadingItems <= MaxDownloadingItems)
+                while (_downloadingItems < MaxDownloadingItems)
                 {
                     DownloadItemImp(null);
                 }
@@ -202,6 +202,18 @@ namespace TirkxDownloader.Models
             else
             {
                 _downloadingItemsDic.Apply(x => x.Value.Item2.Cancel());
+            }
+        }
+
+        private DownloadInfo GetNextDownloadInfo(DownloadInfo item)
+        {
+            if (item == null)
+            {
+                return _queueingItems.Dequeue();
+            }
+            else
+            {
+                return item.Status == DownloadStatus.Queue ? item : _queueingItems.Dequeue();
             }
         }
         #endregion
