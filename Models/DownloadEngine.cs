@@ -83,7 +83,6 @@ namespace TirkxDownloader.Models
             var downloadTask = downloadProgress.StartDownloadProcess(
                 maximumBytesPerSecond: MaximumBytesPerSecond,
                 downloadInf: info,
-                counter: DownloadCounter,
                 eventAggregate: _eventAggregate,
                 ct: cts.Token,
                 detailProvider: _detailProvider);

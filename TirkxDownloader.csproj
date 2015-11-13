@@ -179,6 +179,7 @@
     <Compile Include="Framework\DownloadInfo.cs" />
     <Compile Include="Framework\Extension.cs" />
     <Compile Include="Framework\Interface\IDownloader.cs" />
+    <Compile Include="Framework\Interface\IDownloadItem.cs" />
     <Compile Include="Framework\Interface\IMessageRecieverT.cs" />
     <Compile Include="Framework\Interface\ISetting.cs" />
     <Compile Include="Framework\LoadingDetail.cs" />
@@ -186,7 +187,8 @@
     <Compile Include="Framework\HttpDownloadLink.cs" />
     <Compile Include="Framework\ThrottledStream.cs" />
     <Compile Include="Models\AuthorizationManager.cs" />
-    <Compile Include="Models\DownloadEngine.cs" />
+    <None Include="Models\DownloadEngine.cs" />
+    <Compile Include="Models\Downloader.cs" />
     <Compile Include="Models\DownloadProcess.cs" />
     <Compile Include="Models\MessageReciever.cs" />
     <Compile Include="Models\DetailProvider.cs" />
@@ -197,6 +199,7 @@
     <Compile Include="Framework\Interface\IContentList.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\DownloadedViewModel.cs" />
+    <None Include="Views\Converter\BoolToWorkingStringConverter.cs" />
     <Compile Include="Views\Converter\NullToVisibilityConverter.cs" />
     <Compile Include="Views\Settings\AuthorizationView.xaml.cs">
       <DependentUpon>AuthorizationView.xaml</DependentUpon>
