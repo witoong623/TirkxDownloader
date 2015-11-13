@@ -179,7 +179,7 @@
     <Compile Include="Framework\DownloadInfo.cs" />
     <Compile Include="Framework\Extension.cs" />
     <Compile Include="Framework\Interface\IDownloader.cs" />
-    <Compile Include="Framework\Interface\IDownloadItem.cs" />
+    <None Include="Framework\Interface\IDownloadItem.cs" />
     <Compile Include="Framework\Interface\IMessageRecieverT.cs" />
     <Compile Include="Framework\Interface\ISetting.cs" />
     <Compile Include="Framework\LoadingDetail.cs" />
