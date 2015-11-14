@@ -175,23 +175,21 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Framework\AuthorizationInfo.cs" />
-    <Compile Include="Framework\CounterWarpper.cs" />
-    <Compile Include="Framework\DownloadInfo.cs" />
+    <Compile Include="Models\DownloadInfo.cs" />
     <Compile Include="Framework\Extension.cs" />
     <Compile Include="Framework\Interface\IDownloader.cs" />
     <None Include="Framework\Interface\IDownloadItem.cs" />
     <Compile Include="Framework\Interface\IMessageRecieverT.cs" />
     <Compile Include="Framework\Interface\ISetting.cs" />
-    <Compile Include="Framework\LoadingDetail.cs" />
     <Compile Include="Framework\Pair.cs" />
-    <Compile Include="Framework\HttpDownloadLink.cs" />
+    <Compile Include="Framework\Message\HttpDownloadLink.cs" />
     <Compile Include="Framework\ThrottledStream.cs" />
-    <Compile Include="Models\AuthorizationManager.cs" />
-    <None Include="Models\DownloadEngine.cs" />
-    <Compile Include="Models\Downloader.cs" />
-    <Compile Include="Models\DownloadProcess.cs" />
-    <Compile Include="Models\MessageReciever.cs" />
-    <Compile Include="Models\DetailProvider.cs" />
+    <Compile Include="Services\AuthorizationManager.cs" />
+    <None Include="Services\DownloadEngine.cs" />
+    <Compile Include="Services\Downloader.cs" />
+    <Compile Include="Services\DownloadProcess.cs" />
+    <Compile Include="Services\MessageReciever.cs" />
+    <Compile Include="Services\DetailProvider.cs" />
     <Compile Include="ViewModels\Settings\AuthorizationViewModel.cs" />
     <Compile Include="ViewModels\NewWindowViewModels\NewDownloadViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingShellViewModel.cs" />
@@ -251,7 +249,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="TirkxDownloader_TemporaryKey.pfx" />
     <Resource Include="Resources\Entypo.ttf" />
   </ItemGroup>
   <ItemGroup>
