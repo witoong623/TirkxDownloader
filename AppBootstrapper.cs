@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using TirkxDownloader.ViewModels;
-using TirkxDownloader.Models;
+using TirkxDownloader.Services;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.ViewModels.Settings;

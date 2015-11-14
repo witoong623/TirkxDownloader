@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
+using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
 using Caliburn.Micro;
 using NodaTime;
 
-namespace TirkxDownloader.Framework
+namespace TirkxDownloader.Models
 {
     public enum DownloadStatus { Queue, Complete, Downloading, Error, Preparing, Stop }
 
@@ -19,7 +20,6 @@ namespace TirkxDownloader.Framework
         private string _fileName;
         private Duration? _eta;
         private DateTime? _completeDate;
-        private LoadingDetail _downloadDetail;
 
         public event DownloadCompleteHandler DownloadComplete;
 

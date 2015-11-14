@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Caliburn.Micro;
-using TirkxDownloader.Models;
+﻿using Caliburn.Micro;
+using TirkxDownloader.Services;
 using TirkxDownloader.Framework;
-using MahApps.Metro.Controls;
 
 namespace TirkxDownloader.ViewModels.Settings
 {

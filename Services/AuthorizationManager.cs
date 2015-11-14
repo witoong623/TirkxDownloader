@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CredentialManagement;
 using TirkxDownloader.Framework;
 
-namespace TirkxDownloader.Models
+namespace TirkxDownloader.Services
 {
     public class AuthorizationManager
     {

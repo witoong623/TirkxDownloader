@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using NodaTime;
 using TirkxDownloader.Framework;
+using TirkxDownloader.Models;
 
-namespace TirkxDownloader.Models
+namespace TirkxDownloader.Services
 {
     public class DownloadProcess
     {

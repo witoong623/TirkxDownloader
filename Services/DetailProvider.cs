@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Models;
 
-namespace TirkxDownloader.Models
+namespace TirkxDownloader.Services
 {
     public class DetailProvider
     {

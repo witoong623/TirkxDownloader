@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
-using TirkxDownloader.Framework;
+using TirkxDownloader.Models;
 using TirkxDownloader.Framework.Interface;
 
-namespace TirkxDownloader.Models
+namespace TirkxDownloader.Services
 {
     public class Downloader : PropertyChangedBase, IDownloader
     {

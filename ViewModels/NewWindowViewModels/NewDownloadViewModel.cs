@@ -8,6 +8,7 @@ using MahApps.Metro.Controls;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
+using TirkxDownloader.Services;
 using Nito.AsyncEx;
 
 namespace TirkxDownloader.ViewModels

@@ -9,7 +9,7 @@ using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
 using System.Collections.Generic;
 
-namespace TirkxDownloader.Models
+namespace TirkxDownloader.Services
 {
     public class MessageReciever : IMessageReciever<HttpDownloadLink>
     {

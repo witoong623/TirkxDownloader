@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using TirkxDownloader.Framework;
 
-namespace TirkxDownloader.Models
+namespace TirkxDownloader.Services
 {
     public class DownloadEngine : PropertyChangedBase
     {
