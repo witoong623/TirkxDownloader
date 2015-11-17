@@ -18,11 +18,6 @@ namespace TirkxDownloader.Framework
         public const long Infinite = 0;
 
         /// <summary>
-        /// Use for lock statement
-        /// </summary>
-        private readonly object _mutexObject = new object();
-
-        /// <summary>
         /// The base stream.
         /// </summary>
         private Stream _baseStream;
@@ -47,20 +42,14 @@ namespace TirkxDownloader.Framework
         {
             get
             {
-                lock (_mutexObject)
-                {
-                    return _maximumBytesPerSecond;
-                }
+                return _maximumBytesPerSecond;
             }
             set
             {
-                lock (_mutexObject)
+                if (_maximumBytesPerSecond != value)
                 {
-                    if (_maximumBytesPerSecond != value)
-                    {
-                        _maximumBytesPerSecond = value;
-                        Reset();
-                    }
+                    _maximumBytesPerSecond = value;
+                    Reset();
                 }
             }
         }
