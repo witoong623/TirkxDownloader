@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using NodaTime;
 using TirkxDownloader.Framework;
+using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.Models;
 
 namespace TirkxDownloader.Services
@@ -17,19 +18,19 @@ namespace TirkxDownloader.Services
         private long _fileSize;
         private long _maximumBytesPerSecond;
         private ThrottledStream _inStream;
-        private DownloadInfo _currentItem;
+        private IDownloadItem _currentItem;
         private CancellationToken _ct;
-        private DetailProvider _detailProvider;
+        private FileHostingUtil _hostUtil;
         private IEventAggregator _eventAggregate;
 
-        public async Task StartDownloadProcess(long maximumBytesPerSecond, DownloadInfo downloadInf, IEventAggregator eventAggregate, 
-            CancellationToken ct, DetailProvider detailProvider)
+        public async Task StartDownloadProcess(long maximumBytesPerSecond, IDownloadItem downloadInf, IEventAggregator eventAggregate, 
+            CancellationToken ct, FileHostingUtil detailProvider)
         {
             _maximumBytesPerSecond = maximumBytesPerSecond;
             _currentItem = downloadInf;
             _eventAggregate = eventAggregate;
             _ct = ct;
-            _detailProvider = detailProvider;
+            _hostUtil = detailProvider;
 
             _currentItem.Status = DownloadStatus.Preparing;
             _eventAggregate.PublishOnUIThread("CanDownload");
@@ -56,13 +57,9 @@ namespace TirkxDownloader.Services
         {
             try
             {
-                var request = (HttpWebRequest)HttpWebRequest.Create(_currentItem.DownloadLink);
-                request.Timeout = 300000;
-                await FillCredential(request);
-
-                var webResponse = await request.GetResponseAsync(_ct);
-                _fileSize = webResponse.ContentLength;
-                _inStream = new ThrottledStream(webResponse.GetResponseStream(), _maximumBytesPerSecond);
+                var stream = await _hostUtil.GetStreamAsync(_currentItem, _ct);
+                _fileSize = _currentItem.FileSizeInBytes;
+                _inStream = new ThrottledStream(stream, _maximumBytesPerSecond);
                 _currentItem.InStream = _inStream;
             }
             catch (OperationCanceledException)
@@ -79,11 +76,6 @@ namespace TirkxDownloader.Services
 
                 throw;
             }
-        }
-
-        private async Task FillCredential(HttpWebRequest request)
-        {
-            await _detailProvider.FillCredential(request);
         }
 
         private async Task CreateFile()
