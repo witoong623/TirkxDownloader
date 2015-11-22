@@ -9,19 +9,22 @@ using NodaTime;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.Models;
+using TirkxDownloader.Framework.Message;
 
 namespace TirkxDownloader.Services
 {
-    public class DownloadProcess
+    public class DownloadProcess : IHandle<MaxBpsUpdate>
     {
         private bool _isFileCreated;
         private long _fileSize;
+        private long _bytesCalBps;
         private long _maximumBytesPerSecond;
         private ThrottledStream _inStream;
         private IDownloadItem _currentItem;
         private CancellationToken _ct;
         private FileHostingUtil _hostUtil;
         private IEventAggregator _eventAggregate;
+        private Stopwatch _stopWatch;
 
         public async Task StartDownloadProcess(long maximumBytesPerSecond, IDownloadItem downloadInf, IEventAggregator eventAggregate, 
             CancellationToken ct, FileHostingUtil detailProvider)
@@ -131,38 +134,31 @@ namespace TirkxDownloader.Services
                     int readByte = 0;
                     long downloadedSize = 0;
                     int roundCount = 0;
-                    int byteCalRound = 0;
                     byte[] buffer = new byte[maxReadSize];
                     _currentItem.Status = DownloadStatus.Downloading;
-                    DateTime lastUpdate = DateTime.Now;
+                    _stopWatch = Stopwatch.StartNew();
 
                     do
                     {
                         readByte = await _inStream.ReadAsync(buffer, 0, maxReadSize, _ct);
-                        byteCalRound += readByte;
+                        _bytesCalBps += readByte;
                         downloadedSize += readByte;
                         roundCount++;
 
                         if (roundCount == UpdateRound)
                         {
-                            var now = DateTime.Now;
-                            double interval = (now - lastUpdate).TotalSeconds;
-                            int speed = (int)Math.Floor(byteCalRound / interval);
-                            lastUpdate = now;
+                            var speed = _bytesCalBps * 1000L / _stopWatch.ElapsedMilliseconds;
                             var etaTimespan = TimeSpan.FromSeconds((_fileSize - downloadedSize) / speed);
                             Duration eta = Duration.FromSeconds((long)etaTimespan.TotalSeconds);
 
-                            _currentItem.Speed = speed;
+                            _currentItem.Speed = (int)speed;
                             _currentItem.ETA = eta;
                             _currentItem.RecievedSize = downloadedSize;
                             _currentItem.PercentProgress = downloadedSize;
-
-                            Debug.WriteLineIf(speed < 0, string.Format(
-                                "speed = {0}, interval = {1}, byteCalround = {2}, readByte = {3}", speed, interval, byteCalRound, readByte));
-                            byteCalRound = 0;
+                            
                             roundCount = 0;
                             // Calculate update round from kilobyte per secound
-                            UpdateRound = speed / 10240 + 1;
+                            UpdateRound = (int)speed / 10240 + 1;
                         }
 
                         await stream.WriteAsync(buffer, 0, readByte);
@@ -197,6 +193,24 @@ namespace TirkxDownloader.Services
 
                 throw;
             }
+        }
+
+        private void Reset()
+        {
+            var interval = _stopWatch.ElapsedMilliseconds;
+
+            if (interval > 1000)
+            {
+                _bytesCalBps = 0;
+                _stopWatch.Restart();
+            }
+        }
+
+        public void Handle(MaxBpsUpdate message)
+        {
+            _maximumBytesPerSecond = message.MaximumBytesPerSecond;
+            _inStream.MaximumBytesPerSecond = message.MaximumBytesPerSecond;
+            Reset();
         }
     }
 }

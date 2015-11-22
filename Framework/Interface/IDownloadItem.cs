@@ -1,7 +1,8 @@
 ﻿using System;
-using NodaTime;
 using System.ComponentModel;
 using System.IO;
+using NodaTime;
+using TirkxDownloader.Models;
 
 namespace TirkxDownloader.Framework.Interface
 {
@@ -37,13 +38,18 @@ namespace TirkxDownloader.Framework.Interface
         /// <summary>
         /// File size in MB
         /// </summary>
-        double FileSize { get; set; }
+        float FileSize { get; set; }
+
+        /// <summary>
+        /// File size in bytes
+        /// </summary>
+        long FileSizeInBytes { get; set; }
 
         int Speed { get; set; }
 
         string ErrorMessage { get; set; }
 
-        double PercentProgress { get; set; }
+        float PercentProgress { get; set; }
 
         /// <summary>
         /// In MB

@@ -3,7 +3,7 @@ using TirkxDownloader.Models;
 
 namespace TirkxDownloader.Framework.Interface
 {
-    public delegate void DownloadCompleteHandler(DownloadInfo downloadInfo);
+    public delegate void DownloadCompleteHandler(GeneralDownloadItem downloadInfo);
 
     /// <summary>
     /// Implementation that implement this interface should implement PropertyChanged Event for data-binding
@@ -20,12 +20,12 @@ namespace TirkxDownloader.Framework.Interface
 
         int DownloadingItems { get; set; }
 
-        void DownloadItem(DownloadInfo item);
+        void DownloadItem(IDownloadItem item);
 
-        void DownloadItems(IEnumerable<DownloadInfo> items);
+        void DownloadItems(IEnumerable<IDownloadItem> items);
 
-        void StopDownloadItem(DownloadInfo item);
+        void StopDownloadItem(IDownloadItem item);
 
-        void StopDownloadItems(IEnumerable<DownloadInfo> items);
+        void StopDownloadItems(IEnumerable<IDownloadItem> items);
     }
 }

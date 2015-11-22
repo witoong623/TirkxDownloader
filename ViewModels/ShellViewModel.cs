@@ -17,7 +17,7 @@ namespace TirkxDownloader.ViewModels
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly SettingShellViewModel _settingScreen;
-        private readonly DetailProvider _detailProvider;
+        private readonly FileHostingUtil _detailProvider;
         private readonly IMessageReciever<HttpDownloadLink> _reciever;
         private readonly CancellationTokenSource _cts;
         private readonly IDownloader _downloader;
@@ -36,7 +36,7 @@ namespace TirkxDownloader.ViewModels
         
         public ShellViewModel(IEnumerable<IContentList> screen, IWindowManager windowManager, SettingShellViewModel setting,
             IEventAggregator eventAggregator, IMessageReciever<HttpDownloadLink> messageRevicer,
-            IDownloader downloader, DetailProvider detailProvider)
+            IDownloader downloader, FileHostingUtil detailProvider)
         {
             _settingScreen = setting;
             _windowManager = windowManager;

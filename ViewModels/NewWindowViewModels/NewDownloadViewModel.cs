@@ -15,48 +15,76 @@ namespace TirkxDownloader.ViewModels
 {
     public class NewDownloadViewModel : Screen
     {
-        // private INotifyTaskCompletion _detailDownloadTask;
-        private readonly IDownloader _downloader;
-        private readonly IEventAggregator _eventAggregator;
-        private readonly DetailProvider _detailProvider;
+        private IDownloader _downloader;
+        private IDownloadItem _currentItem;
+        private IEventAggregator _eventAggregator;
+        private FileHostingUtil _detailProvider;
+        private HttpDownloadLink _httpDownloadLink;
+        private CancellationTokenSource _cts;
 
-        public DownloadInfo CurrentItem { get; }
-        public INotifyTaskCompletion DetailDownloadTask { get; private set; }
+        #region constructor
+        public NewDownloadViewModel(IEventAggregator eventAggregator, HttpDownloadLink fileInfo,
+            IDownloader downloader, FileHostingUtil detailProvide)
+        {
+            _eventAggregator = eventAggregator;
+            _downloader = downloader;
+            _detailProvider = detailProvide;
+            _httpDownloadLink = fileInfo;
+            _cts = new CancellationTokenSource();
+
+            /*if (_detailProvider.CheckFileHosting(fileInfo.DownloadLink) == HostingProvider.GoogleDrive)
+            {
+                CurrentItem = new GoogleDriveDownloadItem
+                {
+                    FileName = fileInfo.FileName,
+                    DownloadLink = fileInfo.DownloadLink
+                };
+            }
+            else
+            {
+                CurrentItem = new GeneralDownloadItem
+                {
+                    FileName = fileInfo.FileName,
+                    DownloadLink = fileInfo.DownloadLink
+                };
+            }*/
+        }
+        #endregion
+
+        #region properties
+        public IDownloadItem CurrentItem
+        {
+            get { return _currentItem; }
+            set
+            {
+                _currentItem = value;
+                NotifyOfPropertyChange(nameof(CurrentItem));
+            }
+        }
+        public INotifyTaskCompletion<IDownloadItem> CreateDownloadItemNotify { get; private set; }
 
         public bool CanQueue
         {
-            get { return Directory.Exists(CurrentItem.SaveLocation) && DetailDownloadTask.IsSuccessfullyCompleted; }
+            get { return CurrentItem != null && Directory.Exists(CurrentItem.SaveLocation) && CreateDownloadItemNotify.IsSuccessfullyCompleted; }
         }
 
         public bool CanDownload
         {
             get { return CanQueue; }
         }
-
-        public NewDownloadViewModel(IEventAggregator eventAggregator,
-            HttpDownloadLink fileInfo, IDownloader downloader, DetailProvider detailProvide)
-        {
-            _eventAggregator = eventAggregator;
-            _downloader = downloader;
-            _detailProvider = detailProvide;
-
-            CurrentItem = new DownloadInfo
-            {
-                FileName = fileInfo.FileName,
-                DownloadLink = fileInfo.DownloadLink
-            };
-        }
+        #endregion
 
         protected override void OnInitialize()
         {
             DisplayName = "New download file";
-            Task getDetailTask = _detailProvider.TestFileAvailable(CurrentItem, CancellationToken.None);
-            DetailDownloadTask = NotifyTaskCompletion.Create(getDetailTask);
+            Task<IDownloadItem> createDownloadTask = _detailProvider.CreateDownloadFile(_httpDownloadLink, _cts.Token);
+            CreateDownloadItemNotify = NotifyTaskCompletion.Create(createDownloadTask);
 
-            DetailDownloadTask.PropertyChanged += (s, args) =>
+            CreateDownloadItemNotify.PropertyChanged += (s, args) =>
             {
-                if (args.PropertyName.Equals(nameof(DetailDownloadTask.IsSuccessfullyCompleted)))
+                if (args.PropertyName.Equals(nameof(CreateDownloadItemNotify.IsSuccessfullyCompleted)))
                 {
+                    CurrentItem = CreateDownloadItemNotify.Result;
                     NotifyOfPropertyChange(nameof(CanQueue));
                     NotifyOfPropertyChange(nameof(CanDownload));
                 }
@@ -71,7 +99,6 @@ namespace TirkxDownloader.ViewModels
             if (folderBrowser.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 CurrentItem.SaveLocation = folderBrowser.FileName;
-                NotifyOfPropertyChange(() => CurrentItem);
                 NotifyOfPropertyChange(() => CanDownload);
                 NotifyOfPropertyChange(() => CanQueue);
             }
@@ -98,6 +125,7 @@ namespace TirkxDownloader.ViewModels
 
         public void Cancel()
         {
+            _cts.Cancel();
             var window = (MetroWindow)GetView();
             window.Close();
         }

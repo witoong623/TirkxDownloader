@@ -39,7 +39,8 @@ namespace TirkxDownloader
             _container.Singleton<IMessageReciever<HttpDownloadLink>, MessageReciever>();
             _container.Singleton<IDownloader, Downloader>();
             _container.Singleton<AuthorizationManager>();
-            _container.Singleton<DetailProvider>();
+            _container.Singleton<GoogleFileHosting>();
+            _container.Singleton<FileHostingUtil>();
         }
 
         protected override object GetInstance(Type service, string key)

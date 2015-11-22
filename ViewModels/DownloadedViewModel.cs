@@ -5,17 +5,17 @@ namespace TirkxDownloader.ViewModels
 {
     public class DownloadedViewModel : Screen, IContentList
     {
-        private DownloadInfo _selectedItem;
+        private GeneralDownloadItem _selectedItem;
 
-        public BindableCollection<DownloadInfo> DownloadCompleteList { get; private set; }
+        public BindableCollection<GeneralDownloadItem> DownloadCompleteList { get; private set; }
 
         public DownloadedViewModel()
         {
             DisplayName = "Downloaded list";
-            DownloadCompleteList = new BindableCollection<DownloadInfo>();
+            DownloadCompleteList = new BindableCollection<GeneralDownloadItem>();
         }
 
-        public DownloadInfo SelectedItem
+        public GeneralDownloadItem SelectedItem
         {
             get { return _selectedItem; }
             set
@@ -42,7 +42,7 @@ namespace TirkxDownloader.ViewModels
             get { return SelectedItem != null; }
         }
 
-        public void SelectItem(DownloadInfo info)
+        public void SelectItem(GeneralDownloadItem info)
         {
             SelectedItem = info;
         }

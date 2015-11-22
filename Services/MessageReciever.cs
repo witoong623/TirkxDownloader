@@ -18,14 +18,14 @@ namespace TirkxDownloader.Services
         private readonly IEventAggregator _eventAggregator;
         private readonly IWindowManager _windowManager;
         private readonly CancellationTokenSource _cts;
-        private readonly DetailProvider _detailProvider;
+        private readonly FileHostingUtil _detailProvider;
 
         public ICollection<string> Prefixes { get { return _listener.Prefixes; } }
 
         public bool IsRecieving { get { return _listener.IsListening; } }
 
         public MessageReciever(IEventAggregator eventAggregator, IDownloader downloader,
-            DetailProvider detailProvide)
+            FileHostingUtil detailProvide)
         {
             _eventAggregator = eventAggregator;
             _downloader = downloader;

@@ -19,16 +19,16 @@ namespace TirkxDownloader.Services
         private long _maximumBytesPerSecond;
         private string _downloaderErrorMessage;
         private readonly object _mutex = new object();
-        private Queue<DownloadInfo> _queueingItems;
-        private Dictionary<DownloadInfo, Tuple<Task, CancellationTokenSource>> _downloadingItemsDic;
-        private DetailProvider _detailProvider;
+        private Queue<IDownloadItem> _queueingItems;
+        private Dictionary<IDownloadItem, Tuple<Task, CancellationTokenSource>> _downloadingItemsDic;
+        private FileHostingUtil _detailProvider;
         private IEventAggregator _eventAggregator;
 
         #region constructors
-        public Downloader(IEventAggregator eventAggregator, DetailProvider detailProvider)
+        public Downloader(IEventAggregator eventAggregator, FileHostingUtil detailProvider)
         {
-            _queueingItems = new Queue<DownloadInfo>();
-            _downloadingItemsDic = new Dictionary<DownloadInfo, Tuple<Task, CancellationTokenSource>>();
+            _queueingItems = new Queue<IDownloadItem>();
+            _downloadingItemsDic = new Dictionary<IDownloadItem, Tuple<Task, CancellationTokenSource>>();
 
             _detailProvider = detailProvider;
             _eventAggregator = eventAggregator;
@@ -89,12 +89,12 @@ namespace TirkxDownloader.Services
         #endregion
 
         #region methods
-        public void DownloadItem(DownloadInfo item)
+        public void DownloadItem(IDownloadItem item)
         {
             DownloadItemImp(item);
         }
 
-        public void DownloadItems(IEnumerable<DownloadInfo> items)
+        public void DownloadItems(IEnumerable<IDownloadItem> items)
         {
             foreach (var item in items)
             {
@@ -105,10 +105,11 @@ namespace TirkxDownloader.Services
             }
 
             _isQueueDownloading = true;
+            NotifyCanQueueMethod();
             DownloadItemsImp();
         }
 
-        private void DownloadItemImp(DownloadInfo item)
+        private void DownloadItemImp(IDownloadItem item)
         {
             if (item != null)
             {
@@ -117,6 +118,8 @@ namespace TirkxDownloader.Services
                 {
                     DownloadingItems--;
                     _downloadingItemsDic.Remove(item);
+
+                    if (!_isQueueDownloading) return;
                 }
             }
 
@@ -124,13 +127,22 @@ namespace TirkxDownloader.Services
             {
                 if (_isQueueDownloading && _downloadingItems < MaxDownloadingItems)
                 {
-                    DownloadInfo nextItem = GetNextDownloadInfo(item);
+                    IDownloadItem nextItem = GetNextDownloadInfo(item);
                     var cts = new CancellationTokenSource();
                     var ct = cts.Token;
                     nextItem.DownloadComplete += DownloadItemImp;
                     _downloadingItems++;
                     Task downloadTask = StartDownloadProcess(nextItem, ct);
                     _downloadingItemsDic.Add(nextItem, new Tuple<Task, CancellationTokenSource>(downloadTask, cts));
+                }
+                else if (_downloadingItems < MaxDownloadingItems && item != null)
+                {
+                    var cts = new CancellationTokenSource();
+                    var ct = cts.Token;
+                    item.DownloadComplete += DownloadItemImp;
+                    _downloadingItems++;
+                    Task downloadTask = StartDownloadProcess(item, ct);
+                    _downloadingItemsDic.Add(item, new Tuple<Task, CancellationTokenSource>(downloadTask, cts));
                 }
             }
             catch (InvalidOperationException)
@@ -140,18 +152,20 @@ namespace TirkxDownloader.Services
                 
                 if (item == null)
                 {
+                    NotifyCanQueueMethod();
                     throw;
                 }
                 else
                 {
+                    NotifyCanQueueMethod();
                     return;
                 }
             }
         }
 
         /// <summary>
-        /// This method should be called when <see cref="DownloadItems(IEnumerable{DownloadInfo})"/> is called 
-        /// only 1 time for start queue download later queueing download shuold start from <see cref="DownloadItems(IEnumerable{DownloadInfo})"/>
+        /// This method should be called when <see cref="DownloadItems(IEnumerable{GeneralDownloadItem})"/> is called 
+        /// only 1 time for start queue download later queueing download shuold start from <see cref="DownloadItems(IEnumerable{GeneralDownloadItem})"/>
         /// </summary>
         private void DownloadItemsImp()
         {
@@ -165,7 +179,7 @@ namespace TirkxDownloader.Services
             catch (InvalidOperationException) { }
         }
 
-        private Task StartDownloadProcess(DownloadInfo item, CancellationToken ct)
+        private Task StartDownloadProcess(IDownloadItem item, CancellationToken ct)
         {
             var downloadProcess = new DownloadProcess();
             Task processTask = downloadProcess.StartDownloadProcess
@@ -177,10 +191,12 @@ namespace TirkxDownloader.Services
                     detailProvider: _detailProvider
                 );
 
+            _eventAggregator.Subscribe(downloadProcess);
+
             return processTask;
         }
 
-        public void StopDownloadItem(DownloadInfo item)
+        public void StopDownloadItem(IDownloadItem item)
         {
             try
             {
@@ -189,7 +205,7 @@ namespace TirkxDownloader.Services
             catch { }
         }
 
-        public void StopDownloadItems(IEnumerable<DownloadInfo> items)
+        public void StopDownloadItems(IEnumerable<IDownloadItem> items)
         {
             _isDownloading = false;
 
@@ -205,7 +221,7 @@ namespace TirkxDownloader.Services
             }
         }
 
-        private DownloadInfo GetNextDownloadInfo(DownloadInfo item)
+        private IDownloadItem GetNextDownloadInfo(IDownloadItem item)
         {
             if (item == null)
             {
@@ -215,6 +231,12 @@ namespace TirkxDownloader.Services
             {
                 return item.Status == DownloadStatus.Queue ? item : _queueingItems.Dequeue();
             }
+        }
+
+        private void NotifyCanQueueMethod()
+        {
+            _eventAggregator.PublishOnUIThread("CanStartQueue");
+            _eventAggregator.PublishOnUIThread("CanStopQueue");
         }
         #endregion
     }

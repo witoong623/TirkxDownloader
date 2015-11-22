@@ -46,8 +46,8 @@
                 <TextBox Text="{Binding Path=CurrentItem.FileSize, StringFormat=N2}"
                          Style="{StaticResource NewDownloadValue}" />
             </StackPanel>
-            <Label Visibility="{Binding DetailDownloadTask.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"
-                   Content="{Binding DetailDownloadTask.ErrorMessage}"
+            <Label Visibility="{Binding CreateDownloadItemNotify.IsFaulted, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   Content="{Binding CreateDownloadItemNotify.ErrorMessage}"
                    HorizontalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">

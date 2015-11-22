@@ -1,41 +1,41 @@
 ﻿using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using TirkxDownloader.Models;
-using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
+using TirkxDownloader.Framework.Message;
+using TirkxDownloader.Models;
 
 namespace TirkxDownloader.ViewModels
 {
-    public class QueueViewModel : Screen, IContentList, IHandle<DownloadInfo>, IHandle<string>
+    public class QueueViewModel : Screen, IContentList, IHandle<GeneralDownloadItem>, IHandle<string>
     {
-        private DownloadInfo _selectedItem;
+        private GeneralDownloadItem _selectedItem;
         private readonly IEventAggregator _eventAggregator;
         private readonly IDownloader _downloader;
 
-        public BindableCollection<DownloadInfo> QueueDownloadList { get; private set; }
+        public BindableCollection<GeneralDownloadItem> QueueDownloadList { get; private set; }
 
         public QueueViewModel(IEventAggregator eventAggregator, IDownloader engine)
         {
             _eventAggregator = eventAggregator;
             _downloader = engine;
             
-            QueueDownloadList = new BindableCollection<DownloadInfo>();
+            QueueDownloadList = new BindableCollection<GeneralDownloadItem>();
 
             this._eventAggregator.Subscribe(this);
         }
 
         #region notify methods
-        public DownloadInfo SelectedItem
+        public GeneralDownloadItem SelectedItem
         {
             get { return _selectedItem; }
             set
             {
                 _selectedItem = value;
-                NotifyOfPropertyChange(() => SelectedItem);
-                NotifyOfPropertyChange(() => CanDownload);
-                NotifyOfPropertyChange(() => CanStop);
-                NotifyOfPropertyChange(() => CanDelete);
+                //NotifyOfPropertyChange(() => SelectedItem);
+                //NotifyOfPropertyChange(() => CanDownload);
+                //NotifyOfPropertyChange(() => CanStop);
+                //NotifyOfPropertyChange(() => CanDelete);
             }
         }
 
@@ -48,11 +48,8 @@ namespace TirkxDownloader.ViewModels
             }
         }
 
-        public bool CanStop
-        {
-            get { return SelectedItem != null && (SelectedItem.Status == DownloadStatus.Downloading || 
-                SelectedItem.Status == DownloadStatus.Preparing); }
-        }
+        public bool CanStop => SelectedItem != null && (SelectedItem.Status == DownloadStatus.Downloading ||
+                SelectedItem.Status == DownloadStatus.Preparing);
 
         public bool CanDelete
         {
@@ -69,7 +66,7 @@ namespace TirkxDownloader.ViewModels
             get { return _downloader.IsDownloading; }
         }
 
-        public void SelectItem(DownloadInfo info)
+        public void SelectItem(GeneralDownloadItem info)
         {
             SelectedItem = info;
         }
@@ -108,7 +105,7 @@ namespace TirkxDownloader.ViewModels
         }
 
         // Receive message from add windows to queue
-        public void Handle(DownloadInfo message)
+        public void Handle(GeneralDownloadItem message)
         {
             QueueDownloadList.Add(message);
             NotifyOfPropertyChange(() => IsEmpty);
@@ -120,7 +117,7 @@ namespace TirkxDownloader.ViewModels
             _downloader.DownloadItem(SelectedItem);
         }
 
-        public void Download(DownloadInfo info)
+        public void Download(IDownloadItem info)
         {
             _downloader.DownloadItem(info);
         }
@@ -143,7 +140,7 @@ namespace TirkxDownloader.ViewModels
             _downloader.StopDownloadItem(_selectedItem);
         }
 
-        public void Stop(DownloadInfo info)
+        public void Stop(GeneralDownloadItem info)
         {
             _downloader.StopDownloadItem(info);
         }
@@ -153,7 +150,7 @@ namespace TirkxDownloader.ViewModels
             _downloader.StopDownloadItems(null);
         }
 
-        public async void BandwidthThrottling(DownloadInfo info)
+        public async void BandwidthThrottling(GeneralDownloadItem info)
         {
             if (info.InStream == null)
             {
@@ -180,7 +177,7 @@ namespace TirkxDownloader.ViewModels
                 return;
             }
 
-            info.InStream.MaximumBytesPerSecond = bandwidth * 1024;
+            _eventAggregator.PublishOnUIThread(new MaxBpsUpdate(bandwidth * 1024));
             _downloader.MaximumBytesPerSecond = bandwidth * 1024;
         }
     }

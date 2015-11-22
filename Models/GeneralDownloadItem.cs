@@ -9,12 +9,12 @@ namespace TirkxDownloader.Models
 {
     public enum DownloadStatus { Queue, Complete, Downloading, Error, Preparing, Stop }
 
-    public class DownloadInfo : PropertyChangedBase
+    public class GeneralDownloadItem : PropertyChangedBase, IDownloadItem
     {
-        private int _throughput;
-        private double _fileSize;
+        private int _speed;
+        private float _fileSize;
         private double _recievedSize;
-        private double _percentProgress;
+        private float _percentProgress;
         private string _errorMessage;
         private DownloadStatus _status;
         private string _fileName;
@@ -59,20 +59,22 @@ namespace TirkxDownloader.Models
             set
             {
                 _status = value;
-                NotifyOfPropertyChange("Status");
+                NotifyOfPropertyChange(nameof(Status));
             }
         }
 
         #region download detail
-        public double FileSize
+        public float FileSize
         {
             get { return _fileSize; }
             set
             {
-                _fileSize = value / 1048576;
+                _fileSize = value;
                 NotifyOfPropertyChange(() => FileSize);
             }
         }
+
+        public long FileSizeInBytes { get; set; }
 
         public string ErrorMessage
         {
@@ -86,20 +88,20 @@ namespace TirkxDownloader.Models
 
         public int Speed
         {
-            get { return _throughput; }
+            get { return _speed; }
             set
             {
-                _throughput = value / 1024;
+                _speed = value / 1024;
                 NotifyOfPropertyChange(() => Speed);
             }
         }
 
-        public double PercentProgress
+        public float PercentProgress
         {
             get { return _percentProgress; }
             set
             {
-                _percentProgress = value / 1048576 * 100 / _fileSize;
+                _percentProgress = value * 100 / FileSizeInBytes;
                 NotifyOfPropertyChange(() => PercentProgress);
             }
         }
@@ -125,6 +127,12 @@ namespace TirkxDownloader.Models
         }
 
         public ThrottledStream InStream { get; set; }
+
+        Stream IDownloadItem.InStream
+        {
+            get { return InStream; }
+            set { InStream = (ThrottledStream)value; }
+        }
 
         public void OnDownloadComplete()
         {
