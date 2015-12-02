@@ -58,6 +58,15 @@ namespace TirkxDownloader.Framework
             ).IsMatch(str);
         }
 
+        public static bool IsSameDomain(this string domainOne, string domainTwo)
+        {
+            string pattern = @"([0-9A-Za-z]{2,}\.[0-9A-Za-z]{2,3}\.[0-9A-Za-z]{2,3}|[0-9A-Za-z]{2,}\.[0-9A-Za-z]{2,3})$";
+            string actualDomainOne = Regex.Match(domainOne, pattern).Value;
+            string actualDomainTwo = Regex.Match(domainTwo, pattern).Value;
+
+            return actualDomainOne.Equals(actualDomainTwo);
+        }
+
         public static async Task<HttpListenerContext> GetContextAsync(this HttpListener listener, CancellationToken ct)
         {
             using (ct.Register(() => listener.Abort(), useSynchronizationContext: false))
