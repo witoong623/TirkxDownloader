@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using TirkxDownloader.Services;
 using TirkxDownloader.Framework;
+using TirkxDownloader.Framework.Interface;
 
 namespace TirkxDownloader.ViewModels.Settings
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Caliburn.Micro;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework.Interface;
+using TirkxDownloader.Models.Settings;
 
 namespace TirkxDownloader.Services
 {
@@ -79,10 +81,10 @@ namespace TirkxDownloader.Services
 
         public int MaxDownloadingItems
         {
-            get { return _maxDownloadingItem; }
+            get { return DownloadingSetting.MaxConcurrentDownload.Value; }
             set
             {
-                _maxDownloadingItem = value;
+                DownloadingSetting.MaxConcurrentDownload.Value = (byte)value;
                 NotifyOfPropertyChange(nameof(MaxDownloadingItems));
             }
         }
@@ -91,6 +93,7 @@ namespace TirkxDownloader.Services
         #region methods
         public void DownloadItem(IDownloadItem item)
         {
+            Debug.WriteLine("Setting file locate in " + SettingsProviders.LocalFilePath);
             DownloadItemImp(item);
         }
 

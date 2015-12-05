@@ -32,10 +32,10 @@ namespace TirkxDownloader.ViewModels
             set
             {
                 _selectedItem = value;
-                //NotifyOfPropertyChange(() => SelectedItem);
-                //NotifyOfPropertyChange(() => CanDownload);
-                //NotifyOfPropertyChange(() => CanStop);
-                //NotifyOfPropertyChange(() => CanDelete);
+                NotifyOfPropertyChange(() => SelectedItem);
+                NotifyOfPropertyChange(() => CanDownload);
+                NotifyOfPropertyChange(() => CanStop);
+                NotifyOfPropertyChange(() => CanDelete);
             }
         }
 

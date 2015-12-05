@@ -248,6 +248,8 @@
     <Compile Include="Framework\Message\HttpDownloadLink.cs" />
     <Compile Include="Framework\ThrottledStream.cs" />
     <Compile Include="Models\GoogleDriveDownloadItem.cs" />
+    <Compile Include="Models\Settings\DownloadingSetting.cs" />
+    <Compile Include="Models\Settings\SettingsProviders.cs" />
     <Compile Include="Services\AuthorizationManager.cs" />
     <None Include="Services\DownloadEngine.cs" />
     <Compile Include="Services\Downloader.cs" />
@@ -257,6 +259,7 @@
     <Compile Include="Services\FileHostingUtil.cs" />
     <Compile Include="ViewModels\Settings\AuthorizationViewModel.cs" />
     <Compile Include="ViewModels\NewWindowViewModels\NewDownloadViewModel.cs" />
+    <Compile Include="ViewModels\Settings\DownloadingSettingViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingShellViewModel.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="Framework\Interface\IContentList.cs" />
@@ -389,7 +392,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\KanColleViewer\source\MetroTrilithon\source\MetroTrilithon.Desktop\MetroTrilithon.Desktop.csproj">
+      <Project>{4e2eb2e0-e5fe-4feb-a3e5-5f2f05cd1a67}</Project>
+      <Name>MetroTrilithon.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KanColleViewer\source\MetroTrilithon\source\MetroTrilithon\MetroTrilithon.csproj">
+      <Project>{df381709-9f44-44ed-a7d6-ecdf157e620d}</Project>
+      <Name>MetroTrilithon</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
