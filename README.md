@@ -1,8 +1,8 @@
 # TirkxDownloader
 Unofficial downloader for tirkx
 ##What is it?
-**TirkxDownloader** is download manager program. at first, intended to be used for browsing anime on Tirkx and download it without open web browser later it was written in the way that it can download every file that URL directly point to by sending URI to program and make HTTP request that resource to server.  
-The reason it can't browse anime on Tirkx directly because
+**TirkxDownloader** is download manager program. at first, intended to be used for browsing anime on Tirkx and download it without open web browser later it was written in the way that it can download every file that URL directly point to by sending URI to program and make HTTP request that resource to server.
+The reason it can't browse anime on Tirkx directly because  
 1. I don't want to use Tirkx API and it is too slow and inefficiently to download every web pages and parse HTML content to list of animes.  
 2. There is no reason to make this program to download file from only one website.  
 ##Feature
