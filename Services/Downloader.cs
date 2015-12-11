@@ -21,7 +21,7 @@ namespace TirkxDownloader.Services
         private string _downloaderErrorMessage;
         private readonly object _mutex = new object();
         private Queue<IDownloadItem> _queueingItems;
-        private Dictionary<IDownloadItem, Tuple<Task, CancellationTokenSource>> _downloadingItemsDic;
+        private Dictionary<IDownloadItem, CancellationTokenSource> _downloadingItemsDic;
         private FileHostingUtil _detailProvider;
         private IEventAggregator _eventAggregator;
 
@@ -29,7 +29,7 @@ namespace TirkxDownloader.Services
         public Downloader(IEventAggregator eventAggregator, FileHostingUtil detailProvider)
         {
             _queueingItems = new Queue<IDownloadItem>();
-            _downloadingItemsDic = new Dictionary<IDownloadItem, Tuple<Task, CancellationTokenSource>>();
+            _downloadingItemsDic = new Dictionary<IDownloadItem, CancellationTokenSource>();
 
             _detailProvider = detailProvider;
             _eventAggregator = eventAggregator;
@@ -128,7 +128,7 @@ namespace TirkxDownloader.Services
                     nextItem.DownloadComplete += DownloadItemImp;
                     DownloadingItems++;
                     Task downloadTask = StartDownloadProcess(nextItem, ct);
-                    _downloadingItemsDic.Add(nextItem, new Tuple<Task, CancellationTokenSource>(downloadTask, cts));
+                    _downloadingItemsDic.Add(nextItem, cts);
                 }
                 else if (_downloadingItems < MaxDownloadingItems && item != null)
                 {
@@ -137,7 +137,7 @@ namespace TirkxDownloader.Services
                     item.DownloadComplete += DownloadItemImp;
                     DownloadingItems++;
                     Task downloadTask = StartDownloadProcess(item, ct);
-                    _downloadingItemsDic.Add(item, new Tuple<Task, CancellationTokenSource>(downloadTask, cts));
+                    _downloadingItemsDic.Add(item, cts);
                 }
             }
             catch (InvalidOperationException)
@@ -195,7 +195,7 @@ namespace TirkxDownloader.Services
         {
             try
             {
-                _downloadingItemsDic[item].Item2.Cancel();
+                _downloadingItemsDic[item].Cancel();
             }
             catch { }
         }
@@ -208,11 +208,11 @@ namespace TirkxDownloader.Services
             {
                 _downloadingItemsDic.
                     Where(x => x.Key.Status == DownloadStatus.Downloading || x.Key.Status == DownloadStatus.Preparing).
-                    Apply(x => x.Value.Item2.Cancel());
+                    Apply(x => x.Value.Cancel());
             }
             else
             {
-                _downloadingItemsDic.Apply(x => x.Value.Item2.Cancel());
+                _downloadingItemsDic.Apply(x => x.Value.Cancel());
             }
         }
 
