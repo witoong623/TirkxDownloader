@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="TirkxDownloader.Views.Settings.DownloadingSetting.Summary"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TirkxDownloader.Views.Settings.DownloadingSetting"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Style="{StaticResource GeneralSettingHeader}"
+                           Text="Max concurrent download" />
+                <StackPanel Orientation="Horizontal"
+                            Margin="20,0,0,0">
+                    <TextBlock Text="Set maximum number of file concurrent downloading:"
+                               VerticalAlignment="Center" />
+                    <TextBox Text="{Binding MaxDownloadingItems, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"
+                             Margin="5,0,0,0"
+                             Width="30" />
+                </StackPanel>
+                <Separator Margin="0,20,0,20" />
+                <TextBlock Style="{StaticResource GeneralSettingHeader}"
+                           Text="Maximum download speed" />
+                <StackPanel Orientation="Vertical"
+                            Margin="20,0,0,0">
+                    <TextBlock Text="Set maximum download speed in bytes per second(B/s)"
+                               Margin="0,0,0,3"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="MaximumBytesPerSecond"
+                                 VerticalAlignment="Center"
+                                 Margin="4,0,0,0"
+                                 Width="40" />
+                        <Label Content="※specify 0 to unlimited" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

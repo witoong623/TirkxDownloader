@@ -4,6 +4,7 @@ using MahApps.Metro.Controls.Dialogs;
 using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.Framework.Message;
 using TirkxDownloader.Models;
+using TirkxDownloader.Models.Settings;
 
 namespace TirkxDownloader.ViewModels
 {
@@ -178,7 +179,7 @@ namespace TirkxDownloader.ViewModels
             }
 
             _eventAggregator.PublishOnUIThread(new MaxBpsUpdate(bandwidth * 1024));
-            _downloader.MaximumBytesPerSecond = bandwidth * 1024;
+            DownloadingSetting.MaximumBytesPerSec.Value = bandwidth * 1024;
         }
     }
 }

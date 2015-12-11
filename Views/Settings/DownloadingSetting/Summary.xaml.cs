@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TirkxDownloader.Views.Settings
+namespace TirkxDownloader.Views.Settings.DownloadingSetting
 {
     /// <summary>
-    /// Interaction logic for AuthorizationView.xaml
+    /// Interaction logic for Summary.xaml
     /// </summary>
-    public partial class AuthorizationView : UserControl
+    public partial class Summary : UserControl
     {
-        public AuthorizationView()
+        public Summary()
         {
             InitializeComponent();
         }

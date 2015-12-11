@@ -267,9 +267,6 @@
     <Compile Include="ViewModels\DownloadedViewModel.cs" />
     <None Include="Views\Converter\BoolToWorkingStringConverter.cs" />
     <Compile Include="Views\Converter\NullToVisibilityConverter.cs" />
-    <Compile Include="Views\Settings\AuthorizationView.xaml.cs">
-      <DependentUpon>AuthorizationView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\NewWindowViews\NewDownloadView.xaml.cs">
       <DependentUpon>NewDownloadView.xaml</DependentUpon>
     </Compile>
@@ -277,6 +274,9 @@
       <DependentUpon>Modify.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\Authorization\Summary.xaml.cs">
+      <DependentUpon>Summary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\DownloadingSetting\Summary.xaml.cs">
       <DependentUpon>Summary.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\SettingShellView.xaml.cs">
@@ -348,10 +348,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Settings\AuthorizationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\NewWindowViews\NewDownloadView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -361,6 +357,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Settings\Authorization\Summary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Settings\DownloadingSetting\Summary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

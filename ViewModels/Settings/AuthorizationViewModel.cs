@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using System.Diagnostics;
+using Caliburn.Micro;
 using TirkxDownloader.Services;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
@@ -20,6 +21,7 @@ namespace TirkxDownloader.ViewModels.Settings
 
         public AuthorizationViewModel(AuthorizationManager credentialsStorage)
         {
+            DisplayName = "Authorization";
             _authorization = credentialsStorage;
             Credentials = new BindableCollection<AuthorizationInfo>();
             
@@ -122,7 +124,6 @@ namespace TirkxDownloader.ViewModels.Settings
         #region override member
         protected override void OnInitialize()
         {
-            DisplayName = "Authorization";
             Credentials.AddRange(_authorization.GetAllCredential());
         }
         #endregion

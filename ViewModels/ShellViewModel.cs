@@ -16,7 +16,6 @@ namespace TirkxDownloader.ViewModels
         private string _queueEngineMessage;
         private readonly IWindowManager _windowManager;
         private readonly IEventAggregator _eventAggregator;
-        private readonly SettingShellViewModel _settingScreen;
         private readonly FileHostingUtil _detailProvider;
         private readonly IMessageReciever<HttpDownloadLink> _reciever;
         private readonly CancellationTokenSource _cts;
@@ -34,11 +33,10 @@ namespace TirkxDownloader.ViewModels
 
         public IDownloader Downloader { get { return _downloader; } }
         
-        public ShellViewModel(IEnumerable<IContentList> screen, IWindowManager windowManager, SettingShellViewModel setting,
+        public ShellViewModel(IEnumerable<IContentList> screen, IWindowManager windowManager,
             IEventAggregator eventAggregator, IMessageReciever<HttpDownloadLink> messageRevicer,
             IDownloader downloader, FileHostingUtil detailProvider)
         {
-            _settingScreen = setting;
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
             _reciever = messageRevicer;
@@ -81,7 +79,7 @@ namespace TirkxDownloader.ViewModels
 
         public void OpenSetting()
         {
-            _windowManager.ShowDialog(_settingScreen);
+            _windowManager.ShowDialog(IoC.Get<SettingShellViewModel>());
         }
 
         protected override void OnDeactivate(bool close)

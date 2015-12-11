@@ -30,10 +30,13 @@ namespace TirkxDownloader
 
             // Screen
             _container.Singleton<ShellViewModel>();
-            _container.Singleton<SettingShellViewModel>();
             _container.Singleton<IContentList, QueueViewModel>();
             _container.Singleton<IContentList, DownloadedViewModel>();
-            _container.Singleton<ISetting, AuthorizationViewModel>();
+
+            // Setting screen
+            _container.PerRequest<SettingShellViewModel>(nameof(SettingShellViewModel));
+            _container.PerRequest<ISetting, DownloadingSettingViewModel>();
+            _container.PerRequest<ISetting, AuthorizationViewModel>();
 
             // Serveice
             _container.Singleton<IMessageReciever<HttpDownloadLink>, MessageReciever>();

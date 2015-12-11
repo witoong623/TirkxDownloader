@@ -2,6 +2,9 @@
 using System.Linq;
 using Caliburn.Micro;
 using TirkxDownloader.Framework.Interface;
+using TirkxDownloader.Models.Settings;
+
+using static TirkxDownloader.ViewModels.Settings.SettingState;
 
 namespace TirkxDownloader.ViewModels.Settings
 {
@@ -12,7 +15,7 @@ namespace TirkxDownloader.ViewModels.Settings
         {
             DisplayName = "Setting";
             Items.AddRange(screen);
-            State = SettingState.Summary;
+            State = Summary;
         }
 
         protected override void OnActivate()
@@ -34,7 +37,13 @@ namespace TirkxDownloader.ViewModels.Settings
         {
             if (close)
             {
+                if (Items.OfType<ISetting>().Count(x => x.IsSet == true) >= 1)
+                {
+                    SettingsProviders.Local.Save();
+                }
+
                 Items.OfType<IDeactivate>().Apply(x => x.Deactivate(true));
+                Items.Clear();
             }
             else
             {
