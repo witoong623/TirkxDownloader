@@ -16,9 +16,8 @@ namespace TirkxDownloader.Services
     {
         private bool _isQueueDownloading;
         private bool _isDownloading;
-        private int _maxDownloadingItem;
+
         private int _downloadingItems;
-        private long _maximumBytesPerSecond;
         private string _downloaderErrorMessage;
         private readonly object _mutex = new object();
         private Queue<IDownloadItem> _queueingItems;
@@ -34,7 +33,9 @@ namespace TirkxDownloader.Services
 
             _detailProvider = detailProvider;
             _eventAggregator = eventAggregator;
-            MaxDownloadingItems = 1;
+
+            DownloadingSetting.MaxConcurrentDownload.Subscribe(x => MaxDownloadingItems = x);
+            DownloadingSetting.MaximumBytesPerSec.Subscribe(x => MaximumBytesPerSecond = x);
         }
         #endregion
 
@@ -77,23 +78,14 @@ namespace TirkxDownloader.Services
             }
         }
 
-        public long MaximumBytesPerSecond { get; set; }
+        public long MaximumBytesPerSecond { get; private set; } = DownloadingSetting.MaximumBytesPerSec.Value;
 
-        public int MaxDownloadingItems
-        {
-            get { return DownloadingSetting.MaxConcurrentDownload.Value; }
-            set
-            {
-                DownloadingSetting.MaxConcurrentDownload.Value = (byte)value;
-                NotifyOfPropertyChange(nameof(MaxDownloadingItems));
-            }
-        }
+        public byte MaxDownloadingItems { get; private set; } = DownloadingSetting.MaxConcurrentDownload.Value;
         #endregion
 
         #region methods
         public void DownloadItem(IDownloadItem item)
         {
-            Debug.WriteLine("Setting file locate in " + SettingsProviders.LocalFilePath);
             DownloadItemImp(item);
         }
 
@@ -134,7 +126,7 @@ namespace TirkxDownloader.Services
                     var cts = new CancellationTokenSource();
                     var ct = cts.Token;
                     nextItem.DownloadComplete += DownloadItemImp;
-                    _downloadingItems++;
+                    DownloadingItems++;
                     Task downloadTask = StartDownloadProcess(nextItem, ct);
                     _downloadingItemsDic.Add(nextItem, new Tuple<Task, CancellationTokenSource>(downloadTask, cts));
                 }
@@ -143,7 +135,7 @@ namespace TirkxDownloader.Services
                     var cts = new CancellationTokenSource();
                     var ct = cts.Token;
                     item.DownloadComplete += DownloadItemImp;
-                    _downloadingItems++;
+                    DownloadingItems++;
                     Task downloadTask = StartDownloadProcess(item, ct);
                     _downloadingItemsDic.Add(item, new Tuple<Task, CancellationTokenSource>(downloadTask, cts));
                 }
