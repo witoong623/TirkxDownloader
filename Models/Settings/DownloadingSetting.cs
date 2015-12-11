@@ -10,8 +10,8 @@ namespace TirkxDownloader.Models.Settings
 {
     public class DownloadingSetting
     {
-        public static SerializableProperty<int> MaximumBytesPerSec { get; } 
-            = new SerializableProperty<int>(GetKey(), SettingsProviders.Local, 0);
+        public static SerializableProperty<long> MaximumBytesPerSec { get; } 
+            = new SerializableProperty<long>(GetKey(), SettingsProviders.Local, 0);
 
         public static SerializableProperty<byte> MaxConcurrentDownload { get; }
             = new SerializableProperty<byte>(GetKey(), SettingsProviders.Local, 1);
