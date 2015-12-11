@@ -12,9 +12,9 @@ namespace TirkxDownloader.Framework.Interface
     {
         bool IsDownloading { get; }
 
-        long MaximumBytesPerSecond { get; set; }
+        long MaximumBytesPerSecond { get; }
 
-        int MaxDownloadingItems { get; set; }
+        byte MaxDownloadingItems { get; }
 
         string DownloaderErrorMessage { get; set; }
 
