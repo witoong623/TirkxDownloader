@@ -36,7 +36,11 @@ namespace TirkxDownloader.Services
             credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart");
 
             credentials = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                new ClientSecrets() { ClientId = APIKey.Client_ID, ClientSecret = APIKey.Client_Secret },
+                new ClientSecrets()
+                {
+                    ClientId = APIKey.Google_Client_Id,
+                    ClientSecret = APIKey.Google_Client_Secret
+                },
                 Scopes,
                 "user",
                 CancellationToken.None,
