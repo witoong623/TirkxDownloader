@@ -32,20 +32,17 @@ namespace TirkxDownloader.Services
         {
             UserCredential credentials;
 
-            using (var rs = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
-            {
-                string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart");
+            string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart");
 
-                credentials = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(rs).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath));
+            credentials = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                new ClientSecrets() { ClientId = APIKey.Client_ID, ClientSecret = APIKey.Client_Secret },
+                Scopes,
+                "user",
+                CancellationToken.None,
+                new FileDataStore(credPath));
 
-                Trace.WriteLine("credentials location is {0}", credPath);
-            }
+            Trace.WriteLine("credentials location is {0}", credPath);
 
             _driveService = new DriveService(new BaseClientService.Initializer()
             {
