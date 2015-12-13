@@ -10,6 +10,7 @@ The reason it can't browse anime on Tirkx directly because
  - Google Drive file downloading(by specific file)
  - Queueing
  - Stop downloading
+ - Bandwidth throttling
  - Concurrently downloading
  - Authenticate request by let user enter username and password for specific website that require authentication.
  
@@ -23,12 +24,18 @@ The reason it can't browse anime on Tirkx directly because
 Although this program isn't even in beta state, it can be use to downloading and queueing without any bug.  
 **Please note** that Google Drive doesn't expose stream's length so file size in program usually mismatch file size on computer.
 
+##System Requirements
+ - Windows 7 or later
+
 ##How to install
 This program doesn't release yet, the only way to install is to compile from source.  
 1. Download Visual Studio Community which is free version of Visual Studio from [this site.](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx)  
 2. Clone this repository to your computer.  
 3. Open Visual Studio project, select Release and Build Solution(press F6), you can find compiled program in `bin/release` directory in root project directory.    
 4. Go to Extensions page in Chrome, press **load unpacked extension...** and select `TirkxDownloader chrome extension` directory in root project directory.  
+
+##How to use
+After upload unpack extension to Google Chrome, open program, right click on link that you want to download, the new download file window will show up, specify location that you want to save file to then click Queue or Download now.
 
 ##License
 [MIT license](https://github.com/witoong623/TirkxDownloader/blob/master/license.txt)
