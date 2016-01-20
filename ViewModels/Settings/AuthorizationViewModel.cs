@@ -106,7 +106,7 @@ namespace TirkxDownloader.ViewModels.Settings
             set
             {
                 _submitMessage = value;
-                NotifyOfPropertyChange(nameof(SubmitMessage));
+                NotifyOfPropertyChange();
             }
         }
 
@@ -116,7 +116,7 @@ namespace TirkxDownloader.ViewModels.Settings
             set
             {
                 _cancelMessage = value;
-                NotifyOfPropertyChange(nameof(CancelMessage));
+                NotifyOfPropertyChange();
             }
         }
         #endregion

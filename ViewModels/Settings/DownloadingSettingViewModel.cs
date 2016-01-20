@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Caliburn.Micro;
 using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.Framework.Message;
@@ -33,7 +32,7 @@ namespace TirkxDownloader.ViewModels.Settings
 
                 IsSet = true;
                 _maxDownloadingItems = value;
-                NotifyOfPropertyChange(nameof(MaxDownloadingItems));
+                NotifyOfPropertyChange();
             }
 
         }
@@ -49,7 +48,7 @@ namespace TirkxDownloader.ViewModels.Settings
 
                 IsSet = true;
                 _maximumBytesPerSecond = value;
-                NotifyOfPropertyChange(nameof(MaximumBytesPerSecond));
+                NotifyOfPropertyChange();
             }
         }
 
@@ -68,7 +67,7 @@ namespace TirkxDownloader.ViewModels.Settings
         {
             if (close && IsSet)
             {
-                DownloadingSetting.MaxConcurrentDownload.Value = MaxDownloadingItems ;
+                DownloadingSetting.MaxConcurrentDownload.Value = MaxDownloadingItems;
                 
                 if (DownloadingSetting.MaximumBytesPerSec.Value != MaximumBytesPerSecond * 1024)
                 {

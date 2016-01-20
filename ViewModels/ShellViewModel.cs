@@ -27,7 +27,7 @@ namespace TirkxDownloader.ViewModels
             set
             {
                 _queueEngineMessage = value;
-                NotifyOfPropertyChange(() => QueueEngineMessage);
+                NotifyOfPropertyChange();
             }
         }
 

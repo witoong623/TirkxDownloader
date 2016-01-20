@@ -21,9 +21,9 @@ namespace TirkxDownloader.ViewModels
             set
             {
                 _selectedItem = value;
-                NotifyOfPropertyChange(() => SelectedItem);
-                NotifyOfPropertyChange(() => CanDelete);
-                NotifyOfPropertyChange(() => CanOpen);
+                NotifyOfPropertyChange(nameof(SelectedItem));
+                NotifyOfPropertyChange(nameof(CanDelete));
+                NotifyOfPropertyChange(nameof(CanOpen));
             }
         }
 
@@ -55,9 +55,10 @@ namespace TirkxDownloader.ViewModels
         public void Delete()
         {
             DownloadCompleteList.Remove(SelectedItem);
-            NotifyOfPropertyChange(() => CanOpen);
-            NotifyOfPropertyChange(() => CanDelete);
-            NotifyOfPropertyChange(() => IsEmpty);
+
+            NotifyOfPropertyChange(nameof(CanOpen));
+            NotifyOfPropertyChange(nameof(CanDelete));
+            NotifyOfPropertyChange(nameof(IsEmpty));
         }
     }
 }

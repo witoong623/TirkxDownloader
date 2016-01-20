@@ -33,10 +33,11 @@ namespace TirkxDownloader.ViewModels
             set
             {
                 _selectedItem = value;
-                NotifyOfPropertyChange(() => SelectedItem);
-                NotifyOfPropertyChange(() => CanDownload);
-                NotifyOfPropertyChange(() => CanStop);
-                NotifyOfPropertyChange(() => CanDelete);
+
+                NotifyOfPropertyChange(nameof(SelectedItem));
+                NotifyOfPropertyChange(nameof(CanDownload));
+                NotifyOfPropertyChange(nameof(CanStop));
+                NotifyOfPropertyChange(nameof(CanDelete));
             }
         }
 
@@ -109,7 +110,7 @@ namespace TirkxDownloader.ViewModels
         public void Handle(GeneralDownloadItem message)
         {
             QueueDownloadList.Add(message);
-            NotifyOfPropertyChange(() => IsEmpty);
+            NotifyOfPropertyChange(nameof(IsEmpty));
         }
         #endregion
 
@@ -132,8 +133,8 @@ namespace TirkxDownloader.ViewModels
         {
             SelectedItem.Status = DownloadStatus.Stop;
             QueueDownloadList.Remove(SelectedItem);
-            NotifyOfPropertyChange(() => SelectedItem);
-            NotifyOfPropertyChange(() => IsEmpty);
+            NotifyOfPropertyChange(nameof(SelectedItem));
+            NotifyOfPropertyChange(nameof(IsEmpty));
         }
 
         public void Stop()

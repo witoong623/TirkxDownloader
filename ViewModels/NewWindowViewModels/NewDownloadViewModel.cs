@@ -58,7 +58,7 @@ namespace TirkxDownloader.ViewModels
             set
             {
                 _currentItem = value;
-                NotifyOfPropertyChange(nameof(CurrentItem));
+                NotifyOfPropertyChange();
             }
         }
         public INotifyTaskCompletion<IDownloadItem> CreateDownloadItemNotify { get; private set; }
@@ -99,8 +99,8 @@ namespace TirkxDownloader.ViewModels
             if (folderBrowser.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 CurrentItem.SaveLocation = folderBrowser.FileName;
-                NotifyOfPropertyChange(() => CanDownload);
-                NotifyOfPropertyChange(() => CanQueue);
+                NotifyOfPropertyChange(nameof(CanDownload));
+                NotifyOfPropertyChange(nameof(CanQueue));
             }
         }
 
