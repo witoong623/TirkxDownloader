@@ -11,6 +11,7 @@ namespace TirkxDownloader.Models
 
     public class GeneralDownloadItem : Notifier, IDownloadItem
     {
+        private string _saveLocation;
         private int _speed;
         private float _fileSize;
         private double _recievedSize;
@@ -24,9 +25,18 @@ namespace TirkxDownloader.Models
         public event DownloadCompleteHandler DownloadComplete;
 
         public string DownloadLink { get; set; }
-        public string SaveLocation { get; set; }
         public DateTime AddOn { get; set; }
         public IEventAggregator EventAggretagor { get; set; }
+
+        public string SaveLocation
+        {
+            get { return _saveLocation; }
+            set
+            {
+                _saveLocation = value;
+                NotifyOfPropertyChange();
+            }
+        }
 
         public string FileName
         {
