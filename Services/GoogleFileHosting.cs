@@ -32,8 +32,7 @@ namespace TirkxDownloader.Services
         {
             UserCredential credentials;
 
-            string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart");
+            string credPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Credentials");
 
             credentials = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                 new ClientSecrets()
@@ -46,7 +45,6 @@ namespace TirkxDownloader.Services
                 CancellationToken.None,
                 new FileDataStore(credPath));
 
-            Trace.WriteLine("credentials location is {0}", credPath);
 
             _driveService = new DriveService(new BaseClientService.Initializer()
             {
