@@ -9,7 +9,7 @@ namespace TirkxDownloader.Models
 {
     public enum DownloadStatus { Queue, Complete, Downloading, Error, Preparing, Stop }
 
-    public class GeneralDownloadItem : PropertyChangedBase, IDownloadItem
+    public class GeneralDownloadItem : Notifier, IDownloadItem
     {
         private int _speed;
         private float _fileSize;
@@ -34,7 +34,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _fileName = value;
-                NotifyOfPropertyChange(() => FileName);
+                NotifyOfPropertyChange();
             }
         }
 
@@ -49,7 +49,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _completeDate = value;
-                NotifyOfPropertyChange(() => CompleteOn);
+                NotifyOfPropertyChange();
             }
         }
 
@@ -59,7 +59,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _status = value;
-                NotifyOfPropertyChange(nameof(Status));
+                NotifyOfPropertyChange();
             }
         }
 
@@ -70,7 +70,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _fileSize = value;
-                NotifyOfPropertyChange(() => FileSize);
+                NotifyOfPropertyChange();
             }
         }
 
@@ -82,7 +82,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _errorMessage = value;
-                NotifyOfPropertyChange(() => ErrorMessage);
+                NotifyOfPropertyChange();
             }
         }
 
@@ -92,7 +92,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _speed = value / 1024;
-                NotifyOfPropertyChange(() => Speed);
+                NotifyOfPropertyChange();
             }
         }
 
@@ -102,7 +102,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _percentProgress = value * 100 / FileSizeInBytes;
-                NotifyOfPropertyChange(() => PercentProgress);
+                NotifyOfPropertyChange();
             }
         }
 
@@ -112,7 +112,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _recievedSize = value / 1048576;
-                NotifyOfPropertyChange(() => RecievedSize);
+                NotifyOfPropertyChange();
             }
         }
 
@@ -136,10 +136,7 @@ namespace TirkxDownloader.Models
 
         public void OnDownloadComplete()
         {
-            if (DownloadComplete != null)
-            {
-                DownloadComplete(this);
-            }
+            DownloadComplete?.Invoke(this);
         }
         #endregion
     }

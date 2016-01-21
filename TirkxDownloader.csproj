@@ -237,6 +237,7 @@
     <Compile Include="Framework\Interface\IAsyncInitialization.cs" />
     <Compile Include="Framework\Interface\IFileHosting.cs" />
     <Compile Include="Framework\Message\MaxBpsUpdate.cs" />
+    <Compile Include="Framework\Notifier.cs" />
     <Compile Include="Models\GeneralDownloadItem.cs" />
     <Compile Include="Framework\Extension.cs" />
     <Compile Include="Framework\Interface\IDownloader.cs" />

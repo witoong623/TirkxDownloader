@@ -13,7 +13,7 @@ namespace TirkxDownloader.Models
             set
             {
                 _fileId = value;
-                NotifyOfPropertyChange(nameof(FileId));
+                NotifyOfPropertyChange();
             }
         }
     }
