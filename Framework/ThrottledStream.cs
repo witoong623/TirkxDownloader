@@ -54,6 +54,11 @@ namespace TirkxDownloader.Framework
             }
         }
 
+        /// <summary>
+        /// Get current bps from this stream
+        /// </summary>
+        public long bps { get; private set; }
+
         public int BlockSize { get; set; }
 
         /// <summary>
@@ -366,6 +371,7 @@ namespace TirkxDownloader.Framework
             {
                 // Calculate the current bps.
                 long bps = _byteCount * 1000L / elapsedMilliseconds;
+                this.bps = bps;
 
                 // If the bps are more then the maximum bps, try to throttle.
                 if (bps > _maximumBytesPerSecond)

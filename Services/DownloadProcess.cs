@@ -15,6 +15,7 @@ namespace TirkxDownloader.Services
 {
     public class DownloadProcess : IHandle<MaxBpsUpdate>
     {
+        private bool _isThrottle;
         private bool _isFileCreated;
         private long _fileSize;
         private long _bytesCalBps;
@@ -38,6 +39,8 @@ namespace TirkxDownloader.Services
             _currentItem.Status = DownloadStatus.Preparing;
             _eventAggregate.PublishOnUIThread("CanDownload");
             _eventAggregate.PublishOnUIThread("CanStop");
+
+            _isThrottle = _maximumBytesPerSecond > 0 ? true : false;
 
             try
             {
@@ -136,7 +139,15 @@ namespace TirkxDownloader.Services
                     int roundCount = 0;
                     byte[] buffer = new byte[maxReadSize];
                     _currentItem.Status = DownloadStatus.Downloading;
-                    _stopWatch = Stopwatch.StartNew();
+
+                    if (_isThrottle)
+                    {
+                        _stopWatch = new Stopwatch();
+                    }
+                    else
+                    {
+                        _stopWatch = Stopwatch.StartNew();
+                    }
 
                     do
                     {
@@ -147,7 +158,17 @@ namespace TirkxDownloader.Services
 
                         if (roundCount == UpdateRound)
                         {
-                            var speed = _bytesCalBps * 1000L / _stopWatch.ElapsedMilliseconds;
+                            long speed;
+
+                            if (!_isThrottle)
+                            {
+                                speed = _bytesCalBps * 1000L / _stopWatch.ElapsedMilliseconds;
+                            }
+                            else
+                            {
+                                speed = _inStream.bps;
+                            }
+
                             var etaTimespan = TimeSpan.FromSeconds((_fileSize - downloadedSize) / speed);
                             Duration eta = Duration.FromSeconds((long)etaTimespan.TotalSeconds);
 
@@ -197,13 +218,8 @@ namespace TirkxDownloader.Services
 
         private void Reset()
         {
-            var interval = _stopWatch.ElapsedMilliseconds;
-
-            if (interval > 1000)
-            {
-                _bytesCalBps = 0;
-                _stopWatch.Restart();
-            }
+            _bytesCalBps = 0;
+            _stopWatch.Restart();
         }
 
         public void Handle(MaxBpsUpdate message)
@@ -211,6 +227,20 @@ namespace TirkxDownloader.Services
             _maximumBytesPerSecond = message.MaximumBytesPerSecond;
             _inStream.MaximumBytesPerSecond = message.MaximumBytesPerSecond;
             Reset();
+
+            if (message.MaximumBytesPerSecond > 0)
+            {
+                _isThrottle = true;
+                
+                if (_stopWatch.IsRunning)
+                {
+                    _stopWatch.Reset();
+                }
+            }
+            else
+            {
+                _isThrottle = false;
+            }
         }
     }
 }
