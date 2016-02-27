@@ -392,16 +392,6 @@
   <ItemGroup>
     <Resource Include="Resources\Entypo-license.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\KanColleViewer\source\MetroTrilithon\source\MetroTrilithon.Desktop\MetroTrilithon.Desktop.csproj">
-      <Project>{4e2eb2e0-e5fe-4feb-a3e5-5f2f05cd1a67}</Project>
-      <Name>MetroTrilithon.Desktop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\KanColleViewer\source\MetroTrilithon\source\MetroTrilithon\MetroTrilithon.csproj">
-      <Project>{df381709-9f44-44ed-a7d6-ecdf157e620d}</Project>
-      <Name>MetroTrilithon</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

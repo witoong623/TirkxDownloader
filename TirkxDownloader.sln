@@ -12,10 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A3260B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TirkxDownloaderTests1", "TirkxDownloaderTests1\TirkxDownloaderTests1.csproj", "{5B79073E-5782-4FF4-BE0F-E1159AC56D5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetroTrilithon", "..\KanColleViewer\source\MetroTrilithon\source\MetroTrilithon\MetroTrilithon.csproj", "{DF381709-9F44-44ED-A7D6-ECDF157E620D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetroTrilithon.Desktop", "..\KanColleViewer\source\MetroTrilithon\source\MetroTrilithon.Desktop\MetroTrilithon.Desktop.csproj", "{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,30 +46,6 @@ Global
 		{5B79073E-5782-4FF4-BE0F-E1159AC56D5C}.Release|x64.Build.0 = Release|Any CPU
 		{5B79073E-5782-4FF4-BE0F-E1159AC56D5C}.Release|x86.ActiveCfg = Release|Any CPU
 		{5B79073E-5782-4FF4-BE0F-E1159AC56D5C}.Release|x86.Build.0 = Release|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Debug|x64.Build.0 = Debug|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Debug|x86.Build.0 = Debug|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Release|x64.ActiveCfg = Release|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Release|x64.Build.0 = Release|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Release|x86.ActiveCfg = Release|Any CPU
-		{DF381709-9F44-44ED-A7D6-ECDF157E620D}.Release|x86.Build.0 = Release|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Debug|x64.Build.0 = Debug|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Debug|x86.Build.0 = Debug|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Release|x64.ActiveCfg = Release|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Release|x64.Build.0 = Release|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Release|x86.ActiveCfg = Release|Any CPU
-		{4E2EB2E0-E5FE-4FEB-A3E5-5F2F05CD1A67}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
