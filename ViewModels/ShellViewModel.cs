@@ -79,6 +79,9 @@ namespace TirkxDownloader.ViewModels
 
         public void OpenSetting()
         {
+            //var test = DialogViewModel<int>.CreateDialog<int>("Please input", "input somestring");
+            //_windowManager.ShowDialog(test);
+            //var result = test.InputResult;
             _windowManager.ShowDialog(IoC.Get<SettingShellViewModel>());
         }
 

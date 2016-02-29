@@ -10,14 +10,15 @@
                     <local:AppBootstrapper x:Key="Bootstrapper" />
                     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
                     <convert:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                    <convert:DialogTypeToVisibilityConverter x:Key="DialogTypeToVisibilityConverter" />
                 </ResourceDictionary>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
-                <ResourceDictionary Source="/Resources/Icons.xaml" />
-                <ResourceDictionary Source="/Style/GenericStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Resources/Icons.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.MetroDialog.xaml" />
+        
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Generic.Button.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Generic.Rectangle.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Generic.TextBlock.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Generic.TextBox.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

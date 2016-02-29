@@ -260,6 +260,7 @@
     <Compile Include="Services\GoogleFileHosting.cs" />
     <Compile Include="Services\MessageReciever.cs" />
     <Compile Include="Services\FileHostingUtil.cs" />
+    <Compile Include="ViewModels\DialogViewModel.cs" />
     <Compile Include="ViewModels\Settings\AuthorizationViewModel.cs" />
     <Compile Include="ViewModels\NewWindowViewModels\NewDownloadViewModel.cs" />
     <Compile Include="ViewModels\Settings\DownloadingSettingViewModel.cs" />
@@ -269,7 +270,11 @@
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\DownloadedViewModel.cs" />
     <None Include="Views\Converter\BoolToWorkingStringConverter.cs" />
+    <Compile Include="Views\Converter\DialogTypeToVisibilityConverter.cs" />
     <Compile Include="Views\Converter\NullToVisibilityConverter.cs" />
+    <Compile Include="Views\DialogView.xaml.cs">
+      <DependentUpon>DialogView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\NewWindowViews\NewDownloadView.xaml.cs">
       <DependentUpon>NewDownloadView.xaml</DependentUpon>
     </Compile>
@@ -349,7 +354,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Style\GenericStyle.xaml">
+    <Page Include="Style\Controls.MetroDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Style\Generic.Button.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Style\Generic.Rectangle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Style\Generic.TextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Style\Generic.TextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Style\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
