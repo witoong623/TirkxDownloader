@@ -4,35 +4,75 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TirkxDownloader.Views.Settings"
-        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:metro="http://schemes.grabacr.net/winfx/2014/controls"
         xmlns:cal="http://www.caliburnproject.org"
+        xmlns:viewmodel="clr-namespace:TirkxDownloader.ViewModels.Settings"
+        d:DataContext="{d:DesignInstance viewmodel:SettingShellViewModel}"
         mc:Ignorable="d"
-        ShowMinButton="False"
-        ShowMaxRestoreButton="False"
-        BorderBrush="{DynamicResource AccentColorBrush}"
-        Height="500" Width="700" WindowStartupLocation="CenterOwner">
+        Background="{StaticResource ThemeBrushKey}"
+        Height="500" Width="700"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        UseLayoutRounding="True">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <DockPanel  metro:MetroWindow.IsCaptionBar="True"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2"
+                    Background="{StaticResource SemiactiveBackgroundBrushKey}">
+            <DockPanel.Resources>
+                <Style TargetType="{x:Type metro:SystemButtons}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type metro:SystemButtons}">
+                                <StackPanel Orientation="Horizontal">
+                                    <metro:CaptionButton WindowAction="Close" />
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DockPanel.Resources>
+            <StackPanel DockPanel.Dock="Right"
+                        Orientation="Horizontal">
+                <metro:SystemButtons />
+            </StackPanel>
+            <TextBlock x:Name="DisplayName"
+                       Foreground="{StaticResource ForegroundBrushKey}"
+                       TextTrimming="CharacterEllipsis"
+                       FontFamily="Segoe UI Light"
+                       FontSize="18"
+                       Margin="10,5,5,5"
+                       VerticalAlignment="Center" />
+        </DockPanel>
         <ListBox Grid.Column="0"
+                 Grid.Row="1"
                  Margin="0,0,5,0"
                  BorderThickness="0,0,1,0"
-                 x:Name="Items">
-            <ListBox.BorderBrush>
-                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
-            </ListBox.BorderBrush>
+                 x:Name="Items"
+                 Background="{StaticResource ActiveBackgroundBrushKey}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Grid.Column="0"
+                    <TextBlock HorizontalAlignment="Left"
+                               Margin="15,0,0,0"
+                               VerticalAlignment="Center"
                                Text="{Binding DisplayName}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <metro:TransitioningContentControl cal:View.Model="{Binding ActiveItem}"
-                                           cal:View.Context="{Binding Path=State, Mode=TwoWay}"
-                                           Grid.Column="1" 
-                                           Margin="10"/>
+        <ContentControl cal:View.Model="{Binding ActiveItem}"
+                        cal:View.Context="{Binding Path=State, Mode=TwoWay}"
+                        Grid.Column="1"
+                        Grid.Row="1"
+                        Margin="10"/>
     </Grid>
 </metro:MetroWindow>

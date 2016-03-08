@@ -17,7 +17,7 @@ namespace TirkxDownloader.ViewModels.Settings
             DisplayName = "Downloading setting";
 
             _maxDownloadingItems = DownloadingSetting.MaxConcurrentDownload.Value;
-            _maximumBytesPerSecond = DownloadingSetting.MaximumBytesPerSec.Value;
+            _maximumBytesPerSecond = DownloadingSetting.MaximumBytesPerSec.Value / 1024;
         }
         #endregion
         #region properties

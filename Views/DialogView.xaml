@@ -4,13 +4,13 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:cal="http://www.caliburnproject.org"
-                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                    xmlns:metro="http://schemes.grabacr.net/winfx/2014/controls"
                     xmlns:local="clr-namespace:TirkxDownloader.Views"
+                    xmlns:viewmodel="clr-namespace:TirkxDownloader.ViewModels"
                     mc:Ignorable="d"
+                    d:DataContext="{d:DesignInstance viewmodel:DialogViewModel}"
                     SizeToContent="Height"
-                    TitleCaps="False"
                     Style="{StaticResource MetroDialogStyleKey}"
-                    BorderBrush="{StaticResource AccentColorBrush}"
                     WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
@@ -25,13 +25,14 @@
 						   HorizontalAlignment="Left"
 						   VerticalAlignment="Center" />
             </DockPanel>
-            <TextBox Name="InputResult"
-                     Visibility="{Binding Path=DialogType, Converter={StaticResource DialogTypeToVisibilityConverter},
-                        ConverterParameter=TextBox}"
-                     Margin="12,5"
-                     HorizontalAlignment="Stretch"
-                     VerticalAlignment="Center" />
-            <Border Height="12" />
+            <metro:PromptTextBox Visibility="{Binding Path=DialogType, Converter={StaticResource DialogTypeToVisibilityConverter},
+                                    ConverterParameter=TextBox}"
+                                 Prompt="Test Message"
+                                 Margin="12,5"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Center"
+                                 Text="{Binding InputResult, UpdateSourceTrigger=PropertyChanged}"/>
+                <Border Height="12" />
 
             <Rectangle Height=".99"
 					   Style="{StaticResource SeparatorRectangleStyleKey}" />
@@ -45,7 +46,7 @@
 					MinWidth="110"
 					Padding="30,6"
 					Margin="6" />
-                <Button cal:Message.Attach="NO"
+            <Button cal:Message.Attach="NO"
                     Visibility="{Binding Path=DialogType, Converter={StaticResource DialogTypeToVisibilityConverter}, ConverterParameter=NO}"
                     Content="No"
 					MinWidth="110"

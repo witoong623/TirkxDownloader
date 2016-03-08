@@ -3,7 +3,7 @@
     <Style x:Key="SeparatorRectangleStyleKey"
 		   TargetType="{x:Type Rectangle}">
         <Setter Property="Fill"
-				Value="{DynamicResource AccentColorBrush2}" />
+				Value="{StaticResource InactiveForegroundBrushKey}" />
         <Setter Property="Opacity"
 				Value="0.6" />
     </Style>

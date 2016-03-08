@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.MetroDialog.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.DownloadButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.StopDownloadButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.QueueDownloadButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.StopQueueDownloadButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.DeleteItemButton.xaml" />
+
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.Button.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.Rectangle.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.TextBlock.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.TextBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.ListBox.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

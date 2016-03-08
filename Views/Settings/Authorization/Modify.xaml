@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:metro="http://schemes.grabacr.net/winfx/2014/controls"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:local="clr-namespace:TirkxDownloader.Views.Settings.Authorization"
              mc:Ignorable="d" 
@@ -14,41 +15,59 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid.Resources>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Width"
+                        Value="110" />
+                <Setter Property="TextAlignment"
+                        Value="Right" />
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+            </Style>
+            <Style TargetType="{x:Type metro:PromptTextBox}">
+                <Setter Property="Width"
+                        Value="350" />
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+                <Setter Property="Margin"
+                        Value="3" />
+            </Style>
+        </Grid.Resources>
         <StackPanel Orientation="Horizontal"
                     Grid.Row="0">
-            <TextBlock Style="{StaticResource NewDownloadDescription}"
-                       Text="Domain" />
-            <TextBox Style="{StaticResource NewCredential}"
-                     Text="{Binding TargetName, Mode=TwoWay}"/>
+            <TextBlock Text="Domain:" />
+            <metro:PromptTextBox Text="{Binding TargetName, Mode=TwoWay}"
+                                 Prompt="You can use * to specify every subdomain"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal"
                     Grid.Row="1">
-            <TextBlock Style="{StaticResource NewDownloadDescription}"
-                       Text="Username" />
-            <TextBox Style="{StaticResource NewCredential}"
-                     Text="{Binding Username, Mode=TwoWay}" />
+            <TextBlock Text="Username:" />
+            <metro:PromptTextBox Text="{Binding Username, Mode=TwoWay}"
+                                 Prompt="Username"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal"
                     Grid.Row="2">
-            <TextBlock Style="{StaticResource NewDownloadDescription}"
-                       Text="Password" />
-            <TextBox Style="{StaticResource NewCredential}"
-                     Text="{Binding Password, Mode=TwoWay}" />
+            <TextBlock Text="Password:" />
+            <metro:PromptTextBox Text="{Binding Password, Mode=TwoWay}"
+                                 Prompt="Password"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center"
-                    Grid.Row="3">
-            <Button cal:Message.Attach="Submit"
-                    Content="{Binding SubmitMessage}"/>
-            <Button cal:Message.Attach="Cancel"
-                    Content="{Binding CancelMessage}"/>
+                    Grid.Row="3"
+                    Margin="0,16,0,0">
             <StackPanel.Resources>
-                <Style TargetType="Button"
-                       BasedOn="{StaticResource MetroButton}">
-                    <Setter Property="Margin"
-                            Value="0,0,5,0" />
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="MinWidth"
+                            Value="110" />
+                    <Setter Property="Padding"
+                            Value="16,6" />
                 </Style>
             </StackPanel.Resources>
+            <Button cal:Message.Attach="Submit"
+                    Content="{Binding SubmitMessage}"/>
+            <Border Width="8" />
+            <Button cal:Message.Attach="Cancel"
+                    Content="{Binding CancelMessage}"/>
         </StackPanel>
     </Grid>
 </UserControl>

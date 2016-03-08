@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using MahApps.Metro.Controls;
+using MetroRadiance.UI.Controls;
 using TirkxDownloader.Models;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;

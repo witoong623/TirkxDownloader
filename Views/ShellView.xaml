@@ -1,30 +1,22 @@
 ﻿<metro:MetroWindow  x:Class="TirkxDownloader.Views.ShellView"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                    xmlns:metro="http://schemes.grabacr.net/winfx/2014/controls"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:viewmodel="clr-namespace:TirkxDownloader.ViewModels"
                     xmlns:cal="http://www.caliburnproject.org"
+                    mc:Ignorable="d"
+                    d:DataContext="{d:DesignInstance viewmodel:ShellViewModel}"
                     Height="600" Width="1000"
                     WindowStartupLocation="CenterScreen"
-                    BorderBrush="{DynamicResource AccentColorBrush}">
-    <metro:MetroWindow.RightWindowCommands>
-        <metro:WindowCommands>
-            <Button cal:Message.Attach="OpenSetting">
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle Width="18" Height="18"
-                               Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Stretch="Fill"
-                                         Visual="{StaticResource appbar_cog}" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                    <TextBlock Text="Setting"
-                               Margin="5,0,0,0" />
-                </StackPanel>
-            </Button>
-        </metro:WindowCommands>
-    </metro:MetroWindow.RightWindowCommands>
+                    Background="{StaticResource ThemeBrushKey}"
+                    SnapsToDevicePixels="True"
+				    TextOptions.TextFormattingMode="Display"
+				    UseLayoutRounding="True">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
@@ -32,27 +24,54 @@
             <ColumnDefinition Width="180" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <DockPanel  metro:MetroWindow.IsCaptionBar="True"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2">
+            <StackPanel DockPanel.Dock="Right"
+                        Orientation="Horizontal">
+                <metro:CaptionButton cal:Message.Attach="OpenSetting"
+                                     Width="Auto">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="M16.414 10.727c-0.944-1.636-0.376-3.732 1.268-4.684l-1.769-3.064c-0.505 0.296-1.093 0.466-1.72 0.466-1.89 0-3.423-1.542-3.423-3.445h-3.538c0.005 0.587-0.142 1.183-0.456 1.727-0.944 1.636-3.044 2.192-4.691 1.244l-1.769 3.064c0.509 0.29 0.95 0.713 1.264 1.256 0.943 1.633 0.378 3.725-1.26 4.68l1.769 3.064c0.504-0.293 1.088-0.461 1.712-0.461 1.884 0 3.413 1.533 3.422 3.427h3.538c-0.002-0.581 0.145-1.17 0.456-1.709 0.943-1.633 3.037-2.19 4.683-1.248l1.769-3.064c-0.506-0.289-0.944-0.712-1.256-1.252zM9 12.645c-2.013 0-3.645-1.632-3.645-3.645s1.632-3.645 3.645-3.645c2.013 0 3.645 1.632 3.645 3.645s-1.632 3.645-3.645 3.645z"
+                              Width="18"
+                              Fill="{StaticResource ForegroundBrushKey}"/>
+                        <TextBlock Text="Setting"
+                                   Foreground="{StaticResource ForegroundBrushKey}"
+                                   Margin="5,0" />
+                    </StackPanel>
+                </metro:CaptionButton>
+                <metro:SystemButtons />
+            </StackPanel>
+            <TextBlock x:Name="DisplayName"
+                       Foreground="{StaticResource ForegroundBrushKey}"
+                       TextTrimming="CharacterEllipsis"
+                       FontFamily="Segoe UI Light"
+                       FontSize="18"
+                       Margin="10,5,5,5"
+                       VerticalAlignment="Center" />
+        </DockPanel>
         <ListBox x:Name="Items"
-                 BorderThickness="0,0,1,0"
-                 Margin="0,0,0,5"
-                 Grid.Column="0">
-            <ListBox.BorderBrush>
-                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
-            </ListBox.BorderBrush>
+                 Grid.Row="1"
+                 Grid.Column="0"
+                 Background="{StaticResource ActiveBackgroundBrushKey}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding DisplayName}"
                                FontSize="14"
-                               Padding="15"/>
+                               Margin="15,0,0,0"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <metro:TransitioningContentControl cal:View.Model="{Binding ActiveItem}"
+        <ContentControl cal:View.Model="{Binding ActiveItem}"
                                            Margin="5,5,10,5"
-                                           Grid.Row="0"
+                                           Grid.Row="1"
                                            Grid.Column="1" />
         <StatusBar Grid.ColumnSpan="2"
-                   Grid.Row="1">
+                   Grid.Row="2"
+                   Background="{StaticResource AccentBrushKey}"
+                   Foreground="{StaticResource AccentForegroundBrushKey}">
             <StatusBarItem>
                 <Grid>
                     <Grid.ColumnDefinitions>

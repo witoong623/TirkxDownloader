@@ -1,10 +1,10 @@
 ﻿using Caliburn.Micro;
-using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
+using MetroRadiance.UI.Controls;
 using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.Framework.Message;
 using TirkxDownloader.Models;
 using TirkxDownloader.Models.Settings;
+using TirkxDownloader.ViewModels;
 
 namespace TirkxDownloader.ViewModels
 {
@@ -13,13 +13,15 @@ namespace TirkxDownloader.ViewModels
         private GeneralDownloadItem _selectedItem;
         private readonly IEventAggregator _eventAggregator;
         private readonly IDownloader _downloader;
+        private readonly IWindowManager _windowManager;
 
         public BindableCollection<GeneralDownloadItem> QueueDownloadList { get; private set; }
 
-        public QueueViewModel(IEventAggregator eventAggregator, IDownloader engine)
+        public QueueViewModel(IEventAggregator eventAggregator, IDownloader engine, IWindowManager windowManager)
         {
             _eventAggregator = eventAggregator;
             _downloader = engine;
+            _windowManager = windowManager;
             
             QueueDownloadList = new BindableCollection<GeneralDownloadItem>();
 
@@ -50,8 +52,14 @@ namespace TirkxDownloader.ViewModels
             }
         }
 
-        public bool CanStop => SelectedItem != null && (SelectedItem.Status == DownloadStatus.Downloading ||
-                SelectedItem.Status == DownloadStatus.Preparing);
+        public bool CanStop
+        {
+            get
+            {
+                return SelectedItem != null && (SelectedItem.Status == DownloadStatus.Downloading ||
+                    SelectedItem.Status == DownloadStatus.Preparing);
+            }
+        }
 
         public bool CanDelete
         {
@@ -116,6 +124,7 @@ namespace TirkxDownloader.ViewModels
 
         public void Download()
         {
+            
             _downloader.DownloadItem(SelectedItem);
         }
 
@@ -154,7 +163,7 @@ namespace TirkxDownloader.ViewModels
             _downloader.StopDownloadItems(null);
         }
 
-        public async void BandwidthThrottling(GeneralDownloadItem info)
+        public void BandwidthThrottling(GeneralDownloadItem info)
         {
             if (info.InStream == null)
             {
@@ -162,24 +171,11 @@ namespace TirkxDownloader.ViewModels
             }
 
             MetroWindow metroWindow = (MetroWindow)((Screen)Parent).GetView();
+            var dialog = DialogViewModel<long>.CreateDialog("Bandwidth Control", "Enter bandwidth to use 0 for unlimited (in KB/s)",
+                DownloadingSetting.MaximumBytesPerSec.Value / 1024);
+            _windowManager.ShowDialog(dialog);
 
-            string bandwidthText = await metroWindow.ShowInputAsync(
-                "Bandwidth Control", 
-                "Enter bandwidth to use 0 for unlimited (in KB/s)",
-                new MetroDialogSettings
-                {
-                    DefaultText = (info.InStream.MaximumBytesPerSecond / 1024).ToString(),
-                    AffirmativeButtonText = "OK",
-                    NegativeButtonText = "Cancel"
-                });
-
-            int bandwidth;
-            bool flag = int.TryParse(bandwidthText, out bandwidth);
-
-            if (!flag || bandwidth < 0)
-            {
-                return;
-            }
+            long bandwidth = dialog.InputResult;
 
             _eventAggregator.PublishOnUIThread(new MaxBpsUpdate(bandwidth * 1024));
             DownloadingSetting.MaximumBytesPerSec.Value = bandwidth * 1024;

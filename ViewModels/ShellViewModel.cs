@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Caliburn.Micro;
-using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 using TirkxDownloader.Framework;
 using TirkxDownloader.Framework.Interface;
 using TirkxDownloader.Services;
@@ -56,22 +55,24 @@ namespace TirkxDownloader.ViewModels
             _reciever.StartSendEvent(_cts.Token);
         }
 
-        public override async void CanClose(Action<bool> callback)
+        public override void CanClose(Action<bool> callback)
         {
-            var dialogResult = MessageDialogResult.Affirmative;
+            DialogResult result = DialogResult.Yes;
 
             if (_downloader.DownloadingItems != 0)
             {
-                var metroWindow = (MetroWindow)GetView();
-                dialogResult = await metroWindow.ShowMessageAsync("Do you really want to close?", "There is item being download\nDo you want to stop and close it?",
-                    MessageDialogStyle.AffirmativeAndNegative);
+                var confirmDialog = DialogViewModel.CreateDialog(DialogType.Confirmation, "Do you really want to close?",
+                    "There is item being download\nDo you want to stop and close it?");
+                _windowManager.ShowDialog(confirmDialog);
+
+                result = confirmDialog.DialogResult;
             }
 
-            if (dialogResult == MessageDialogResult.Affirmative)
+            if (result == DialogResult.Yes)
             {
                 callback(true);
             }
-            else if (dialogResult == MessageDialogResult.Negative)
+            else
             {
                 callback(false);
             }
@@ -79,9 +80,6 @@ namespace TirkxDownloader.ViewModels
 
         public void OpenSetting()
         {
-            //var test = DialogViewModel<int>.CreateDialog<int>("Please input", "input somestring");
-            //_windowManager.ShowDialog(test);
-            //var result = test.InputResult;
             _windowManager.ShowDialog(IoC.Get<SettingShellViewModel>());
         }
 

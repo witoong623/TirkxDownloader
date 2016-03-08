@@ -6,6 +6,7 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:framework="clr-namespace:TirkxDownloader.Framework"
+             xmlns:model="clr-namespace:TirkxDownloader.Models"
              mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
@@ -16,118 +17,142 @@
         <DockPanel Grid.Row="0"
                    LastChildFill="False">
             <Button x:Name="Download"
-                    Style="{StaticResource HeadButton}"
-                    DockPanel.Dock="Left">
-                <Button.Content>
-                    <Rectangle Fill="Green" Width="35" Height="35">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_download}" Stretch="Fill"/>
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
-            <Button Style="{StaticResource HeadButton}"
                     DockPanel.Dock="Left"
-                    x:Name="Stop">
-                <Button.Content>
-                    <Rectangle Fill="Red" Width="35" Height="35">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_control_stop}" Stretch="Fill"/>
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
-            <Button Style="{StaticResource HeadButton}"
+                    ToolTip="Download"
+                    Style="{StaticResource DownloadButtonStyleKey}" />
+            <Button x:Name="Stop"
                     DockPanel.Dock="Left"
-                    x:Name="Delete">
-                <Button.Content>
-                    <Rectangle Fill="Red" Width="35" Height="35">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_close}" Stretch="Fill"/>
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
-            <Button Style="{StaticResource HeadButton}"
-                    DockPanel.Dock="Left"
-                    x:Name="StartQueue">
-                <Button.Content>
-                    <Rectangle Fill="Blue" Width="35" Height="35">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_download}" Stretch="Fill"/>
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
-            <Button Style="{StaticResource HeadButton}"
-                    DockPanel.Dock="Left"
-                    x:Name="StopQueue">
-                <Button.Content>
-                    <Rectangle Fill="Blue" Width="35" Height="35">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_control_stop}" Stretch="Fill"/>
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
+                    ToolTip="Stop download"
+                    Style="{StaticResource StopDownloadButtonStyleKey}" />
+            <Button DockPanel.Dock="Left"
+                    x:Name="Delete"
+                    ToolTip="Delete file"
+                    Style="{StaticResource DeleteItemButtonStyleKey}"/>
+            <Rectangle DockPanel.Dock="Left" 
+                       Width=".99"
+                       Margin="10,5"
+                       Opacity="0.5"
+                       Fill="{StaticResource InactiveForegroundBrushKey}"/>
+            <Button DockPanel.Dock="Left"
+                    x:Name="StartQueue"
+                    ToolTip="Start download queueing"
+                    Style="{StaticResource QueueDownloadButtonStyleKey}" />
+            <Button DockPanel.Dock="Left"
+                    x:Name="StopQueue"
+                    ToolTip="Stop download queueing"
+                    Style="{StaticResource StopQueueDownloadButtonStyleKey}"/>
         </DockPanel>
         <DockPanel Grid.Row="1">
-            <ListView ItemsSource="{Binding Path=QueueDownloadList, Mode=OneWay}"
-                      cal:Message.Attach="[Event SelectionChanged] = [Action SelectItem($this)]"
-                      DockPanel.Dock="Top"
-                      Margin="0,0,0,15"
-                      x:Name="QueueListView">
-                <ListView.BorderBrush>
-                    <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
-                </ListView.BorderBrush>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="File Name"
-                                        Width="400"
-                                        DisplayMemberBinding="{Binding FileName}" />
-                        <GridViewColumn Header="Status"
-                                        Width="100"
-                                        DisplayMemberBinding="{Binding Status}" />
-                        <GridViewColumn Header="Progress"
-                                        Width="100"
-                                        DisplayMemberBinding="{Binding Path=PercentProgress, StringFormat=N2}" />
-                        <GridViewColumn Header="ETA"
-                                        Width="100"
-                                        DisplayMemberBinding="{Binding Path=ETA, StringFormat=H:mm:ss}" />
-                    </GridView>
-                </ListView.View>
-                <ListView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Limit bandwidth">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Click">
-                                    <cal:ActionMessage MethodName="BandwidthThrottling">
-                                        <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
-                                    </cal:ActionMessage>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </MenuItem>
-                        <MenuItem Header="Download">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Click">
-                                    <cal:ActionMessage MethodName="Download">
-                                        <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
-                                    </cal:ActionMessage>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </MenuItem>
-                        <MenuItem Header="Stop">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Click">
-                                    <cal:ActionMessage MethodName="Stop">
-                                        <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
-                                    </cal:ActionMessage>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </MenuItem>
-                    </ContextMenu>
-                </ListView.ContextMenu>
-            </ListView>
+            <Border BorderBrush="{StaticResource BorderBrushKey}"
+                    BorderThickness=".99"
+                    Margin="0,0,0,15">
+                <ListView ItemsSource="{Binding Path=QueueDownloadList, Mode=OneWay}"
+                          cal:Message.Attach="[Event SelectionChanged] = [Action SelectItem($this)]"
+                          DockPanel.Dock="Top"
+                          x:Name="QueueListView">
+                    <ListView.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Margin"
+									Value="5,4" />
+                        </Style>
+                        <Style TargetType="{x:Type GridViewColumnHeader}">
+                            <Setter Property="OverridesDefaultStyle"
+									Value="True" />
+                            <Setter Property="BorderThickness"
+									Value="0,0,0,.99" />
+                            <Setter Property="BorderBrush"
+									Value="{DynamicResource BorderBrushKey}" />
+                            <Setter Property="Background"
+									Value="{DynamicResource BackgroundBrushKey}" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                                        <Grid>
+                                            <Border BorderThickness="{TemplateBinding BorderThickness}"
+													BorderBrush="{TemplateBinding BorderBrush}"
+													Background="{TemplateBinding Background}">
+                                                <ContentPresenter Margin="{TemplateBinding Padding}" />
+                                            </Border>
+                                            <Thumb x:Name="PART_HeaderGripper"
+												   HorizontalAlignment="Right"
+												   BorderBrush="{TemplateBinding BorderBrush}"
+												   Margin="0,0,-6,0">
+                                                <Thumb.Template>
+                                                    <ControlTemplate TargetType="{x:Type Thumb}">
+                                                        <Border Background="Transparent"
+																Width="13">
+                                                            <Rectangle Width="1"
+																	   Stroke="{TemplateBinding BorderBrush}" />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Thumb.Template>
+                                            </Thumb>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.BorderBrush>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+                    </ListView.BorderBrush>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="400"
+                                            DisplayMemberBinding="{Binding FileName}">
+                                <GridViewColumnHeader>
+                                    <TextBlock Text="File Name" />
+                                </GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn Width="100"
+                                            DisplayMemberBinding="{Binding Status}">
+                                <GridViewColumnHeader>
+                                    <TextBlock Text="Status" />
+                                </GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn Width="100"
+                                            DisplayMemberBinding="{Binding Path=PercentProgress, StringFormat=N2}">
+                                <TextBlock Text="Progess" />
+                            </GridViewColumn>
+                            <GridViewColumn Width="100"
+                                            DisplayMemberBinding="{Binding Path=ETA, StringFormat=H:mm:ss}">
+                                <TextBlock Text="ETA" />
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Limit bandwidth">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="BandwidthThrottling">
+                                            <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem Header="Download">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Download">
+                                            <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem Header="Stop">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Stop">
+                                            <cal:Parameter Value="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}" />
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                </ListView>
+            </Border>
         </DockPanel>
         <Border Grid.Row="1"
                 Opacity="0.75" d:IsHidden="True">
@@ -139,11 +164,9 @@
                        HorizontalAlignment="Center"/>
         </Border>
         <Border Grid.Row="2"
-                BorderThickness="1"
+                BorderBrush="{StaticResource BorderBrushKey}"
+                BorderThickness=".99"
                 Padding="10,5">
-            <Border.BorderBrush>
-                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
-            </Border.BorderBrush>
             <Grid DataContext="{Binding Path=SelectedItem}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="130" />
@@ -159,43 +182,43 @@
                     <RowDefinition Height="30" />
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="File name"
+                <TextBlock Text="File name:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="0" Grid.Column="0" />
                 <TextBlock Text="{Binding Path=FileName }"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="0" Grid.Column="1" />
-                <TextBlock Text="Download link"
+                <TextBlock Text="Download link:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="1" Grid.Column="0" />
                 <TextBlock Text="{Binding Path=DownloadLink}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="1" Grid.Column="1" />
-                <TextBlock Text="Save location"
+                <TextBlock Text="Save location:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="2" Grid.Column="0" />
                 <TextBlock Text="{Binding Path=SaveLocation}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="2" Grid.Column="1" />
-                <TextBlock Text="Add date"
+                <TextBlock Text="Add date:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="3" Grid.Column="0" />
                 <TextBlock Text="{Binding Path=AddOn}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="3" Grid.Column="1" />
-                <TextBlock Text="Complete date"
+                <TextBlock Text="Complete date:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="4" Grid.Column="0" />
                 <TextBlock Text="{Binding Path=CompleteOn}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="4" Grid.Column="1" />
-                <TextBlock Text="Status"
+                <TextBlock Text="Status:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="5" Grid.Column="0" />
                 <TextBlock Text="{Binding Path=Status}"
                            Style="{StaticResource MasterDetail}"
                            Grid.Row="5" Grid.Column="1" />
-                <TextBlock Text="File size"
+                <TextBlock Text="File size:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="0" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
@@ -205,7 +228,7 @@
                     <TextBlock Text=" MB"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
-                <TextBlock Text="Tranfer rate"
+                <TextBlock Text="Tranfer rate:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="1" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
@@ -215,7 +238,7 @@
                     <TextBlock Text=" KB/s"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
-                <TextBlock Text="Recieved size"
+                <TextBlock Text="Recieved size:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="2" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
@@ -225,7 +248,7 @@
                     <TextBlock Text=" MB"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
-                <TextBlock Text="Progress"
+                <TextBlock Text="Progress:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="3" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"
@@ -235,7 +258,7 @@
                     <TextBlock Text=" %"
                                Style="{StaticResource DetailDescription}" />
                 </StackPanel>
-                <TextBlock Text="Error message"
+                <TextBlock Text="Error message:"
                            Style="{StaticResource DetailDescription}"
                            Grid.Row="4" Grid.Column="2" />
                 <StackPanel Orientation="Horizontal"

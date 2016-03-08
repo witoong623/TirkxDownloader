@@ -14,12 +14,60 @@
         </Grid.ColumnDefinitions>
         <ListView Grid.Column="0"
                   cal:Message.Attach="[Event SelectionChanged] = [Action SelectItem($this)]"
-                  ItemsSource="{Binding Path=Credentials, Mode=OneWay}">
+                  ItemsSource="{Binding Path=Credentials, Mode=OneWay}"
+                  BorderBrush="{StaticResource BorderBrushKey}"
+                  BorderThickness=".99">
+            <ListView.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Margin"
+									Value="5,4" />
+                </Style>
+                <Style TargetType="{x:Type GridViewColumnHeader}">
+                    <Setter Property="OverridesDefaultStyle"
+									Value="True" />
+                    <Setter Property="BorderThickness"
+									Value="0,0,0,.99" />
+                    <Setter Property="BorderBrush"
+									Value="{DynamicResource BorderBrushKey}" />
+                    <Setter Property="Background"
+									Value="{DynamicResource BackgroundBrushKey}" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                                <Grid>
+                                    <Border BorderThickness="{TemplateBinding BorderThickness}"
+													BorderBrush="{TemplateBinding BorderBrush}"
+													Background="{TemplateBinding Background}">
+                                        <ContentPresenter Margin="{TemplateBinding Padding}" />
+                                    </Border>
+                                    <Thumb x:Name="PART_HeaderGripper"
+												   HorizontalAlignment="Right"
+												   BorderBrush="{TemplateBinding BorderBrush}"
+												   Margin="0,0,-6,0">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="{x:Type Thumb}">
+                                                <Border Background="Transparent"
+																Width="13">
+                                                    <Rectangle Width="1"
+																	   Stroke="{TemplateBinding BorderBrush}" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.Resources>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Domain name"
-                                    Width="100"
-                                    DisplayMemberBinding="{Binding TargetName}" />
+                    <GridViewColumn Width="100"
+                                    DisplayMemberBinding="{Binding TargetName}">
+                        <GridViewColumnHeader>
+                            <TextBlock Text="Domain name" />
+                        </GridViewColumnHeader>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
