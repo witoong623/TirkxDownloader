@@ -153,7 +153,7 @@ namespace TirkxDownloader.ViewModels
             _downloader.StopDownloadItem(_selectedItem);
         }
 
-        public void Stop(GeneralDownloadItem info)
+        public void Stop(IDownloadItem info)
         {
             _downloader.StopDownloadItem(info);
         }
@@ -165,7 +165,7 @@ namespace TirkxDownloader.ViewModels
 
         public void BandwidthThrottling(GeneralDownloadItem info)
         {
-            if (info.InStream == null)
+            if (info == null || info.InStream == null)
             {
                 return;
             }

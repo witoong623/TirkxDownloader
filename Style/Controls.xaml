@@ -13,5 +13,6 @@
         <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.TextBlock.xaml" />
         <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.TextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.ListBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TirkxDownloader;component/Style/Controls.ContextMenu.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
