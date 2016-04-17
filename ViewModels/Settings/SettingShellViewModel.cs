@@ -37,12 +37,13 @@ namespace TirkxDownloader.ViewModels.Settings
         {
             if (close)
             {
+                Items.OfType<IDeactivate>().Apply(x => x.Deactivate(true));
+
                 if (Items.OfType<ISetting>().Count(x => x.IsSet == true) >= 1)
                 {
                     SettingsProviders.Local.Save();
                 }
 
-                Items.OfType<IDeactivate>().Apply(x => x.Deactivate(true));
                 Items.Clear();
             }
             else
