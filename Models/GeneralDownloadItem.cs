@@ -101,8 +101,11 @@ namespace TirkxDownloader.Models
             get { return _speed; }
             set
             {
-                _speed = value / 1024;
-                NotifyOfPropertyChange();
+                if (_speed != value)
+                {
+                    _speed = value / 1024;
+                    NotifyOfPropertyChange();
+                }
             }
         }
 
