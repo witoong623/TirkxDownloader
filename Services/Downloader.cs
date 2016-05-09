@@ -93,7 +93,8 @@ namespace TirkxDownloader.Services
         {
             foreach (var item in items)
             {
-                if (item.Status == DownloadStatus.Queue)
+                if (item.Status == DownloadStatus.Queue || item.Status == DownloadStatus.Stop ||
+                        item.Status == DownloadStatus.Error)
                 {
                     _queueingItems.Enqueue(item);
                 }

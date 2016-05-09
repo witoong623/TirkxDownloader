@@ -48,7 +48,7 @@ namespace TirkxDownloader.ViewModels
             get
             {
                 return SelectedItem != null && (SelectedItem.Status == DownloadStatus.Queue ||
-                    SelectedItem.Status == DownloadStatus.Error);
+                    SelectedItem.Status == DownloadStatus.Error || SelectedItem.Status == DownloadStatus.Stop);
             }
         }
 
@@ -175,7 +175,11 @@ namespace TirkxDownloader.ViewModels
                 DownloadingSetting.MaximumBytesPerSec.Value / 1024);
             _windowManager.ShowDialog(dialog);
 
+            if (dialog.DialogResult == DialogResult.Cancel) return;
+
             long bandwidth = dialog.InputResult;
+
+            if (DownloadingSetting.MaximumBytesPerSec.Value == bandwidth) return;
 
             _eventAggregator.PublishOnUIThread(new MaxBpsUpdate(bandwidth * 1024));
             DownloadingSetting.MaximumBytesPerSec.Value = bandwidth * 1024;
