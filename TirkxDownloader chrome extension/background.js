@@ -2,7 +2,8 @@ chrome.runtime.onInstalled.addListener(Init);
 chrome.contextMenus.onClicked.addListener(showMessageBox);
 
 function showMessageBox(info, tab) {
-	var link = decodeURIComponent(info.linkUrl);
+	// decode url and convert plus sign to space
+	var link = decodeURIComponent(info.linkUrl.replace(/\+/g, '%20'));
 	var index = link.search(/[^/\\\?]+\.\w{3,4}(?=([\?&].*$|$))/);
 	var fileName = link.substring(index);
 	// check if this is actually download link
