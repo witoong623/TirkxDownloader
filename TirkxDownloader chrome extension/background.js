@@ -24,7 +24,7 @@ function Init() {
 
 function SendMessage(fileName, link) {
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST","http://localhost:6230/", false);
+	xhr.open("POST","http://localhost:6230/");
 	xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
 	var JSONstring = JSON.stringify({ FileName: fileName, DownloadLink: link });
 	xhr.send(JSONstring);
