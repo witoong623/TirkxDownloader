@@ -65,7 +65,7 @@ namespace TirkxDownloader.Services
             await Initialization;
 
             Google.Apis.Drive.v2.Data.File gFile = await _driveService.Files.Get(fileId).ExecuteAsync(ct);
-            item.FileName = gFile.OriginalFilename;
+            item.FileName = gFile.Title;
             item.FileSizeInBytes = gFile.FileSize ?? 0;
             item.FileSize = gFile.FileSize / 1048576 ?? 0;
         }
