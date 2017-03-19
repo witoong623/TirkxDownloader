@@ -74,6 +74,7 @@ namespace TirkxDownloader.Services
                 lock (_mutex)
                 {
                     _isDownloading = value;
+                    NotifyOfPropertyChange();
                 }
             }
         }
